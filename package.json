@@ -7,13 +7,16 @@
     "url": "https://github.com/jeecgboot/jeecgboot-vue3"
   },
   "scripts": {
-    "bootstrap": "pnpm install",
-    "serve": "npm run dev",
+    "bootstrap": "yarn install",
+    "postinstall": "patch-package",
+    "prestart": "npm run postinstall",
+    "start": "npm run dev",
     "dev": "vite",
     "clean:cache": "rimraf node_modules/.cache/ && rimraf node_modules/.vite",
-    "clean:lib": "rimraf node_modules",
-    "build": "cross-env NODE_ENV=production NODE_OPTIONS=--max-old-space-size=8192 vite build && esno ./build/script/postBuild.ts",
-    "build:no-cache": "pnpm clean:cache && npm run build",
+    "prebuild": "npm run postinstall",
+    "build": "cross-env NODE_ENV=production NODE_OPTIONS=--max-old-space-size=4096 vite build && esno ./build/script/postBuild.ts",
+    "build:test": "cross-env vite build --mode test && esno ./build/script/postBuild.ts",
+    "build:no-cache": "yarn clean:cache && npm run build",
     "report": "cross-env REPORT=true npm run build",
     "type:check": "vue-tsc --noEmit --skipLibCheck",
     "preview": "npm run build && vite preview",
@@ -89,6 +92,7 @@
     "vxe-table-plugin-antd": "3.0.5",
     "xe-utils": "^3.3.1",
     "vue-json-pretty": "^2.0.6",
+    "xlsx": "^0.18.5",
     "xss": "^1.0.13"
   },
   "devDependencies": {
@@ -146,6 +150,8 @@
     "postcss-html": "^1.4.1",
     "postcss-less": "^6.0.0",
     "prettier": "^2.6.2",
+    "patch-package": "^6.4.7",
+    "postinstall-postinstall": "^2.1.0",
     "pretty-quick": "^3.1.1",
     "rimraf": "^3.0.2",
     "rollup": "^2.70.2",
@@ -296,6 +302,7 @@
         "vxe-table",
         "vxe-table-plugin-antd",
         "xe-utils",
+        "xlsx",
         "xss"
       ]
     }

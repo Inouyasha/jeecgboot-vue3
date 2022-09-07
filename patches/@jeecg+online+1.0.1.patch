@@ -1,0 +1,2201 @@
+diff --git a/node_modules/@jeecg/online/OnlineAutoList.js b/node_modules/@jeecg/online/OnlineAutoList.js
+index 454118f..d95cf4c 100644
+--- a/node_modules/@jeecg/online/OnlineAutoList.js
++++ b/node_modules/@jeecg/online/OnlineAutoList.js
+@@ -14,56 +14,78 @@ var __async = (__this, __arguments, generator) => {
+         reject(e);
+       }
+     };
+-    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
++    var step = (x) => (x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected));
+     step((generator = generator.apply(__this, __arguments)).next());
+   });
+ };
+-import { BasicTable, TableAction } from "/@/components/Table";
+-import { useMessage } from "/@/hooks/web/useMessage";
+-import OnlineAutoModal from "./OnlineAutoModal.js";
+-import OnlineCustomModal from "./OnlineCustomModal.js";
+-import { watch, resolveComponent, openBlock, createElementBlock, createVNode, normalizeClass, withCtx, createBlock, createCommentVNode, Fragment, renderList, createTextVNode, toDisplayString, withDirectives, vShow, createElementVNode, mergeProps, toHandlers, resolveDynamicComponent, normalizeProps, guardReactiveProps } from "vue";
+-import JImportModal from "/@/components/Form/src/jeecg/components/JImportModal.vue";
+-import { u as useOnlineTableContext, a as useListButton, b as useTableColumns } from "./useTableColumns.js";
+-import { u as useEnhance } from "./OnlineForm.js";
+-import OnlineQueryForm from "./OnlineQueryForm.js";
+-import OnlineSuperQuery from "./OnlineSuperQuery.js";
+-import { _ as _export_sfc } from "./index.js";
+-import "/@/components/Modal";
+-import "/@/utils/http/axios";
+-import "./useAutoForm.js";
+-import "./FormSchemaFactory.js";
+-import "/@/components/Form/src/jeecg/components/JUpload";
+-import "/@/views/system/user/user.api";
+-import "/@/store/modules/user";
+-import "/@/utils";
+-import "/@/utils/desform/customExpression";
+-import "/@/components/Form/src/componentMap";
+-import "./OnlineSelectCascade.js";
+-import "/@/components/jeecg/OnLine/JPopupOnlReport.vue";
+-import "vue-router";
+-import "/@/utils/common/compUtils";
+-import "/@/utils/cache";
+-import "/@/hooks/core/onMountedOrActivated";
+-import "ant-design-vue";
+-import "/@/hooks/system/useMethods";
+-import "./pick.js";
+-import "./isArray.js";
+-import "./toString.js";
+-import "./_arrayPush.js";
+-import "/@/utils/dict/JDictSelectUtil";
+-import "/@/components/Form/src/utils/Area";
+-import "/@/components/Preview/index";
+-import "/@/components/Form/index";
+-import "/@/components/Loading";
+-import "./OnlineSubForm.js";
+-import "./OnlineSuperQueryValComponent.vue_vue_type_script_lang.js";
+-import "/@/components/Form/src/helper";
+-import "/@/utils/is";
+-import "@ant-design/icons-vue";
+-var OnlineAutoList_vue_vue_type_style_index_0_lang = "";
++import { BasicTable, TableAction } from '/@/components/Table';
++import { useMessage } from '/@/hooks/web/useMessage';
++import OnlineAutoModal from './OnlineAutoModal.js';
++import OnlineCustomModal from './OnlineCustomModal.js';
++import {
++  watch,
++  resolveComponent,
++  openBlock,
++  createElementBlock,
++  createVNode,
++  normalizeClass,
++  withCtx,
++  createBlock,
++  createCommentVNode,
++  Fragment,
++  renderList,
++  createTextVNode,
++  toDisplayString,
++  withDirectives,
++  vShow,
++  createElementVNode,
++  mergeProps,
++  toHandlers,
++  resolveDynamicComponent,
++  normalizeProps,
++  guardReactiveProps,
++} from 'vue';
++import JImportModal from '/@/components/Form/src/jeecg/components/JImportModal.vue';
++import { u as useOnlineTableContext, a as useListButton, b as useTableColumns } from './useTableColumns.js';
++import { u as useEnhance } from './OnlineForm.js';
++import OnlineQueryForm from './OnlineQueryForm.js';
++import OnlineSuperQuery from './OnlineSuperQuery.js';
++import { _ as _export_sfc } from './index.js';
++import '/@/components/Modal';
++import '/@/utils/http/axios';
++import './useAutoForm.js';
++import './FormSchemaFactory.js';
++import '/@/components/Form/src/jeecg/components/JUpload';
++import '/@/views/system/user/user.api';
++import '/@/store/modules/user';
++import '/@/utils';
++import '/@/utils/desform/customExpression';
++import '/@/components/Form/src/componentMap';
++import './OnlineSelectCascade.js';
++import '/@/components/jeecg/OnLine/JPopupOnlReport.vue';
++import 'vue-router';
++import '/@/utils/common/compUtils';
++import '/@/utils/cache';
++import '/@/hooks/core/onMountedOrActivated';
++import 'ant-design-vue';
++import '/@/hooks/system/useMethods';
++import './pick.js';
++import './isArray.js';
++import './toString.js';
++import './_arrayPush.js';
++import '/@/utils/dict/JDictSelectUtil';
++import '/@/components/Form/src/utils/Area';
++import '/@/components/Preview/index';
++import '/@/components/Form/index';
++import '/@/components/Loading';
++import './OnlineSubForm.js';
++import './OnlineSuperQueryValComponent.vue_vue_type_script_lang.js';
++import '/@/components/Form/src/helper';
++import '/@/utils/is';
++import '@ant-design/icons-vue';
++var OnlineAutoList_vue_vue_type_style_index_0_lang = '';
+ const _sfc_main = {
+-  name: "DefaultOnlineList",
++  name: 'DefaultOnlineList',
+   components: {
+     BasicTable,
+     TableAction,
+@@ -71,7 +93,7 @@ const _sfc_main = {
+     JImportModal,
+     OnlineQueryForm,
+     OnlineSuperQuery,
+-    OnlineCustomModal
++    OnlineCustomModal,
+   },
+   setup() {
+     const { createMessage: $message } = useMessage();
+@@ -90,10 +112,10 @@ const _sfc_main = {
+       superQueryButtonRef,
+       superQueryStatus,
+       handleSuperQuery,
+-      registerCustomModal
++      registerCustomModal,
+     } = useOnlineTableContext();
+     if (!ID.value) {
+-      $message.warning("\u5730\u5740\u9519\u8BEF, \u914D\u7F6EID\u4E0D\u5B58\u5728!");
++      $message.warning('\u5730\u5740\u9519\u8BEF, \u914D\u7F6EID\u4E0D\u5B58\u5728!');
+       return;
+     }
+     let { initCgEnhanceJs } = useEnhance(onlineTableContext);
+@@ -109,6 +131,7 @@ const _sfc_main = {
+       registerImportModal,
+       onImportExcel,
+       onExportExcel,
++      onExportEmptyExcel,
+       cgButtonJsHandler,
+       cgButtonActionHandler,
+       cgButtonLinkHandler,
+@@ -116,7 +139,7 @@ const _sfc_main = {
+       getDropDownActions,
+       getActions,
+       initButtonList,
+-      initButtonSwitch
++      initButtonSwitch,
+     } = useListButton(onlineTableContext);
+     const {
+       columns,
+@@ -131,12 +154,16 @@ const _sfc_main = {
+       getFormatDate,
+       handleColumnResult,
+       hrefComponent,
+-      viewOnlineCellImage
++      viewOnlineCellImage,
+     } = useTableColumns(onlineTableContext);
+-    watch(ID, () => {
+-      console.log("watched id is change...");
+-      initAutoList();
+-    }, { immediate: true });
++    watch(
++      ID,
++      () => {
++        console.log('watched id is change...');
++        initAutoList();
++      },
++      { immediate: true }
++    );
+     function initAutoList() {
+       return __async(this, null, function* () {
+         loading.value = true;
+@@ -144,19 +171,19 @@ const _sfc_main = {
+         handleTableConfig(columnResult);
+         yield loadData();
+         loading.value = false;
+-        onlineTableContext.execButtonEnhance("setup");
++        onlineTableContext.execButtonEnhance('setup');
+       });
+     }
+     function handleTableConfig(result) {
+       let EnhanceJS = initCgEnhanceJs(result.enhanceJs);
+-      onlineTableContext["EnhanceJS"] = EnhanceJS;
++      onlineTableContext['EnhanceJS'] = EnhanceJS;
+       initButtonList(result.cgButtonList);
+       initButtonSwitch(result.hideColumns);
+       handleColumnResult(result);
+       handleSpecialConfig(result);
+     }
+     function queryWithCondition(data) {
+-      onlineTableContext["queryParam"] = data;
++      onlineTableContext['queryParam'] = data;
+       reload();
+     }
+     function onQueryFormLoaded(json) {
+@@ -186,6 +213,7 @@ const _sfc_main = {
+       handleEdit,
+       onImportExcel,
+       onExportExcel,
++      onExportEmptyExcel,
+       cgTopButtonList,
+       cgLinkButtonList,
+       cgButtonJsHandler,
+@@ -204,207 +232,355 @@ const _sfc_main = {
+       importUrl,
+       handleSubmitFlow,
+       hrefComponent,
+-      viewOnlineCellImage
++      viewOnlineCellImage,
+     };
+     return that;
+-  }
++  },
+ };
+-const _hoisted_1 = { class: "p-2" };
+-const _hoisted_2 = /* @__PURE__ */ createTextVNode("\u65B0\u589E");
+-const _hoisted_3 = /* @__PURE__ */ createTextVNode("\u5BFC\u5165");
+-const _hoisted_4 = /* @__PURE__ */ createTextVNode(" \u5BFC\u51FA");
+-const _hoisted_5 = /* @__PURE__ */ createTextVNode(" \u6279\u91CF\u5220\u9664");
++const _hoisted_1 = { class: 'p-2' };
++const _hoisted_2 = /* @__PURE__ */ createTextVNode('\u65B0\u589E');
++const _hoisted_3 = /* @__PURE__ */ createTextVNode('\u5BFC\u5165');
++const _hoisted_4 = /* @__PURE__ */ createTextVNode(' \u5BFC\u51FA');
++// yg 空导出按钮
++const _hoisted_add_1 = /* @__PURE__ */ createTextVNode(' \u7a7a\u5bfc\u51fa');
++const _hoisted_5 = /* @__PURE__ */ createTextVNode(' \u6279\u91CF\u5220\u9664');
+ const _hoisted_6 = {
+   key: 0,
+-  style: { "font-size": "12px", "font-style": "italic" }
++  style: { 'font-size': '12px', 'font-style': 'italic' },
+ };
+-const _hoisted_7 = /* @__PURE__ */ createTextVNode(" \u4E0B\u8F7D ");
++const _hoisted_7 = /* @__PURE__ */ createTextVNode(' \u4E0B\u8F7D ');
+ const _hoisted_8 = {
+   key: 0,
+-  style: { "font-size": "12px", "font-style": "italic" }
++  style: { 'font-size': '12px', 'font-style': 'italic' },
+ };
+-const _hoisted_9 = ["src", "onClick"];
+-const _hoisted_10 = ["innerHTML"];
+-const _hoisted_11 = ["title"];
++const _hoisted_9 = ['src', 'onClick'];
++const _hoisted_10 = ['innerHTML'];
++const _hoisted_11 = ['title'];
+ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+-  const _component_online_query_form = resolveComponent("online-query-form");
+-  const _component_a_button = resolveComponent("a-button");
+-  const _component_online_super_query = resolveComponent("online-super-query");
+-  const _component_TableAction = resolveComponent("TableAction");
+-  const _component_BasicTable = resolveComponent("BasicTable");
+-  const _component_OnlineAutoModal = resolveComponent("OnlineAutoModal");
+-  const _component_JImportModal = resolveComponent("JImportModal");
+-  const _component_a_modal = resolveComponent("a-modal");
+-  const _component_online_custom_modal = resolveComponent("online-custom-modal");
+-  return openBlock(), createElementBlock("div", _hoisted_1, [
+-    createVNode(_component_online_query_form, {
+-      ref: "onlineQueryFormOuter",
+-      id: _ctx.ID,
+-      onSearch: _ctx.queryWithCondition,
+-      onLoaded: _ctx.onQueryFormLoaded
+-    }, null, 8, ["id", "onSearch", "onLoaded"]),
+-    createVNode(_component_BasicTable, {
+-      ref: "onlineTable",
+-      rowKey: "jeecg_row_key",
+-      canResize: true,
+-      bordered: true,
+-      showIndexColumn: false,
+-      loading: _ctx.loading,
+-      columns: _ctx.columns,
+-      dataSource: _ctx.dataSource,
+-      pagination: _ctx.pagination,
+-      rowSelection: _ctx.rowSelection,
+-      actionColumn: _ctx.actionColumn,
+-      showTableSetting: true,
+-      clickToRowSelect: false,
+-      scroll: _ctx.tableScroll,
+-      onTableRedo: _ctx.reload,
+-      class: normalizeClass({ "j-table-force-nowrap": _ctx.enableScrollBar }),
+-      onChange: _ctx.handleChangeInTable
+-    }, {
+-      tableTitle: withCtx(() => [
+-        _ctx.buttonSwitch.add ? (openBlock(), createBlock(_component_a_button, {
+-          key: 0,
+-          preIcon: "ant-design:plus-outlined",
+-          type: "primary",
+-          onClick: _ctx.handleAdd
+-        }, {
+-          default: withCtx(() => [
+-            _hoisted_2
++  const _component_online_query_form = resolveComponent('online-query-form');
++  const _component_a_button = resolveComponent('a-button');
++  const _component_online_super_query = resolveComponent('online-super-query');
++  const _component_TableAction = resolveComponent('TableAction');
++  const _component_BasicTable = resolveComponent('BasicTable');
++  const _component_OnlineAutoModal = resolveComponent('OnlineAutoModal');
++  const _component_JImportModal = resolveComponent('JImportModal');
++  const _component_a_modal = resolveComponent('a-modal');
++  const _component_online_custom_modal = resolveComponent('online-custom-modal');
++  return (
++    openBlock(),
++    createElementBlock('div', _hoisted_1, [
++      createVNode(
++        _component_online_query_form,
++        {
++          ref: 'onlineQueryFormOuter',
++          id: _ctx.ID,
++          onSearch: _ctx.queryWithCondition,
++          onLoaded: _ctx.onQueryFormLoaded,
++        },
++        null,
++        8,
++        ['id', 'onSearch', 'onLoaded']
++      ),
++      createVNode(
++        _component_BasicTable,
++        {
++          ref: 'onlineTable',
++          rowKey: 'jeecg_row_key',
++          canResize: true,
++          bordered: true,
++          showIndexColumn: false,
++          loading: _ctx.loading,
++          columns: _ctx.columns,
++          dataSource: _ctx.dataSource,
++          pagination: _ctx.pagination,
++          rowSelection: _ctx.rowSelection,
++          actionColumn: _ctx.actionColumn,
++          showTableSetting: true,
++          clickToRowSelect: false,
++          scroll: _ctx.tableScroll,
++          onTableRedo: _ctx.reload,
++          class: normalizeClass({ 'j-table-force-nowrap': _ctx.enableScrollBar }),
++          onChange: _ctx.handleChangeInTable,
++        },
++        {
++          tableTitle: withCtx(() => [
++            _ctx.buttonSwitch.add
++              ? (openBlock(),
++                createBlock(
++                  _component_a_button,
++                  {
++                    key: 0,
++                    preIcon: 'ant-design:plus-outlined',
++                    type: 'primary',
++                    onClick: _ctx.handleAdd,
++                  },
++                  {
++                    default: withCtx(() => [_hoisted_2]),
++                    _: 1,
++                  },
++                  8,
++                  ['onClick']
++                ))
++              : createCommentVNode('', true),
++            _ctx.buttonSwitch.import
++              ? (openBlock(),
++                createBlock(
++                  _component_a_button,
++                  {
++                    key: 1,
++                    preIcon: 'ant-design:import-outlined',
++                    type: 'primary',
++                    onClick: _ctx.onImportExcel,
++                  },
++                  {
++                    default: withCtx(() => [_hoisted_3]),
++                    _: 1,
++                  },
++                  8,
++                  ['onClick']
++                ))
++              : createCommentVNode('', true),
++            _ctx.buttonSwitch.export
++              ? (openBlock(),
++                createBlock(
++                  _component_a_button,
++                  {
++                    key: 2,
++                    preIcon: 'ant-design:export-outlined',
++                    type: 'primary',
++                    onClick: _ctx.onExportExcel,
++                  },
++                  {
++                    default: withCtx(() => [_hoisted_4]),
++                    _: 1,
++                  },
++                  8,
++                  ['onClick']
++                ))
++              : createCommentVNode('', true),
++            _ctx.buttonSwitch.export
++              ? (openBlock(),
++                createBlock(
++                  _component_a_button,
++                  {
++                    key: 2,
++                    preIcon: 'ant-design:export-outlined',
++                    type: 'primary',
++                    onClick: _ctx.onExportEmptyExcel,
++                  },
++                  {
++                    default: withCtx(() => [_hoisted_add_1]),
++                    _: 1,
++                  },
++                  8,
++                  ['onClick']
++                ))
++              : createCommentVNode('', true),
++            _ctx.cgTopButtonList && _ctx.cgTopButtonList.length > 0
++              ? (openBlock(true),
++                createElementBlock(
++                  Fragment,
++                  { key: 3 },
++                  renderList(_ctx.cgTopButtonList, (item, index) => {
++                    return (
++                      openBlock(),
++                      createElementBlock(
++                        Fragment,
++                        null,
++                        [
++                          item.optType == 'js'
++                            ? (openBlock(),
++                              createBlock(
++                                _component_a_button,
++                                {
++                                  key: 'cgbtn' + index,
++                                  onClick: ($event) => _ctx.cgButtonJsHandler(item.buttonCode),
++                                  type: 'primary',
++                                  preIcon: item.buttonIcon ? 'ant-design:' + item.buttonIcon : '',
++                                },
++                                {
++                                  default: withCtx(() => [createTextVNode(toDisplayString(item.buttonName), 1)]),
++                                  _: 2,
++                                },
++                                1032,
++                                ['onClick', 'preIcon']
++                              ))
++                            : item.optType == 'action'
++                            ? (openBlock(),
++                              createBlock(
++                                _component_a_button,
++                                {
++                                  key: 'cgbtn' + index,
++                                  onClick: ($event) => _ctx.cgButtonActionHandler(item.buttonCode),
++                                  type: 'primary',
++                                  preIcon: item.buttonIcon ? 'ant-design:' + item.buttonIcon : '',
++                                },
++                                {
++                                  default: withCtx(() => [createTextVNode(toDisplayString(item.buttonName), 1)]),
++                                  _: 2,
++                                },
++                                1032,
++                                ['onClick', 'preIcon']
++                              ))
++                            : createCommentVNode('', true),
++                        ],
++                        64
++                      )
++                    );
++                  }),
++                  256
++                ))
++              : createCommentVNode('', true),
++            _ctx.buttonSwitch.batch_delete
++              ? withDirectives(
++                  (openBlock(),
++                  createBlock(
++                    _component_a_button,
++                    {
++                      key: 4,
++                      preIcon: 'ant-design:delete-outlined',
++                      onClick: _ctx.handleBatchDelete,
++                    },
++                    {
++                      default: withCtx(() => [_hoisted_5]),
++                      _: 1,
++                    },
++                    8,
++                    ['onClick']
++                  )),
++                  [[vShow, _ctx.selectedKeys.length > 0]]
++                )
++              : createCommentVNode('', true),
++            _ctx.buttonSwitch.super_query
++              ? (openBlock(),
++                createBlock(
++                  _component_online_super_query,
++                  {
++                    key: 5,
++                    ref: 'superQueryButtonRef',
++                    status: _ctx.superQueryStatus,
++                    onSearch: _ctx.handleSuperQuery,
++                  },
++                  null,
++                  8,
++                  ['status', 'onSearch']
++                ))
++              : createCommentVNode('', true),
+           ]),
+-          _: 1
+-        }, 8, ["onClick"])) : createCommentVNode("", true),
+-        _ctx.buttonSwitch.import ? (openBlock(), createBlock(_component_a_button, {
+-          key: 1,
+-          preIcon: "ant-design:import-outlined",
+-          type: "primary",
+-          onClick: _ctx.onImportExcel
+-        }, {
+-          default: withCtx(() => [
+-            _hoisted_3
++          fileSlot: withCtx(({ text }) => [
++            !text
++              ? (openBlock(), createElementBlock('span', _hoisted_6, '\u65E0\u6587\u4EF6'))
++              : (openBlock(),
++                createBlock(
++                  _component_a_button,
++                  {
++                    key: 1,
++                    ghost: true,
++                    type: 'primary',
++                    preIcon: 'ant-design:download',
++                    size: 'small',
++                    onClick: ($event) => _ctx.downloadRowFile(text),
++                  },
++                  {
++                    default: withCtx(() => [_hoisted_7]),
++                    _: 2,
++                  },
++                  1032,
++                  ['onClick']
++                )),
+           ]),
+-          _: 1
+-        }, 8, ["onClick"])) : createCommentVNode("", true),
+-        _ctx.buttonSwitch.export ? (openBlock(), createBlock(_component_a_button, {
+-          key: 2,
+-          preIcon: "ant-design:export-outlined",
+-          type: "primary",
+-          onClick: _ctx.onExportExcel
+-        }, {
+-          default: withCtx(() => [
+-            _hoisted_4
++          imgSlot: withCtx(({ text }) => [
++            !text
++              ? (openBlock(), createElementBlock('span', _hoisted_8, '\u65E0\u56FE\u7247'))
++              : (openBlock(),
++                createElementBlock(
++                  'img',
++                  {
++                    key: 1,
++                    src: _ctx.getImgView(text),
++                    alt: '\u56FE\u7247\u4E0D\u5B58\u5728',
++                    class: 'online-cell-image',
++                    onClick: ($event) => _ctx.viewOnlineCellImage(text),
++                  },
++                  null,
++                  8,
++                  _hoisted_9
++                )),
+           ]),
+-          _: 1
+-        }, 8, ["onClick"])) : createCommentVNode("", true),
+-        _ctx.cgTopButtonList && _ctx.cgTopButtonList.length > 0 ? (openBlock(true), createElementBlock(Fragment, { key: 3 }, renderList(_ctx.cgTopButtonList, (item, index) => {
+-          return openBlock(), createElementBlock(Fragment, null, [
+-            item.optType == "js" ? (openBlock(), createBlock(_component_a_button, {
+-              key: "cgbtn" + index,
+-              onClick: ($event) => _ctx.cgButtonJsHandler(item.buttonCode),
+-              type: "primary",
+-              preIcon: item.buttonIcon ? "ant-design:" + item.buttonIcon : ""
+-            }, {
+-              default: withCtx(() => [
+-                createTextVNode(toDisplayString(item.buttonName), 1)
+-              ]),
+-              _: 2
+-            }, 1032, ["onClick", "preIcon"])) : item.optType == "action" ? (openBlock(), createBlock(_component_a_button, {
+-              key: "cgbtn" + index,
+-              onClick: ($event) => _ctx.cgButtonActionHandler(item.buttonCode),
+-              type: "primary",
+-              preIcon: item.buttonIcon ? "ant-design:" + item.buttonIcon : ""
+-            }, {
+-              default: withCtx(() => [
+-                createTextVNode(toDisplayString(item.buttonName), 1)
+-              ]),
+-              _: 2
+-            }, 1032, ["onClick", "preIcon"])) : createCommentVNode("", true)
+-          ], 64);
+-        }), 256)) : createCommentVNode("", true),
+-        _ctx.buttonSwitch.batch_delete ? withDirectives((openBlock(), createBlock(_component_a_button, {
+-          key: 4,
+-          preIcon: "ant-design:delete-outlined",
+-          onClick: _ctx.handleBatchDelete
+-        }, {
+-          default: withCtx(() => [
+-            _hoisted_5
++          htmlSlot: withCtx(({ text }) => [createElementVNode('div', { innerHTML: text }, null, 8, _hoisted_10)]),
++          pcaSlot: withCtx(({ text }) => [
++            createElementVNode(
++              'div',
++              {
++                title: _ctx.getPcaText(text),
++              },
++              toDisplayString(_ctx.getPcaText(text)),
++              9,
++              _hoisted_11
++            ),
+           ]),
+-          _: 1
+-        }, 8, ["onClick"])), [
+-          [vShow, _ctx.selectedKeys.length > 0]
+-        ]) : createCommentVNode("", true),
+-        _ctx.buttonSwitch.super_query ? (openBlock(), createBlock(_component_online_super_query, {
+-          key: 5,
+-          ref: "superQueryButtonRef",
+-          status: _ctx.superQueryStatus,
+-          onSearch: _ctx.handleSuperQuery
+-        }, null, 8, ["status", "onSearch"])) : createCommentVNode("", true)
+-      ]),
+-      fileSlot: withCtx(({ text }) => [
+-        !text ? (openBlock(), createElementBlock("span", _hoisted_6, "\u65E0\u6587\u4EF6")) : (openBlock(), createBlock(_component_a_button, {
+-          key: 1,
+-          ghost: true,
+-          type: "primary",
+-          preIcon: "ant-design:download",
+-          size: "small",
+-          onClick: ($event) => _ctx.downloadRowFile(text)
+-        }, {
+-          default: withCtx(() => [
+-            _hoisted_7
++          dateSlot: withCtx(({ text }) => [createElementVNode('span', null, toDisplayString(_ctx.getFormatDate(text)), 1)]),
++          action: withCtx(({ record }) => [
++            createVNode(
++              _component_TableAction,
++              {
++                actions: _ctx.getActions(record),
++                dropDownActions: _ctx.getDropDownActions(record),
++              },
++              null,
++              8,
++              ['actions', 'dropDownActions']
++            ),
+           ]),
+-          _: 2
+-        }, 1032, ["onClick"]))
+-      ]),
+-      imgSlot: withCtx(({ text }) => [
+-        !text ? (openBlock(), createElementBlock("span", _hoisted_8, "\u65E0\u56FE\u7247")) : (openBlock(), createElementBlock("img", {
+-          key: 1,
+-          src: _ctx.getImgView(text),
+-          alt: "\u56FE\u7247\u4E0D\u5B58\u5728",
+-          class: "online-cell-image",
+-          onClick: ($event) => _ctx.viewOnlineCellImage(text)
+-        }, null, 8, _hoisted_9))
+-      ]),
+-      htmlSlot: withCtx(({ text }) => [
+-        createElementVNode("div", { innerHTML: text }, null, 8, _hoisted_10)
+-      ]),
+-      pcaSlot: withCtx(({ text }) => [
+-        createElementVNode("div", {
+-          title: _ctx.getPcaText(text)
+-        }, toDisplayString(_ctx.getPcaText(text)), 9, _hoisted_11)
+-      ]),
+-      dateSlot: withCtx(({ text }) => [
+-        createElementVNode("span", null, toDisplayString(_ctx.getFormatDate(text)), 1)
+-      ]),
+-      action: withCtx(({ record }) => [
+-        createVNode(_component_TableAction, {
+-          actions: _ctx.getActions(record),
+-          dropDownActions: _ctx.getDropDownActions(record)
+-        }, null, 8, ["actions", "dropDownActions"])
+-      ]),
+-      _: 1
+-    }, 8, ["loading", "columns", "dataSource", "pagination", "rowSelection", "actionColumn", "scroll", "onTableRedo", "class", "onChange"]),
+-    createVNode(_component_OnlineAutoModal, {
+-      id: _ctx.ID,
+-      onRegister: _ctx.registerModal,
+-      onSuccess: _ctx.reload
+-    }, null, 8, ["id", "onRegister", "onSuccess"]),
+-    createVNode(_component_JImportModal, {
+-      onRegister: _ctx.registerImportModal,
+-      url: _ctx.importUrl(),
+-      onOk: _ctx.reload,
+-      online: ""
+-    }, null, 8, ["onRegister", "url", "onOk"]),
+-    createVNode(_component_a_modal, mergeProps(_ctx.hrefComponent.model, toHandlers(_ctx.hrefComponent.on)), {
+-      default: withCtx(() => [
+-        (openBlock(), createBlock(resolveDynamicComponent(_ctx.hrefComponent.is), normalizeProps(guardReactiveProps(_ctx.hrefComponent.params)), null, 16))
+-      ]),
+-      _: 1
+-    }, 16),
+-    createVNode(_component_online_custom_modal, {
+-      onRegister: _ctx.registerCustomModal,
+-      onSuccess: _ctx.reload
+-    }, null, 8, ["onRegister", "onSuccess"])
+-  ]);
++          _: 1,
++        },
++        8,
++        ['loading', 'columns', 'dataSource', 'pagination', 'rowSelection', 'actionColumn', 'scroll', 'onTableRedo', 'class', 'onChange']
++      ),
++      createVNode(
++        _component_OnlineAutoModal,
++        {
++          id: _ctx.ID,
++          onRegister: _ctx.registerModal,
++          onSuccess: _ctx.reload,
++        },
++        null,
++        8,
++        ['id', 'onRegister', 'onSuccess']
++      ),
++      createVNode(
++        _component_JImportModal,
++        {
++          onRegister: _ctx.registerImportModal,
++          url: _ctx.importUrl(),
++          onOk: _ctx.reload,
++          online: '',
++        },
++        null,
++        8,
++        ['onRegister', 'url', 'onOk']
++      ),
++      createVNode(
++        _component_a_modal,
++        mergeProps(_ctx.hrefComponent.model, toHandlers(_ctx.hrefComponent.on)),
++        {
++          default: withCtx(() => [(openBlock(), createBlock(resolveDynamicComponent(_ctx.hrefComponent.is), normalizeProps(guardReactiveProps(_ctx.hrefComponent.params)), null, 16))]),
++          _: 1,
++        },
++        16
++      ),
++      createVNode(
++        _component_online_custom_modal,
++        {
++          onRegister: _ctx.registerCustomModal,
++          onSuccess: _ctx.reload,
++        },
++        null,
++        8,
++        ['onRegister', 'onSuccess']
++      ),
++    ])
++  );
+ }
+-var OnlineAutoList = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render]]);
++var OnlineAutoList = /* @__PURE__ */ _export_sfc(_sfc_main, [['render', _sfc_render]]);
+ export { OnlineAutoList as default };
+diff --git a/node_modules/@jeecg/online/README.md b/node_modules/@jeecg/online/README.md
+deleted file mode 100644
+index 642e43b..0000000
+--- a/node_modules/@jeecg/online/README.md
++++ /dev/null
+@@ -1,23 +0,0 @@
+-# jeecg online form vue3
+-
+-
+-## Install
+-
+-```bash
+-yarn add @jeecg/online
+-```
+-
+-```javascript
+-src/main.js
+-
+-require('@jeecg/antd-online-mini')
+-require('@jeecg/antd-online-mini/dist/OnlineForm.css')
+-```
+-
+-## Description
+-
+-```
+-Jeecg Online UI
+- 1、低代码开发模块 
+- 2、在线建表功能
+-```
+\ No newline at end of file
+diff --git a/node_modules/@jeecg/online/useTableColumns.js b/node_modules/@jeecg/online/useTableColumns.js
+index c0ceb88..48f6799 100644
+--- a/node_modules/@jeecg/online/useTableColumns.js
++++ b/node_modules/@jeecg/online/useTableColumns.js
+@@ -4,15 +4,12 @@ var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+ var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+ var __hasOwnProp = Object.prototype.hasOwnProperty;
+ var __propIsEnum = Object.prototype.propertyIsEnumerable;
+-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
++var __defNormalProp = (obj, key, value) => (key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : (obj[key] = value));
+ var __spreadValues = (a, b) => {
+-  for (var prop in b || (b = {}))
+-    if (__hasOwnProp.call(b, prop))
+-      __defNormalProp(a, prop, b[prop]);
++  for (var prop in b || (b = {})) if (__hasOwnProp.call(b, prop)) __defNormalProp(a, prop, b[prop]);
+   if (__getOwnPropSymbols)
+     for (var prop of __getOwnPropSymbols(b)) {
+-      if (__propIsEnum.call(b, prop))
+-        __defNormalProp(a, prop, b[prop]);
++      if (__propIsEnum.call(b, prop)) __defNormalProp(a, prop, b[prop]);
+     }
+   return a;
+ };
+@@ -33,45 +30,45 @@ var __async = (__this, __arguments, generator) => {
+         reject(e);
+       }
+     };
+-    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
++    var step = (x) => (x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected));
+     step((generator = generator.apply(__this, __arguments)).next());
+   });
+ };
+-import { E as ENHANCEJS, c as SETUP } from "./FormSchemaFactory.js";
+-import { useRoute, useRouter } from "vue-router";
+-import * as vue from "vue";
+-import { ref, onBeforeUnmount, toRaw, nextTick, reactive, computed, unref, h, defineAsyncComponent, watch } from "vue";
+-import * as UTIL_AXIOS from "/@/utils/http/axios";
+-import { defHttp } from "/@/utils/http/axios";
+-import * as HOOK_MESSAGE from "/@/hooks/web/useMessage";
+-import { useMessage } from "/@/hooks/web/useMessage";
+-import { randomString, filterObj, getFileAccessHttpUrl } from "/@/utils/common/compUtils";
+-import * as UTIL_CACHE from "/@/utils/cache";
+-import { onMountedOrActivated } from "/@/hooks/core/onMountedOrActivated";
+-import { useModal } from "/@/components/Modal";
+-import { Modal } from "ant-design-vue";
+-import { useMethods } from "/@/hooks/system/useMethods";
+-import { p as pick } from "./pick.js";
+-import { filterMultiDictText } from "/@/utils/dict/JDictSelectUtil";
+-import { getAreaTextByCode } from "/@/components/Form/src/utils/Area";
+-import { createImgPreview } from "/@/components/Preview/index";
++import { E as ENHANCEJS, c as SETUP } from './FormSchemaFactory.js';
++import { useRoute, useRouter } from 'vue-router';
++import * as vue from 'vue';
++import { ref, onBeforeUnmount, toRaw, nextTick, reactive, computed, unref, h, defineAsyncComponent, watch } from 'vue';
++import * as UTIL_AXIOS from '/@/utils/http/axios';
++import { defHttp } from '/@/utils/http/axios';
++import * as HOOK_MESSAGE from '/@/hooks/web/useMessage';
++import { useMessage } from '/@/hooks/web/useMessage';
++import { randomString, filterObj, getFileAccessHttpUrl } from '/@/utils/common/compUtils';
++import * as UTIL_CACHE from '/@/utils/cache';
++import { onMountedOrActivated } from '/@/hooks/core/onMountedOrActivated';
++import { useModal } from '/@/components/Modal';
++import { Modal } from 'ant-design-vue';
++import { useMethods } from '/@/hooks/system/useMethods';
++import { p as pick } from './pick.js';
++import { filterMultiDictText } from '/@/utils/dict/JDictSelectUtil';
++import { getAreaTextByCode } from '/@/components/Form/src/utils/Area';
++import { createImgPreview } from '/@/components/Preview/index';
+ const $exports = {
+   vue,
+-  "@": {
++  '@': {
+     hooks: {
+-      useMessage: HOOK_MESSAGE
++      useMessage: HOOK_MESSAGE,
+     },
+     utils: {
+       axios: UTIL_AXIOS,
+-      cache: UTIL_CACHE
+-    }
+-  }
++      cache: UTIL_CACHE,
++    },
++  },
+ };
+ function useCustomHook(otherExports, context) {
+   const assignExports = Object.assign({}, $exports, otherExports);
+   function doImport(path) {
+-    if (path != null && path != "") {
+-      let paths = path.toString().split("/");
++    if (path != null && path != '') {
++      let paths = path.toString().split('/');
+       let result = assignExports[paths[0]];
+       for (let i = 1; i < paths.length; i++) {
+         result = result[paths[i]];
+@@ -80,82 +77,81 @@ function useCustomHook(otherExports, context) {
+     }
+     return null;
+   }
+-  function doExport() {
+-  }
++  function doExport() {}
+   function executeJsEnhanced(code) {
+     let randomKey = randomString(6);
+-    let exportKey = "__export_" + randomKey;
++    let exportKey = '__export_' + randomKey;
+     const executeCode = `return function (customImport, ${exportKey}) {"use strict"; ${code}}`;
+-    console.group("executeJsEnhanced");
++    console.group('executeJsEnhanced');
+     console.log(executeCode);
+     console.groupEnd();
+     const fun = new Function(executeCode)();
+     fun.call(context, doImport, doExport);
+   }
+   return {
+-    executeJsEnhanced
++    executeJsEnhanced,
+   };
+ }
+ const CONTEXT_PROP_DESCRIPTION = {
+-  acceptHrefParams: "<p> \u8DF3\u8F6C\u65F6\u83B7\u53D6\u7684\u53C2\u6570\u4FE1\u606F",
+-  currentPage: "<p> \u5F53\u524D\u9875\u6570",
+-  currentTableName: "<p> \u5F53\u524D\u8868\u540D",
+-  description: "<p> \u5F53\u524D\u8868\u63CF\u8FF0",
+-  hasChildrenField: "<p> \u662F\u5426\u6709\u5B50\u8282\u70B9\u7684\u5B57\u6BB5\u540D\uFF0C\u4EC5\u6811\u5F62\u8868\u5355\u4E0B\u6709\u6548",
+-  isDesForm: "<p> xx",
+-  isTree: "<m> \u662F\u5426\u662F\u6811\u5F62\u8868\u5355 ",
+-  loadData: "<m> \u52A0\u8F7D\u5217\u8868\u6570\u636E",
+-  pageSize: "<p> \u6BCF\u4E00\u9875\u663E\u793A\u6761\u6570",
+-  queryParam: "<p> \u67E5\u8BE2\u6761\u4EF6\u5BF9\u8C61\uFF0C\u6BCF\u6B21\u70B9\u51FB\u67E5\u8BE2\u540E\u624D\u4F1A\u66F4\u65B0\u6B64\u6570\u636E",
+-  selectedRowKeys: "<p> \u9009\u4E2D\u7684\u884C\u7684id\u6570\u7EC4",
+-  sortField: "<p> \u6392\u5E8F\u5B57\u6BB5",
+-  sortType: "<p> \u6392\u5E8F\u89C4\u5219",
+-  total: "<p> \u603B\u9875\u6570"
++  acceptHrefParams: '<p> \u8DF3\u8F6C\u65F6\u83B7\u53D6\u7684\u53C2\u6570\u4FE1\u606F',
++  currentPage: '<p> \u5F53\u524D\u9875\u6570',
++  currentTableName: '<p> \u5F53\u524D\u8868\u540D',
++  description: '<p> \u5F53\u524D\u8868\u63CF\u8FF0',
++  hasChildrenField: '<p> \u662F\u5426\u6709\u5B50\u8282\u70B9\u7684\u5B57\u6BB5\u540D\uFF0C\u4EC5\u6811\u5F62\u8868\u5355\u4E0B\u6709\u6548',
++  isDesForm: '<p> xx',
++  isTree: '<m> \u662F\u5426\u662F\u6811\u5F62\u8868\u5355 ',
++  loadData: '<m> \u52A0\u8F7D\u5217\u8868\u6570\u636E',
++  pageSize: '<p> \u6BCF\u4E00\u9875\u663E\u793A\u6761\u6570',
++  queryParam: '<p> \u67E5\u8BE2\u6761\u4EF6\u5BF9\u8C61\uFF0C\u6BCF\u6B21\u70B9\u51FB\u67E5\u8BE2\u540E\u624D\u4F1A\u66F4\u65B0\u6B64\u6570\u636E',
++  selectedRowKeys: '<p> \u9009\u4E2D\u7684\u884C\u7684id\u6570\u7EC4',
++  sortField: '<p> \u6392\u5E8F\u5B57\u6BB5',
++  sortType: '<p> \u6392\u5E8F\u89C4\u5219',
++  total: '<p> \u603B\u9875\u6570',
+ };
+ const onlineUrl = {
+-  getColumns: "/online/cgform/api/getColumns/",
+-  getQueryInfo: "/online/cgform/api/getQueryInfo/",
+-  getData: "/online/cgform/api/getData/",
+-  getTreeData: "/online/cgform/api/getTreeData/",
+-  optPre: "/online/cgform/api/form/",
+-  buttonAction: "/online/cgform/api/doButton",
+-  exportXls: "/online/cgform/api/exportXls/",
+-  importXls: "/online/cgform/api/importXls/",
+-  startProcess: "/act/process/extActProcess/startMutilProcess"
++  getColumns: '/online/cgform/api/getColumns/',
++  getQueryInfo: '/online/cgform/api/getQueryInfo/',
++  getData: '/online/cgform/api/getData/',
++  getTreeData: '/online/cgform/api/getTreeData/',
++  optPre: '/online/cgform/api/form/',
++  buttonAction: '/online/cgform/api/doButton',
++  exportXls: '/online/cgform/api/exportXls/',
++  importXls: '/online/cgform/api/importXls/',
++  startProcess: '/act/process/extActProcess/startMutilProcess',
+ };
+ let config = {
+-  sortField: "id",
+-  sortType: "asc",
++  sortField: 'id',
++  sortType: 'asc',
+   currentPage: 1,
+   pageSize: 10,
+   total: 0,
+   selectedRowKeys: [],
+   queryParam: {},
+   acceptHrefParams: {},
+-  description: "",
+-  currentTableName: "",
++  description: '',
++  currentTableName: '',
+   isDesForm: false,
+-  desFormCode: "",
++  desFormCode: '',
+   cache: false,
+   isTree: false,
+-  hasChildrenField: ""
++  hasChildrenField: '',
+ };
+ const metaPagination = {
+   current: 1,
+   pageSize: 10,
+-  pageSizeOptions: ["10", "20", "30"],
++  pageSizeOptions: ['10', '20', '30'],
+   showTotal: (total, range) => {
+-    return range[0] + "-" + range[1] + " \u5171" + total + "\u6761";
++    return range[0] + '-' + range[1] + ' \u5171' + total + '\u6761';
+   },
+   showQuickJumper: true,
+   showSizeChanger: true,
+-  total: 0
++  total: 0,
+ };
+ const { createMessage: $message } = useMessage();
+ const GET_FUN_BODY_REG = /(?:\/\*[\s\S]*?\*\/|\/\/.*?\r?\n|[^{])+\{([\s\S]*)\}$/;
+ function useOnlineTableContext() {
+-  console.log("-------------------------useOnlineTableContext----------------------->");
+-  const ID = ref("");
++  console.log('-------------------------useOnlineTableContext----------------------->');
++  const ID = ref('');
+   const route = useRoute();
+   const onlineQueryFormOuter = ref();
+   const superQueryButtonRef = ref();
+@@ -163,7 +159,7 @@ function useOnlineTableContext() {
+   const dataSource = ref([]);
+   let specialConfigMap = {};
+   const methods = {
+-    execButtonEnhance: function(code, record2) {
++    execButtonEnhance: function (code, record2) {
+       if (onlineTableContext2[ENHANCEJS][code]) {
+         if (SETUP === code) {
+           executeEnhanceJsHook(code);
+@@ -171,20 +167,20 @@ function useOnlineTableContext() {
+           let row = toRaw(record2);
+           return onlineTableContext2[ENHANCEJS][code].call(onlineTableContext2, onlineTableContext2, row);
+         }
+-      } else if (onlineTableContext2[ENHANCEJS][code + "_hook"]) {
+-        executeEnhanceJsHook(code + "_hook");
++      } else if (onlineTableContext2[ENHANCEJS][code + '_hook']) {
++        executeEnhanceJsHook(code + '_hook');
+       } else {
+-        console.log("\u589E\u5F3A\u6CA1\u627E\u5230!", code);
++        console.log('\u589E\u5F3A\u6CA1\u627E\u5230!', code);
+       }
+     },
+-    isTree: function(status) {
+-      if (typeof status === "boolean") {
+-        onlineTableContext2["isTreeTable"] = status;
++    isTree: function (status) {
++      if (typeof status === 'boolean') {
++        onlineTableContext2['isTreeTable'] = status;
+         return status;
+       } else {
+-        return onlineTableContext2["isTreeTable"];
++        return onlineTableContext2['isTreeTable'];
+       }
+-    }
++    },
+   };
+   function executeEnhanceJsHook(code) {
+     let str = onlineTableContext2[ENHANCEJS][code].toLocaleString();
+@@ -196,7 +192,7 @@ function useOnlineTableContext() {
+   }
+   const onlineTableContext2 = new Proxy(CONTEXT_PROP_DESCRIPTION, {
+     get(_target, prop) {
+-      if (typeof methods[prop] === "function") {
++      if (typeof methods[prop] === 'function') {
+         return methods[prop];
+       } else {
+         let temp = specialConfigMap[ID.value];
+@@ -205,7 +201,7 @@ function useOnlineTableContext() {
+     },
+     set(_target, prop, value) {
+       let temp = getCurrentPageSpecialConfigMap();
+-      if (typeof value === "function") {
++      if (typeof value === 'function') {
+         return Reflect.set(methods, prop, value);
+       } else {
+         return Reflect.set(temp, prop, value);
+@@ -218,22 +214,22 @@ function useOnlineTableContext() {
+       } else {
+         return false;
+       }
+-    }
++    },
+   });
+   const { executeJsEnhanced } = useCustomHook({}, onlineTableContext2);
+   function getTableId() {
+     let idValue = route.params.id;
+     if (!idValue) {
+-      idValue = "";
++      idValue = '';
+     }
+     return idValue;
+   }
+   onMountedOrActivated(() => {
+-    console.log("-------------------onMountedOrActivated-------------------");
++    console.log('-------------------onMountedOrActivated-------------------');
+     handlePageChange();
+   });
+   onBeforeUnmount(() => {
+-    console.log("-------------------onBeforeUnmount-------------------");
++    console.log('-------------------onBeforeUnmount-------------------');
+     delete specialConfigMap[ID.value];
+   });
+   function getCurrentPageSpecialConfigMap() {
+@@ -252,23 +248,29 @@ function useOnlineTableContext() {
+       Object.keys(hrefParam).map((key) => {
+         acceptHrefParams[key] = hrefParam[key];
+       });
+-      onlineTableContext2["acceptHrefParams"] = acceptHrefParams;
++      onlineTableContext2['acceptHrefParams'] = acceptHrefParams;
+     }
+   }
+   function getColumnList() {
+     return new Promise((resolve, reject) => {
+-      defHttp.get({
+-        url: `${onlineTableContext2.onlineUrl.getColumns}${ID.value}`
+-      }, { isTransformResponse: false }).then((res) => {
+-        if (res.success) {
+-          resolve(res.result);
+-        } else {
+-          $message.warning(res.message);
++      defHttp
++        .get(
++          {
++            url: `${onlineTableContext2.onlineUrl.getColumns}${ID.value}`,
++          },
++          { isTransformResponse: false }
++        )
++        .then((res) => {
++          if (res.success) {
++            resolve(res.result);
++          } else {
++            $message.warning(res.message);
++            reject();
++          }
++        })
++        .catch(() => {
+           reject();
+-        }
+-      }).catch(() => {
+-        reject();
+-      });
++        });
+     });
+   }
+   function loadData() {
+@@ -278,41 +280,44 @@ function useOnlineTableContext() {
+         url = `${onlineTableContext2.onlineUrl.getTreeData}${ID.value}`;
+       }
+       let params = getLoadDataParams();
+-      console.log("------\u67E5\u8BE2\u53C2\u6570-----", params);
+-      defHttp.get({ url, params }, { isTransformResponse: false }).then((res) => {
+-        console.log("--onlineList-\u67E5\u8BE2\u5217\u8868\u6570\u636E", res);
+-        if (res.success) {
+-          handleDataResult(res.result);
+-          resolve(true);
+-        } else {
+-          $message.warning(res.message);
++      console.log('------\u67E5\u8BE2\u53C2\u6570-----', params);
++      defHttp
++        .get({ url, params }, { isTransformResponse: false })
++        .then((res) => {
++          console.log('--onlineList-\u67E5\u8BE2\u5217\u8868\u6570\u636E', res);
++          if (res.success) {
++            handleDataResult(res.result);
++            resolve(true);
++          } else {
++            $message.warning(res.message);
++            reject(false);
++          }
++        })
++        .catch(() => {
++          let error = '\u8BF7\u6C42\u5217\u8868\u6570\u636E\u5F02\u5E38!';
++          $message.warning(error);
+           reject(false);
+-        }
+-      }).catch(() => {
+-        let error = "\u8BF7\u6C42\u5217\u8868\u6570\u636E\u5F02\u5E38!";
+-        $message.warning(error);
+-        reject(false);
+-      });
++        });
+     });
+   }
+   function getLoadDataParams() {
+     const { sortField, sortType, acceptHrefParams, queryParam } = onlineTableContext2;
+     let treeParam = {};
+     if (onlineTableContext2.isTree() === true) {
+-      treeParam["hasQuery"] = "false";
++      treeParam['hasQuery'] = 'false';
+     } else {
+-      treeParam["hasQuery"] = "true";
++      treeParam['hasQuery'] = 'true';
+     }
+     let params = Object.assign({}, treeParam, acceptHrefParams, queryParam, { column: sortField, order: sortType });
+     if (pagination.value) {
+       params.pageNo = pagination.value.current;
+       params.pageSize = pagination.value.pageSize;
+     } else {
+-      params["pageSize"] = -521;
++      params['pageSize'] = -521;
+     }
+     let superQueryData = getSuperQueryData();
+-    params.superQueryMatchType = superQueryData.matchType || "";
+-    params.superQueryParams = superQueryData.params || "";
++    params.superQueryMatchType = superQueryData.matchType || '';
++    params.superQueryParams = superQueryData.params || '';
+     return filterObj(params);
+   }
+   function handleDataResult(result) {
+@@ -336,11 +341,11 @@ function useOnlineTableContext() {
+   }
+   function handleChangeInTable($pagination, _filters, sorter) {
+     if (sorter && sorter.order) {
+-      onlineTableContext2["sortField"] = sorter.field;
+-      onlineTableContext2["sortType"] = sorter.order == "ascend" ? "asc" : "desc";
++      onlineTableContext2['sortField'] = sorter.field;
++      onlineTableContext2['sortType'] = sorter.order == 'ascend' ? 'asc' : 'desc';
+     } else {
+-      onlineTableContext2["sortField"] = "id";
+-      onlineTableContext2["sortType"] = "asc";
++      onlineTableContext2['sortField'] = 'id';
++      onlineTableContext2['sortType'] = 'asc';
+     }
+     if (pagination.value) {
+       pagination.value = $pagination;
+@@ -348,24 +353,24 @@ function useOnlineTableContext() {
+     loadData();
+   }
+   function handleSpecialConfig(result) {
+-    onlineTableContext2["description"] = result.description;
+-    onlineTableContext2["currentTableName"] = result.currentTableName;
+-    onlineTableContext2["isDesForm"] = result.isDesForm;
+-    onlineTableContext2["desFormCode"] = result.desFormCode;
+-    onlineTableContext2["ID"] = ID.value;
++    onlineTableContext2['description'] = result.description;
++    onlineTableContext2['currentTableName'] = result.currentTableName;
++    onlineTableContext2['isDesForm'] = result.isDesForm;
++    onlineTableContext2['desFormCode'] = result.desFormCode;
++    onlineTableContext2['ID'] = ID.value;
+     let { acceptHrefParams, queryParam, superQuery, currentPage, pageSize } = onlineTableContext2;
+     handleAcceptHrefParams();
+     if (!queryParam) {
+-      onlineTableContext2["queryParam"] = {};
++      onlineTableContext2['queryParam'] = {};
+     } else {
+       onlineQueryFormOuter.value.initDefaultValues(queryParam, acceptHrefParams);
+     }
+     if (!superQuery) {
+-      onlineTableContext2["superQuery"] = { params: "", matchType: "" };
++      onlineTableContext2['superQuery'] = { params: '', matchType: '' };
+     } else {
+       superQueryButtonRef.value.initDefaultValues(superQuery);
+     }
+-    if (result.paginationFlag == "Y") {
++    if (result.paginationFlag == 'Y') {
+       pagination.value = __spreadValues(__spreadValues({}, metaPagination), { current: currentPage, pageSize });
+     } else {
+       pagination.value = false;
+@@ -373,7 +378,7 @@ function useOnlineTableContext() {
+   }
+   const add2Context = {
+     loadData,
+-    getLoadDataParams
++    getLoadDataParams,
+   };
+   Object.keys(add2Context).map((key) => {
+     onlineTableContext2[key] = add2Context[key];
+@@ -391,10 +396,10 @@ function useOnlineTableContext() {
+   function getTreeDataByResult(result) {
+     if (result) {
+       return result.map((item) => {
+-        let hasChildrenField = onlineTableContext2["hasChildrenField"];
+-        if (item[hasChildrenField] == "1") {
+-          let loadChild = { id: item.id + "_loadChild", name: "loading...", isLoading: true };
+-          loadChild["jeecg_row_key"] = loadChild.id;
++        let hasChildrenField = onlineTableContext2['hasChildrenField'];
++        if (item[hasChildrenField] == '1') {
++          let loadChild = { id: item.id + '_loadChild', name: 'loading...', isLoading: true };
++          loadChild['jeecg_row_key'] = loadChild.id;
+           item.children = [loadChild];
+         }
+         return item;
+@@ -410,51 +415,54 @@ function useOnlineTableContext() {
+     if (expandedRowKeysValue.length > 0) {
+       const { sortField, sortType, pidField } = onlineTableContext2;
+       let params = Object.assign({}, { column: sortField, order: sortType });
+-      params["hasQuery"] = "in";
++      params['hasQuery'] = 'in';
+       let superParams = Object.assign({});
+-      superParams.rule = "in";
+-      superParams.type = "text";
+-      superParams.val = expandedRowKeysValue.join(",");
++      superParams.rule = 'in';
++      superParams.type = 'text';
++      superParams.val = expandedRowKeysValue.join(',');
+       superParams.field = pidField;
+       superParams = [superParams];
+-      params["superQueryParams"] = encodeURI(JSON.stringify(superParams));
+-      params["superQueryMatchType"] = "and";
+-      params["batchFlag"] = "true";
++      params['superQueryParams'] = encodeURI(JSON.stringify(superParams));
++      params['superQueryMatchType'] = 'and';
++      params['batchFlag'] = 'true';
+       let url = `${onlineTableContext2.onlineUrl.getTreeData}${ID.value}`;
+-      console.log("--onlineList-\u67E5\u8BE2\u5B50\u8282\u70B9\u53C2\u6570", superParams);
+-      defHttp.get({ url, params }, { isTransformResponse: false }).then((res) => {
+-        console.log("--onlineList-\u67E5\u8BE2\u5B50\u8282\u70B9\u5217\u8868\u6570\u636E", res);
+-        if (res.success && res.result.records && res.result.records.length > 0) {
+-          let records = res.result.records;
+-          const listMap = /* @__PURE__ */ new Map();
+-          for (let item of records) {
+-            let pid = item[pidField];
+-            if (expandedRowKeysValue.join(",").includes(pid)) {
+-              let mapList = listMap.get(pid);
+-              if (mapList == null) {
+-                mapList = [];
++      console.log('--onlineList-\u67E5\u8BE2\u5B50\u8282\u70B9\u53C2\u6570', superParams);
++      defHttp
++        .get({ url, params }, { isTransformResponse: false })
++        .then((res) => {
++          console.log('--onlineList-\u67E5\u8BE2\u5B50\u8282\u70B9\u5217\u8868\u6570\u636E', res);
++          if (res.success && res.result.records && res.result.records.length > 0) {
++            let records = res.result.records;
++            const listMap = /* @__PURE__ */ new Map();
++            for (let item of records) {
++              let pid = item[pidField];
++              if (expandedRowKeysValue.join(',').includes(pid)) {
++                let mapList = listMap.get(pid);
++                if (mapList == null) {
++                  mapList = [];
++                }
++                mapList.push(item);
++                listMap.set(pid, mapList);
+               }
+-              mapList.push(item);
+-              listMap.set(pid, mapList);
+             }
++            let childrenMap = listMap;
++            let fn = (list) => {
++              if (list) {
++                list.forEach((data) => {
++                  if (expandedRowKeysValue.includes(data.id)) {
++                    data.children = getTreeDataByResult(childrenMap.get(data.id));
++                    fn(data.children);
++                  }
++                });
++              }
++            };
++            fn(dataList);
+           }
+-          let childrenMap = listMap;
+-          let fn = (list) => {
+-            if (list) {
+-              list.forEach((data) => {
+-                if (expandedRowKeysValue.includes(data.id)) {
+-                  data.children = getTreeDataByResult(childrenMap.get(data.id));
+-                  fn(data.children);
+-                }
+-              });
+-            }
+-          };
+-          fn(dataList);
+-        }
+-      }).catch(() => {
+-        let error = "loadDataByExpandedRows\u8BF7\u6C42\u5217\u8868\u6570\u636E\u5F02\u5E38!";
+-        $message.warning(error);
+-      });
++        })
++        .catch(() => {
++          let error = 'loadDataByExpandedRows\u8BF7\u6C42\u5217\u8868\u6570\u636E\u5F02\u5E38!';
++          $message.warning(error);
++        });
+     } else {
+       return Promise.resolve();
+     }
+@@ -463,31 +471,34 @@ function useOnlineTableContext() {
+     if (!onlineTableContext2.superQuery) {
+       return {};
+     }
+-    const { superQuery: { params, matchType }, currentTableName } = onlineTableContext2;
+-    let pre = currentTableName + "@";
++    const {
++      superQuery: { params, matchType },
++      currentTableName,
++    } = onlineTableContext2;
++    let pre = currentTableName + '@';
+     let arr = [];
+     if (params.length > 0) {
+       for (let data of params) {
+         let item = __spreadValues({}, data);
+         let field2 = item.field;
+         if (field2.startsWith(pre)) {
+-          item.field = field2.replace(pre, "");
++          item.field = field2.replace(pre, '');
+         }
+         arr.push(item);
+       }
+     }
+-    let str = arr.length > 0 ? JSON.stringify(arr) : "";
+-    console.log("\u9AD8\u7EA7\u67E5\u8BE2\u6761\u4EF6", arr, matchType);
++    let str = arr.length > 0 ? JSON.stringify(arr) : '';
++    console.log('\u9AD8\u7EA7\u67E5\u8BE2\u6761\u4EF6', arr, matchType);
+     return {
+       params: encodeURIComponent(str),
+-      matchType
++      matchType,
+     };
+   }
+   const superQueryStatus = ref(false);
+   function handleSuperQuery(params, matchType) {
+-    onlineTableContext2["superQuery"] = {
++    onlineTableContext2['superQuery'] = {
+       params,
+-      matchType
++      matchType,
+     };
+     if (params.length == 0) {
+       superQueryStatus.value = false;
+@@ -502,43 +513,46 @@ function useOnlineTableContext() {
+       param = {};
+     }
+     if (!param.row) {
+-      let rows = onlineTableContext2["selectedRows"];
++      let rows = onlineTableContext2['selectedRows'];
+       if (!rows || rows.length == 0 || rows.length > 1) {
+-        $message.warning("\u8BF7\u9009\u62E9\u4E00\u6761\u6570\u636E");
++        $message.warning('\u8BF7\u9009\u62E9\u4E00\u6761\u6570\u636E');
+         return;
+       }
+       param.row = rows[0];
+     }
+-    param["code"] = ID.value;
++    param['code'] = ID.value;
+     doOpenCustomModal(true, param);
+   }
+-  onlineTableContext2["openCustomModal"] = openCustomModal;
++  onlineTableContext2['openCustomModal'] = openCustomModal;
+   function handlePageChange() {
+     let idValue = getTableId();
+     ID.value = idValue;
+   }
+   handlePageChange();
+-  return __spreadValues({
+-    ID,
+-    onlineQueryFormOuter,
+-    superQueryButtonRef,
+-    loading,
+-    reload,
+-    dataSource,
+-    pagination,
+-    handleSpecialConfig,
+-    onlineTableContext: onlineTableContext2,
+-    handleChangeInTable,
+-    getColumnList,
+-    getTreeDataByResult,
+-    expandedRowKeys,
+-    handleExpandedRowsChange,
+-    superQueryStatus,
+-    handleSuperQuery,
+-    registerCustomModal
+-  }, add2Context);
++  return __spreadValues(
++    {
++      ID,
++      onlineQueryFormOuter,
++      superQueryButtonRef,
++      loading,
++      reload,
++      dataSource,
++      pagination,
++      handleSpecialConfig,
++      onlineTableContext: onlineTableContext2,
++      handleChangeInTable,
++      getColumnList,
++      getTreeDataByResult,
++      expandedRowKeys,
++      handleExpandedRowsChange,
++      superQueryStatus,
++      handleSuperQuery,
++      registerCustomModal,
++    },
++    add2Context
++  );
+ }
+-const FLOW_CODE_PRE = "onl_";
++const FLOW_CODE_PRE = 'onl_';
+ function useListButton(onlineTableContext2) {
+   const buttonStatus = {
+     add: true,
+@@ -550,7 +564,7 @@ function useListButton(onlineTableContext2) {
+     export: true,
+     detail: true,
+     super_query: true,
+-    bpm: true
++    bpm: true,
+   };
+   const [registerModal, { openModal }] = useModal();
+   const [registerImportModal, { openModal: openImportModal }] = useModal();
+@@ -563,10 +577,10 @@ function useListButton(onlineTableContext2) {
+     cgTopButtonList.length = 0;
+     if (btnList && btnList.length > 0) {
+       for (let i = 0; i < btnList.length; i++) {
+-        let temp = pick(btnList[i], "buttonCode", "buttonName", "buttonStyle", "optType", "exp", "buttonIcon");
+-        if (temp.buttonStyle == "button") {
++        let temp = pick(btnList[i], 'buttonCode', 'buttonName', 'buttonStyle', 'optType', 'exp', 'buttonIcon');
++        if (temp.buttonStyle == 'button') {
+           cgTopButtonList.push(temp);
+-        } else if (temp.buttonStyle == "link") {
++        } else if (temp.buttonStyle == 'link') {
+           cgLinkButtonList.push(temp);
+         }
+       }
+@@ -587,65 +601,71 @@ function useListButton(onlineTableContext2) {
+   function handleAdd(param) {
+     let data = { isUpdate: false };
+     if (param) {
+-      data["param"] = param;
++      data['param'] = param;
+     }
+     openModal(true, data);
+   }
+   function handleEdit(record2) {
+-    onlineTableContext2.beforeEdit(record2).then(() => {
+-      openModal(true, {
+-        isUpdate: true,
+-        record: record2
++    onlineTableContext2
++      .beforeEdit(record2)
++      .then(() => {
++        openModal(true, {
++          isUpdate: true,
++          record: record2,
++        });
++      })
++      .catch((msg) => {
++        $message2.warning(msg);
+       });
+-    }).catch((msg) => {
+-      $message2.warning(msg);
+-    });
+   }
+   const getDeleteButton = (record2) => {
+     return {
+-      label: "\u5220\u9664",
++      label: '\u5220\u9664',
+       popConfirm: {
+-        title: "\u662F\u5426\u5220\u9664\uFF1F",
+-        confirm: handleDeleteOne.bind(null, record2)
+-      }
++        title: '\u662F\u5426\u5220\u9664\uFF1F',
++        confirm: handleDeleteOne.bind(null, record2),
++      },
+     };
+   };
+   function handleDeleteOne(record2) {
+-    onlineTableContext2.beforeDelete(record2).then(() => {
+-      handleDelete(record2.id);
+-    }).catch((msg) => {
+-      $message2.warning(msg);
+-    });
++    onlineTableContext2
++      .beforeDelete(record2)
++      .then(() => {
++        handleDelete(record2.id);
++      })
++      .catch((msg) => {
++        $message2.warning(msg);
++      });
+   }
+   function getActions(record2) {
+     if (toRaw(buttonSwitch.update) === true) {
+       return [
+         {
+-          label: "\u7F16\u8F91",
+-          onClick: handleEdit.bind(null, record2)
+-        }
++          label: '\u7F16\u8F91',
++          onClick: handleEdit.bind(null, record2),
++        },
+       ];
+     }
+     return [];
+   }
+   function getSubmitFlowButton(record2) {
+     return {
+-      label: "\u63D0\u4EA4\u6D41\u7A0B",
++      label: '\u63D0\u4EA4\u6D41\u7A0B',
+       popConfirm: {
+-        title: "\u786E\u8BA4\u63D0\u4EA4\u6D41\u7A0B\u5417\uFF1F",
+-        confirm: handleSubmitFlow.bind(null, record2)
+-      }
++        title: '\u786E\u8BA4\u63D0\u4EA4\u6D41\u7A0B\u5417\uFF1F',
++        confirm: handleSubmitFlow.bind(null, record2),
++      },
+     };
+   }
+   function getDropDownActions(record2) {
+     let arr = [];
+     if (toRaw(buttonSwitch.delete) === true) {
+       arr.push({
+-        label: "\u8BE6\u60C5",
+-        onClick: handleDetail.bind(null, record2)
++        label: '\u8BE6\u60C5',
++        onClick: handleDetail.bind(null, record2),
+       });
+     }
+-    if (onlineTableContext2["hasBpmStatus"] === true) {
++    if (onlineTableContext2['hasBpmStatus'] === true) {
+       arr.push(getSubmitFlowButton(record2));
+     }
+     if (toRaw(buttonSwitch.delete) === true) {
+@@ -654,10 +674,10 @@ function useListButton(onlineTableContext2) {
+     let buttonList = cgLinkButtonList;
+     if (buttonList && buttonList.length > 0) {
+       for (let item of buttonList) {
+-        if (showLinkButtonOfExpression(item.exp || "", record2) === true) {
++        if (showLinkButtonOfExpression(item.exp || '', record2) === true) {
+           arr.push({
+             label: item.buttonName,
+-            onClick: cgButtonLinkHandler.bind(null, record2, item.buttonCode, item.optType)
++            onClick: cgButtonLinkHandler.bind(null, record2, item.buttonCode, item.optType),
+           });
+         }
+       }
+@@ -668,19 +688,22 @@ function useListButton(onlineTableContext2) {
+     openModal(true, {
+       isUpdate: true,
+       disableSubmit: true,
+-      record: record2
++      record: record2,
+     });
+   }
+   function startProcess(record2) {
+-    const { currentTableName, onlineUrl: { startProcess: startProcess2 } } = onlineTableContext2;
++    const {
++      currentTableName,
++      onlineUrl: { startProcess: startProcess2 },
++    } = onlineTableContext2;
+     let postConfig = {
+       url: startProcess2,
+       params: {
+         flowCode: FLOW_CODE_PRE + currentTableName,
+         id: record2.id,
+-        formUrl: "modules/bpm/task/form/OnlineFormDetail",
+-        formUrlMobile: "check/onlineForm/detail"
+-      }
++        formUrl: 'modules/bpm/task/form/OnlineFormDetail',
++        formUrlMobile: 'check/onlineForm/detail',
++      },
+     };
+     let postOption = { isTransformResponse: false };
+     return new Promise((resolve, reject) => {
+@@ -702,103 +725,119 @@ function useListButton(onlineTableContext2) {
+     });
+   }
+   function handleDelete(dataId) {
+-    console.log("\u5220\u9664\u6570\u636Eid\u503C", dataId);
++    console.log('\u5220\u9664\u6570\u636Eid\u503C', dataId);
+     let url = `${onlineTableContext2.onlineUrl.optPre}${onlineTableContext2.ID}/${dataId}`;
+     return new Promise((resolve, reject) => {
+-      defHttp.delete({
+-        url
+-      }, { isTransformResponse: false }).then((res) => {
+-        if (res.success) {
+-          $message2.success(res.message);
+-          onlineTableContext2.loadData();
+-          resolve(true);
+-        } else {
+-          $message2.warning(res.message);
+-          reject();
+-        }
+-      });
++      defHttp
++        .delete(
++          {
++            url,
++          },
++          { isTransformResponse: false }
++        )
++        .then((res) => {
++          if (res.success) {
++            $message2.success(res.message);
++            onlineTableContext2.loadData();
++            resolve(true);
++          } else {
++            $message2.warning(res.message);
++            reject();
++          }
++        });
+     });
+   }
+   function handleBatchDelete() {
+-    let arr = onlineTableContext2["selectedRowKeys"];
++    let arr = onlineTableContext2['selectedRowKeys'];
+     if (arr.length <= 0) {
+-      $message2.warning("\u8BF7\u9009\u62E9\u4E00\u6761\u8BB0\u5F55\uFF01");
++      $message2.warning('\u8BF7\u9009\u62E9\u4E00\u6761\u8BB0\u5F55\uFF01');
+       return false;
+     } else {
+       let idSet = [];
+-      arr.forEach(function(val) {
++      arr.forEach(function (val) {
+         let temp = val;
+-        if (temp && temp.endsWith("_loadChild")) {
+-          temp = temp.replace("_loadChild", "");
++        if (temp && temp.endsWith('_loadChild')) {
++          temp = temp.replace('_loadChild', '');
+         }
+         if (idSet.indexOf(temp) < 0) {
+           idSet.push(temp);
+         }
+       });
+-      let ids = idSet.join(",");
++      let ids = idSet.join(',');
+       Modal.confirm({
+-        title: "\u786E\u8BA4\u5220\u9664",
+-        content: "\u662F\u5426\u5220\u9664\u9009\u4E2D\u6570\u636E",
+-        okText: "\u786E\u8BA4",
+-        cancelText: "\u53D6\u6D88",
+-        onOk: () => __async(this, null, function* () {
+-          yield handleDelete(ids);
+-          onlineTableContext2.clearSelectedRow();
+-        })
++        title: '\u786E\u8BA4\u5220\u9664',
++        content: '\u662F\u5426\u5220\u9664\u9009\u4E2D\u6570\u636E',
++        okText: '\u786E\u8BA4',
++        cancelText: '\u53D6\u6D88',
++        onOk: () =>
++          __async(this, null, function* () {
++            yield handleDelete(ids);
++            onlineTableContext2.clearSelectedRow();
++          }),
+       });
+     }
+   }
+   function cgButtonLinkHandler(record2, buttonCode, optType) {
+-    if (optType == "js") {
+-      onlineTableContext2["execButtonEnhance"](buttonCode, record2);
+-    } else if (optType == "action") {
++    if (optType == 'js') {
++      onlineTableContext2['execButtonEnhance'](buttonCode, record2);
++    } else if (optType == 'action') {
+       let params = {
+-        formId: onlineTableContext2["ID"],
++        formId: onlineTableContext2['ID'],
+         buttonCode,
+-        dataId: record2.id
++        dataId: record2.id,
+       };
+       let url = `${onlineTableContext2.onlineUrl.buttonAction}`;
+-      defHttp.post({
+-        url,
+-        params
+-      }, { isTransformResponse: false }).then((res) => {
+-        if (res.success) {
+-          onlineTableContext2.loadData();
+-          $message2.success("\u5904\u7406\u5B8C\u6210!");
+-        } else {
+-          $message2.warning(res.message);
+-        }
+-      });
++      defHttp
++        .post(
++          {
++            url,
++            params,
++          },
++          { isTransformResponse: false }
++        )
++        .then((res) => {
++          if (res.success) {
++            onlineTableContext2.loadData();
++            $message2.success('\u5904\u7406\u5B8C\u6210!');
++          } else {
++            $message2.warning(res.message);
++          }
++        });
+     }
+   }
+   function cgButtonJsHandler(buttonCode) {
+-    onlineTableContext2["execButtonEnhance"](buttonCode);
++    onlineTableContext2['execButtonEnhance'](buttonCode);
+   }
+   function cgButtonActionHandler(buttonCode) {
+-    let arr = onlineTableContext2["selectedRowKeys"];
++    let arr = onlineTableContext2['selectedRowKeys'];
+     if (!arr || arr.length == 0) {
+-      $message2.warning("\u8BF7\u5148\u9009\u4E2D\u4E00\u6761\u8BB0\u5F55");
++      $message2.warning('\u8BF7\u5148\u9009\u4E2D\u4E00\u6761\u8BB0\u5F55');
+       return false;
+     }
+-    let dataId = arr.join(",");
++    let dataId = arr.join(',');
+     let params = {
+-      formId: onlineTableContext2["ID"],
++      formId: onlineTableContext2['ID'],
+       buttonCode,
+-      dataId
++      dataId,
+     };
+     let url = `${onlineTableContext2.onlineUrl.buttonAction}`;
+-    defHttp.post({
+-      url,
+-      params
+-    }, { isTransformResponse: false }).then((res) => {
+-      if (res.success) {
+-        onlineTableContext2.loadData();
+-        onlineTableContext2.clearSelectedRow();
+-        $message2.success("\u5904\u7406\u5B8C\u6210!");
+-      } else {
+-        $message2.warning(res.message);
+-      }
+-    });
++    defHttp
++      .post(
++        {
++          url,
++          params,
++        },
++        { isTransformResponse: false }
++      )
++      .then((res) => {
++        if (res.success) {
++          onlineTableContext2.loadData();
++          onlineTableContext2.clearSelectedRow();
++          $message2.success('\u5904\u7406\u5B8C\u6210!');
++        } else {
++          $message2.warning(res.message);
++        }
++      });
+   }
+   function onImportExcel() {
+     openImportModal(true);
+@@ -806,12 +845,25 @@ function useListButton(onlineTableContext2) {
+   const importUrl = () => {
+     return `${onlineTableContext2.onlineUrl.importXls}${onlineTableContext2.ID}`;
+   };
+-  const { handleExportXlsx } = useMethods();
++  const { handleExportXlsx, handleEmptyExportXlsx } = useMethods();
++  // yg 空导出
++  function onExportEmptyExcel() {
++    let params = onlineTableContext2.getLoadDataParams();
++    params.pageNo = 0;
++    let selections = onlineTableContext2['selectedRowKeys'];
++    if (selections && selections.length > 0) {
++      params['selections'] = selections.join(',');
++    }
++    let paramsStr = JSON.stringify(filterObj(params));
++    let url = `${onlineTableContext2.onlineUrl.exportXls}${onlineTableContext2.ID}`;
++    const description = onlineTableContext2.description;
++    handleEmptyExportXlsx(description, url, { paramsStr });
++  }
+   function onExportExcel() {
+     let params = onlineTableContext2.getLoadDataParams();
+-    let selections = onlineTableContext2["selectedRowKeys"];
++    let selections = onlineTableContext2['selectedRowKeys'];
+     if (selections && selections.length > 0) {
+-      params["selections"] = selections.join(",");
++      params['selections'] = selections.join(',');
+     }
+     let paramsStr = JSON.stringify(filterObj(params));
+     let url = `${onlineTableContext2.onlineUrl.exportXls}${onlineTableContext2.ID}`;
+@@ -819,24 +871,24 @@ function useListButton(onlineTableContext2) {
+     handleExportXlsx(description, url, { paramsStr });
+   }
+   function showLinkButtonOfExpression(expression, row) {
+-    if (!expression || expression == "") {
++    if (!expression || expression == '') {
+       return true;
+     }
+-    let arr = expression.split("#");
++    let arr = expression.split('#');
+     let fieldValue = row[arr[0]];
+     let exp = arr[1].toLowerCase();
+-    if (exp === "eq") {
++    if (exp === 'eq') {
+       return fieldValue == arr[2];
+-    } else if (exp === "ne") {
++    } else if (exp === 'ne') {
+       return !(fieldValue == arr[2]);
+-    } else if (exp === "empty") {
+-      if (arr[2] === "true") {
+-        return !fieldValue || fieldValue == "";
++    } else if (exp === 'empty') {
++      if (arr[2] === 'true') {
++        return !fieldValue || fieldValue == '';
+       } else {
+         return fieldValue && fieldValue.length > 0;
+       }
+-    } else if (exp === "in") {
+-      let arr2 = arr[2].split(",");
++    } else if (exp === 'in') {
++      let arr2 = arr[2].split(',');
+       return arr2.indexOf(String(fieldValue)) >= 0;
+     }
+     return false;
+@@ -853,6 +905,7 @@ function useListButton(onlineTableContext2) {
+     registerImportModal,
+     onImportExcel,
+     onExportExcel,
++    onExportEmptyExcel,
+     getDropDownActions,
+     getActions,
+     cgButtonJsHandler,
+@@ -862,7 +915,7 @@ function useListButton(onlineTableContext2) {
+     initButtonSwitch,
+     getDeleteButton,
+     handleSubmitFlow,
+-    getSubmitFlowButton
++    getSubmitFlowButton,
+   };
+ }
+ function useTableColumns(onlineTableContext) {
+@@ -881,10 +934,10 @@ function useTableColumns(onlineTableContext) {
+   });
+   function handleColumnResult(result) {
+     dictOptionInfo.value = result.dictOptions;
+-    if (result.checkboxFlag == "Y") {
++    if (result.checkboxFlag == 'Y') {
+       rowSelection.value = {
+         selectedRowKeys: selectedKeys,
+-        onChange: onSelectChange
++        onChange: onSelectChange,
+       };
+     } else {
+       rowSelection.value = null;
+@@ -900,11 +953,11 @@ function useTableColumns(onlineTableContext) {
+     });
+     let fieldHrefSlots = result.fieldHrefSlots;
+     const fieldHrefSlotKeysMap = {};
+-    fieldHrefSlots.forEach((item) => fieldHrefSlotKeysMap[item.slotName] = item);
++    fieldHrefSlots.forEach((item) => (fieldHrefSlotKeysMap[item.slotName] = item));
+     let tableColumns = [];
+     tableColumns = handleColumnHrefAndDict(dataColumns, fieldHrefSlotKeysMap);
+     bpmStatusFilter(tableColumns);
+-    console.log("-----\u5217\u8868\u5217\u914D\u7F6E----", tableColumns);
++    console.log('-----\u5217\u8868\u5217\u914D\u7F6E----', tableColumns);
+     if (onlineTableContext.isTree() === true) {
+       let firstField = result.textField;
+       let index = -1;
+@@ -919,23 +972,23 @@ function useTableColumns(onlineTableContext) {
+         tableColumns.unshift(deleteColumns[0]);
+       }
+       if (tableColumns.length > 0) {
+-        tableColumns[0].align = "left";
++        tableColumns[0].align = 'left';
+       }
+     }
+     columns.value = tableColumns;
+   }
+   function onSelectChange(selectedRowKeys, selectedRows) {
+     selectedKeys.value = selectedRowKeys;
+-    onlineTableContext["selectedRows"] = toRaw(selectedRows);
+-    onlineTableContext["selectedRowKeys"] = toRaw(selectedRowKeys);
++    onlineTableContext['selectedRows'] = toRaw(selectedRows);
++    onlineTableContext['selectedRowKeys'] = toRaw(selectedRowKeys);
+   }
+   function handleColumnHrefAndDict(columns2, fieldHrefSlotKeysMap) {
+     for (let column of columns2) {
+       let { customRender, hrefSlotName, fieldType } = column;
+-      if (fieldType == "Date") {
++      if (fieldType == 'Date') {
+         column.customRender = ({ text: text2 }) => {
+           if (!text2) {
+-            return "";
++            return '';
+           }
+           if (text2.length > 10) {
+             return text2.substring(0, 10);
+@@ -943,36 +996,40 @@ function useTableColumns(onlineTableContext) {
+           return text2;
+         };
+       } else {
+-        if (!hrefSlotName && (column.scopedSlots && column.scopedSlots.customRender)) {
++        if (!hrefSlotName && column.scopedSlots && column.scopedSlots.customRender) {
+           if (fieldHrefSlotKeysMap.hasOwnProperty(column.scopedSlots.customRender)) {
+             hrefSlotName = column.scopedSlots.customRender;
+           }
+         }
+         if (customRender || hrefSlotName) {
+           let dictCode = customRender;
+-          let replaceFlag = "_replace_text_";
++          let replaceFlag = '_replace_text_';
+           column.ellipsis = true;
+           column.customRender = ({ text: text2, record: record2 }) => {
+             let value = text2;
+             if (dictCode) {
+               if (dictCode.startsWith(replaceFlag)) {
+-                let textFieldName = dictCode.replace(replaceFlag, "");
++                let textFieldName = dictCode.replace(replaceFlag, '');
+                 value = record2[textFieldName];
+               } else {
+-                value = filterMultiDictText(unref(dictOptionInfo)[dictCode], text2 + "");
++                value = filterMultiDictText(unref(dictOptionInfo)[dictCode], text2 + '');
+               }
+             }
+             if (column.showLength) {
+               if (value && value.length > column.showLength) {
+-                value = value.substr(0, column.showLength) + "...";
++                value = value.substr(0, column.showLength) + '...';
+               }
+             }
+             if (hrefSlotName) {
+               let field2 = fieldHrefSlotKeysMap[hrefSlotName];
+               if (field2) {
+-                return h("a", {
+-                  onClick: () => handleClickFieldHref(field2, record2)
+-                }, value);
++                return h(
++                  'a',
++                  {
++                    onClick: () => handleClickFieldHref(field2, record2),
++                  },
++                  value
++                );
+               }
+             }
+             return value;
+@@ -981,7 +1038,7 @@ function useTableColumns(onlineTableContext) {
+         if (column.scopedSlots) {
+           column.ellipsis = true;
+           let slots = column.scopedSlots;
+-          column["slots"] = slots;
++          column['slots'] = slots;
+           delete column.scopedSlots;
+         }
+       }
+@@ -993,10 +1050,10 @@ function useTableColumns(onlineTableContext) {
+     let urlPattern = /(ht|f)tp(s?)\:\/\/[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_]*)?/;
+     let compPattern = /\.vue(\?.*)?$/;
+     let jsPattern = /{{([^}]+)}}/g;
+-    if (typeof href === "string") {
++    if (typeof href === 'string') {
+       href = href.trim().replace(/\${([^}]+)?}/g, (_s1, s2) => record[s2]);
+       if (jsPattern.test(href)) {
+-        href = href.replace(jsPattern, function(text, s0) {
++        href = href.replace(jsPattern, function (text, s0) {
+           try {
+             return eval(s0);
+           } catch (e) {
+@@ -1006,7 +1063,7 @@ function useTableColumns(onlineTableContext) {
+         });
+       }
+       if (urlPattern.test(href)) {
+-        window.open(href, "_blank");
++        window.open(href, '_blank');
+       } else if (compPattern.test(href)) {
+         openHrefCompModal(href);
+       } else {
+@@ -1017,38 +1074,38 @@ function useTableColumns(onlineTableContext) {
+   const dialogStyle = {
+     top: 0,
+     left: 0,
+-    height: "100%",
++    height: '100%',
+     margin: 0,
+-    padding: 0
++    padding: 0,
+   };
+   const hrefComponent = reactive({
+     model: {
+-      title: "",
+-      okText: "\u5173\u95ED",
+-      width: "100%",
++      title: '',
++      okText: '\u5173\u95ED',
++      width: '100%',
+       visible: false,
+       destroyOnClose: true,
+       style: dialogStyle,
+-      bodyStyle: { padding: "8px", height: "calc(100vh - 108px)", overflow: "auto", overflowX: "hidden" },
+-      cancelButtonProps: { style: { display: "none" } }
++      bodyStyle: { padding: '8px', height: 'calc(100vh - 108px)', overflow: 'auto', overflowX: 'hidden' },
++      cancelButtonProps: { style: { display: 'none' } },
+     },
+     on: {
+-      ok: () => hrefComponent.model.visible = false,
+-      cancel: () => hrefComponent.model.visible = false
++      ok: () => (hrefComponent.model.visible = false),
++      cancel: () => (hrefComponent.model.visible = false),
+     },
+     is: null,
+-    params: {}
++    params: {},
+   });
+   function openHrefCompModal(href2) {
+-    let index = href2.indexOf("?");
++    let index = href2.indexOf('?');
+     let path = href2;
+     if (index !== -1) {
+       path = href2.substring(0, index);
+       let paramString = href2.substring(index + 1, href2.length);
+-      let paramArray = paramString.split("&");
++      let paramArray = paramString.split('&');
+       let params = {};
+       paramArray.forEach((paramObject) => {
+-        let paramItem = paramObject.split("=");
++        let paramItem = paramObject.split('=');
+         params[paramItem[0]] = paramItem[1];
+       });
+       hrefComponent.params = params;
+@@ -1056,57 +1113,59 @@ function useTableColumns(onlineTableContext) {
+       hrefComponent.params = {};
+     }
+     hrefComponent.model.visible = true;
+-    hrefComponent.model.title = "\u64CD\u4F5C";
+-    hrefComponent.is = defineAsyncComponent(() => import(
+-      /* @vite-ignore */
+-      "/@/views/" + (path.startsWith("/") ? path.slice(1) : path)
+-    ));
++    hrefComponent.model.title = '\u64CD\u4F5C';
++    hrefComponent.is = defineAsyncComponent(() =>
++      import(
++        /* @vite-ignore */
++        '/@/views/' + (path.startsWith('/') ? path.slice(1) : path)
++      )
++    );
+   }
+   const actionColumn = reactive({
+-    title: "\u64CD\u4F5C",
+-    dataIndex: "action",
+-    slots: { customRender: "action" },
+-    align: "center",
+-    width: 150
++    title: '\u64CD\u4F5C',
++    dataIndex: 'action',
++    slots: { customRender: 'action' },
++    align: 'center',
++    width: 150,
+   });
+   function bpmStatusFilter(tableColumns) {
+     let flag = false;
+     for (let i = 0; i < tableColumns.length; i++) {
+       let item = tableColumns[i];
+       let fieldName = item.dataIndex;
+-      if (fieldName.toLowerCase() == "bpm_status") {
++      if (fieldName.toLowerCase() == 'bpm_status') {
+         flag = true;
+         break;
+       }
+     }
+-    onlineTableContext["hasBpmStatus"] = flag;
++    onlineTableContext['hasBpmStatus'] = flag;
+     return flag;
+   }
+   function downloadRowFile(text2) {
+     if (!text2) {
+       return;
+     }
+-    if (text2.indexOf(",") > 0) {
+-      text2 = text2.substring(0, text2.indexOf(","));
++    if (text2.indexOf(',') > 0) {
++      text2 = text2.substring(0, text2.indexOf(','));
+     }
+     let url = getFileAccessHttpUrl(text2);
+     window.open(url);
+   }
+   function getImgView(text2) {
+-    if (text2 && text2.indexOf(",") > 0) {
+-      text2 = text2.substring(0, text2.indexOf(","));
++    if (text2 && text2.indexOf(',') > 0) {
++      text2 = text2.substring(0, text2.indexOf(','));
+     }
+     return getFileAccessHttpUrl(text2);
+   }
+   function getPcaText(code) {
+     if (!code) {
+-      return "";
++      return '';
+     }
+     return getAreaTextByCode(code);
+   }
+   function getFormatDate(text2) {
+     if (!text2) {
+-      return "";
++      return '';
+     }
+     let a = text2;
+     if (a.length > 10) {
+@@ -1115,17 +1174,17 @@ function useTableColumns(onlineTableContext) {
+     return a;
+   }
+   watch(selectedKeys, () => {
+-    onlineTableContext["selectedRowKeys"] = toRaw(selectedKeys.value);
++    onlineTableContext['selectedRowKeys'] = toRaw(selectedKeys.value);
+   });
+-  onlineTableContext["clearSelectedRow"] = () => {
++  onlineTableContext['clearSelectedRow'] = () => {
+     selectedKeys.value = [];
+-    onlineTableContext["selectedRows"] = [];
+-    onlineTableContext["selectedRowKeys"] = [];
++    onlineTableContext['selectedRows'] = [];
++    onlineTableContext['selectedRowKeys'] = [];
+   };
+   function viewOnlineCellImage(text2) {
+     if (text2) {
+       let imgList = [];
+-      let arr = text2.split(",");
++      let arr = text2.split(',');
+       for (let str of arr) {
+         if (str) {
+           imgList.push(getFileAccessHttpUrl(str));
+@@ -1148,7 +1207,7 @@ function useTableColumns(onlineTableContext) {
+     handleColumnResult,
+     onSelectChange,
+     hrefComponent,
+-    viewOnlineCellImage
++    viewOnlineCellImage,
+   };
+ }
+ export { useListButton as a, useTableColumns as b, useOnlineTableContext as u };
