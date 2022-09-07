@@ -1,5 +1,5 @@
 diff --git a/node_modules/@jeecg/online/OnlineAutoList.js b/node_modules/@jeecg/online/OnlineAutoList.js
-index 454118f..d95cf4c 100644
+index 454118f..5b9c54a 100644
 --- a/node_modules/@jeecg/online/OnlineAutoList.js
 +++ b/node_modules/@jeecg/online/OnlineAutoList.js
 @@ -14,56 +14,78 @@ var __async = (__this, __arguments, generator) => {
@@ -166,7 +166,7 @@ index 454118f..d95cf4c 100644
      } = useListButton(onlineTableContext);
      const {
        columns,
-@@ -131,12 +154,16 @@ const _sfc_main = {
+@@ -131,32 +154,54 @@ const _sfc_main = {
        getFormatDate,
        handleColumnResult,
        hrefComponent,
@@ -188,9 +188,30 @@ index 454118f..d95cf4c 100644
      function initAutoList() {
        return __async(this, null, function* () {
          loading.value = true;
-@@ -144,19 +171,19 @@ const _sfc_main = {
-         handleTableConfig(columnResult);
-         yield loadData();
+-        let columnResult = yield getColumnList();
+-        handleTableConfig(columnResult);
+-        yield loadData();
++
++        // 读取localStrorage数据
++        const storage = window.localStorage;
++        const queryFormData = storage.getItem('query_form_data');
++
++        // yg更新初始化列表的逻辑 增加一次性的localStroage的检查
++        if (queryFormData !== null) {
++          onlineTableContext['queryParam'] = JSON.parse(queryFormData);
++          // 重置
++          storage.setItem('query_form_data', null);
++
++          // 重复写了下 这里是为了第一时间抹除storage的痕迹 减少bug
++          let columnResult = yield getColumnList();
++          handleTableConfig(columnResult);
++          yield reload();
++        } else {
++          let columnResult = yield getColumnList();
++          handleTableConfig(columnResult);
++          yield loadData();
++        }
++
          loading.value = false;
 -        onlineTableContext.execButtonEnhance("setup");
 +        onlineTableContext.execButtonEnhance('setup');
@@ -211,7 +232,7 @@ index 454118f..d95cf4c 100644
        reload();
      }
      function onQueryFormLoaded(json) {
-@@ -186,6 +213,7 @@ const _sfc_main = {
+@@ -186,6 +231,7 @@ const _sfc_main = {
        handleEdit,
        onImportExcel,
        onExportExcel,
@@ -219,7 +240,7 @@ index 454118f..d95cf4c 100644
        cgTopButtonList,
        cgLinkButtonList,
        cgButtonJsHandler,
-@@ -204,207 +232,355 @@ const _sfc_main = {
+@@ -204,207 +250,355 @@ const _sfc_main = {
        importUrl,
        handleSubmitFlow,
        hrefComponent,
@@ -762,6 +783,693 @@ index 454118f..d95cf4c 100644
 -var OnlineAutoList = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render]]);
 +var OnlineAutoList = /* @__PURE__ */ _export_sfc(_sfc_main, [['render', _sfc_render]]);
  export { OnlineAutoList as default };
+diff --git a/node_modules/@jeecg/online/OnlineQueryForm.js b/node_modules/@jeecg/online/OnlineQueryForm.js
+index f0a63ff..25fbd6b 100644
+--- a/node_modules/@jeecg/online/OnlineQueryForm.js
++++ b/node_modules/@jeecg/online/OnlineQueryForm.js
+@@ -2,15 +2,12 @@ var __defProp = Object.defineProperty;
+ var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+ var __hasOwnProp = Object.prototype.hasOwnProperty;
+ var __propIsEnum = Object.prototype.propertyIsEnumerable;
+-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
++var __defNormalProp = (obj, key, value) => (key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : (obj[key] = value));
+ var __spreadValues = (a, b) => {
+-  for (var prop in b || (b = {}))
+-    if (__hasOwnProp.call(b, prop))
+-      __defNormalProp(a, prop, b[prop]);
++  for (var prop in b || (b = {})) if (__hasOwnProp.call(b, prop)) __defNormalProp(a, prop, b[prop]);
+   if (__getOwnPropSymbols)
+     for (var prop of __getOwnPropSymbols(b)) {
+-      if (__propIsEnum.call(b, prop))
+-        __defNormalProp(a, prop, b[prop]);
++      if (__propIsEnum.call(b, prop)) __defNormalProp(a, prop, b[prop]);
+     }
+   return a;
+ };
+@@ -30,42 +27,58 @@ var __async = (__this, __arguments, generator) => {
+         reject(e);
+       }
+     };
+-    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
++    var step = (x) => (x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected));
+     step((generator = generator.apply(__this, __arguments)).next());
+   });
+ };
+-import { BasicForm, useForm } from "/@/components/Form/index";
+-import { ref, reactive, watch, toRaw, resolveComponent, openBlock, createElementBlock, createVNode, withCtx, createElementVNode, createTextVNode, toDisplayString, createCommentVNode, pushScopeId, popScopeId } from "vue";
+-import { defHttp } from "/@/utils/http/axios";
+-import { useMessage } from "/@/hooks/web/useMessage";
+-import { b as FORM_VIEW_TO_QUERY_VIEW, F as FormSchemaFactory } from "./FormSchemaFactory.js";
+-import { g as getRefPromise, b as loadOneFieldDefVal, L as LINK_DOWN, h as handleLinkDown, c as getFieldIndex } from "./useAutoForm.js";
+-import { _ as _export_sfc } from "./index.js";
+-import "/@/components/Form/src/jeecg/components/JUpload";
+-import "/@/views/system/user/user.api";
+-import "/@/store/modules/user";
+-import "/@/utils";
+-import "/@/utils/desform/customExpression";
+-import "/@/components/Form/src/componentMap";
+-import "./OnlineSelectCascade.js";
+-import "/@/components/jeecg/OnLine/JPopupOnlReport.vue";
+-import "vue-router";
+-var OnlineQueryForm_vue_vue_type_style_index_0_scoped_true_lang = "";
++import { BasicForm, useForm } from '/@/components/Form/index';
++import {
++  ref,
++  reactive,
++  watch,
++  toRaw,
++  resolveComponent,
++  openBlock,
++  createElementBlock,
++  createVNode,
++  withCtx,
++  createElementVNode,
++  createTextVNode,
++  toDisplayString,
++  createCommentVNode,
++  pushScopeId,
++  popScopeId,
++} from 'vue';
++import { defHttp } from '/@/utils/http/axios';
++import { useMessage } from '/@/hooks/web/useMessage';
++import { b as FORM_VIEW_TO_QUERY_VIEW, F as FormSchemaFactory } from './FormSchemaFactory.js';
++import { g as getRefPromise, b as loadOneFieldDefVal, L as LINK_DOWN, h as handleLinkDown, c as getFieldIndex } from './useAutoForm.js';
++import { _ as _export_sfc } from './index.js';
++import '/@/components/Form/src/jeecg/components/JUpload';
++import '/@/views/system/user/user.api';
++import '/@/store/modules/user';
++import '/@/utils';
++import '/@/utils/desform/customExpression';
++import '/@/components/Form/src/componentMap';
++import './OnlineSelectCascade.js';
++import '/@/components/jeecg/OnLine/JPopupOnlReport.vue';
++import 'vue-router';
++var OnlineQueryForm_vue_vue_type_style_index_0_scoped_true_lang = '';
+ const _sfc_main = {
+-  name: "OnlineQueryForm",
++  name: 'OnlineQueryForm',
+   components: {
+-    BasicForm
++    BasicForm,
+   },
+   props: {
+     id: {
+       type: String,
+-      default: ""
+-    }
++      default: '',
++    },
+   },
+-  emits: ["search", "loaded"],
++  emits: ['search', 'loaded'],
+   setup(props, { emit }) {
+     const { createMessage: $message } = useMessage();
+-    const LOAD_URL = "/online/cgform/api/getQueryInfoVue3/";
++    const LOAD_URL = '/online/cgform/api/getQueryInfoVue3/';
+     const onlineQueryFormRef = ref(null);
+     const formSchemas = ref([]);
+     const baseColProps = ref({ sm: 24, md: 8 });
+@@ -77,14 +90,19 @@ const _sfc_main = {
+       config: {},
+       cache: {},
+       param: {},
+-      status: false
++      status: false,
+     });
+-    watch(() => defaultValues.status, (val) => __async(this, null, function* () {
+-      console.log("-------------defaultValues\u53D1\u751F\u6539\u53D8,\u9700\u8981\u91CD\u7F6E\u8868\u5355---------------");
+-      const { config, cache, param } = toRaw(defaultValues);
+-      let rawValues = Object.assign({}, config, cache, param);
+-      yield customSetFieldsValue(rawValues);
+-    }), { immediate: true, deep: true });
++    watch(
++      () => defaultValues.status,
++      (val) =>
++        __async(this, null, function* () {
++          console.log('-------------defaultValues\u53D1\u751F\u6539\u53D8,\u9700\u8981\u91CD\u7F6E\u8868\u5355---------------');
++          const { config, cache, param } = toRaw(defaultValues);
++          let rawValues = Object.assign({}, config, cache, param);
++          yield customSetFieldsValue(rawValues);
++        }),
++      { immediate: true, deep: true }
++    );
+     function initDefaultValues(cache, param) {
+       return __async(this, null, function* () {
+         defaultValues.cache = __spreadValues({}, cache);
+@@ -92,13 +110,17 @@ const _sfc_main = {
+         defaultValues.status = !defaultValues.status;
+       });
+     }
+-    watch(() => props.id, (val) => {
+-      if (val) {
+-        resetForm();
+-      } else {
+-        formSchemas.value = [];
+-      }
+-    }, { immediate: true });
++    watch(
++      () => props.id,
++      (val) => {
++        if (val) {
++          resetForm();
++        } else {
++          formSchemas.value = [];
++        }
++      },
++      { immediate: true }
++    );
+     function initSchemas(formProperties) {
+       return __async(this, null, function* () {
+         let arr = [];
+@@ -111,7 +133,7 @@ const _sfc_main = {
+             item.view = FORM_VIEW_TO_QUERY_VIEW[view];
+           }
+           yield loadOneFieldDefVal(key, item, configValue);
+-          if (item.mode == "group" && (view == "date" || view == "datetime" || view == "number")) {
++          if (item.mode == 'group' && (view == 'date' || view == 'datetime' || view == 'number')) {
+             let temp = FormSchemaFactory.createSlotFormSchema(key, item);
+             arr.push(temp);
+           } else {
+@@ -135,7 +157,7 @@ const _sfc_main = {
+             }
+           }
+         }
+-        arr.sort(function(a, b) {
++        arr.sort(function (a, b) {
+           return a.order - b.order;
+         });
+         let schemaArray = [];
+@@ -164,7 +186,7 @@ const _sfc_main = {
+       return __async(this, null, function* () {
+         let json = yield loadQueryInfo();
+         let allFields = getAllFields(json);
+-        emit("loaded", json);
++        emit('loaded', json);
+         let { formProperties, hasField } = getQueryFormProperties(allFields, json);
+         if (hasField == false) {
+           formSchemas.value = [];
+@@ -176,7 +198,7 @@ const _sfc_main = {
+     function customSetFieldsValue(rawValues) {
+       return __async(this, null, function* () {
+         yield getRefPromise(onlineQueryFormRef);
+-        console.log("rawValues", rawValues);
++        console.log('rawValues', rawValues);
+         yield setFieldsValue(rawValues);
+         if (Object.keys(rawValues).length > 0) {
+           doSearch();
+@@ -191,15 +213,15 @@ const _sfc_main = {
+         Object.keys(allFields).map((field) => {
+           if (searchFieldList.indexOf(field) >= 0) {
+             if (joinQuery == true) {
+-              if (field.indexOf("@") < 0) {
+-                formProperties[table + "@" + field] = allFields[field];
++              if (field.indexOf('@') < 0) {
++                formProperties[table + '@' + field] = allFields[field];
+                 hasField = true;
+               } else {
+                 formProperties[field] = allFields[field];
+                 hasField = true;
+               }
+             } else {
+-              if (field.indexOf("@") < 0) {
++              if (field.indexOf('@') < 0) {
+                 formProperties[field] = allFields[field];
+                 hasField = true;
+               }
+@@ -209,7 +231,7 @@ const _sfc_main = {
+       }
+       return {
+         formProperties,
+-        hasField
++        hasField,
+       };
+     }
+     function getAllFields(json) {
+@@ -218,18 +240,18 @@ const _sfc_main = {
+       let order = 1;
+       Object.keys(properties).map((field) => {
+         let item = properties[field];
+-        if (item.view == "table") {
+-          let subProps = item["properties"];
++        if (item.view == 'table') {
++          let subProps = item['properties'];
+           let subTableOrder = order * 100;
+           Object.keys(subProps).map((subField) => {
+             let subItem = subProps[subField];
+-            subItem["order"] = subTableOrder + Number(subItem["order"]);
+-            let subFieldKey = field + "@" + subField;
++            subItem['order'] = subTableOrder + Number(subItem['order']);
++            let subFieldKey = field + '@' + subField;
+             allFields[subFieldKey] = subItem;
+           });
+           order++;
+         } else {
+-          item["order"] = Number(item["order"]);
++          item['order'] = Number(item['order']);
+           allFields[field] = item;
+         }
+       });
+@@ -238,17 +260,20 @@ const _sfc_main = {
+     function loadQueryInfo() {
+       let url = `${LOAD_URL}${props.id}`;
+       return new Promise((resolve) => {
+-        defHttp.get({ url }, { isTransformResponse: false }).then((res) => {
+-          if (res.success) {
+-            resolve(res.result);
+-          } else {
++        defHttp
++          .get({ url }, { isTransformResponse: false })
++          .then((res) => {
++            if (res.success) {
++              resolve(res.result);
++            } else {
++              resolve(false);
++              $message.warning(res.message);
++            }
++          })
++          .catch(() => {
++            $message.warning('\u83B7\u53D6\u67E5\u8BE2\u6761\u4EF6\u5931\u8D25!');
+             resolve(false);
+-            $message.warning(res.message);
+-          }
+-        }).catch(() => {
+-          $message.warning("\u83B7\u53D6\u67E5\u8BE2\u6761\u4EF6\u5931\u8D25!");
+-          resolve(false);
+-        });
++          });
+       });
+     }
+     const [registerForm, { resetFields, setFieldsValue, updateSchema, getFieldsValue }] = useForm({
+@@ -258,12 +283,21 @@ const _sfc_main = {
+       autoSubmitOnEnter: true,
+       submitFunc() {
+         doSearch();
+-      }
++      },
+     });
+     function doSearch() {
+       let formValues = getFieldsValue();
+       let data = Object.assign({}, toRaw(defaultValues.param), changeDataIfArray2String(formValues));
+-      emit("search", data, true);
++      emit('search', data, true);
++    }
++    // yg search行为改为跳转到新页面 并读取一次query数据
++    function doSearch_update() {
++      let formValues = getFieldsValue();
++      let data = Object.assign({}, toRaw(defaultValues.param), changeDataIfArray2String(formValues));
++
++      const storage = window.localStorage;
++      storage.setItem('query_form_data', JSON.stringify(data));
++      window.open(window.location.href);
+     }
+     function resetSearch() {
+       return __async(this, null, function* () {
+@@ -273,32 +307,36 @@ const _sfc_main = {
+         if (Object.keys(rawValues).length > 0) {
+           yield setFieldsValue(rawValues);
+         }
+-        emit("search", rawValues, false);
++        emit('search', rawValues, false);
+       });
+     }
+     function changeDataIfArray2String(data) {
+       Object.keys(data).map((k) => {
+         if (data[k]) {
+           if (data[k] instanceof Array) {
+-            data[k] = data[k].join(",");
++            data[k] = data[k].join(',');
+           }
+         }
+       });
+       return data;
+     }
+-    watch(() => toggleSearchStatus.value, (status) => {
+-      let names = hideList.value;
+-      if (names && names.length > 0) {
+-        let arr = [];
+-        for (let name of names) {
+-          arr.push({
+-            field: name,
+-            show: status
+-          });
++    watch(
++      () => toggleSearchStatus.value,
++      (status) => {
++        let names = hideList.value;
++        if (names && names.length > 0) {
++          let arr = [];
++          for (let name of names) {
++            arr.push({
++              field: name,
++              show: status,
++            });
++          }
++          updateSchema(arr);
+         }
+-        updateSchema(arr);
+-      }
+-    }, { immediate: false });
++      },
++      { immediate: false }
++    );
+     return {
+       onlineQueryFormRef,
+       registerForm,
+@@ -306,137 +344,212 @@ const _sfc_main = {
+       toggleButtonShow,
+       toggleSearchStatus,
+       doSearch,
++      doSearch_update,
+       resetSearch,
+       queryParams,
+-      formSchemas
++      formSchemas,
+     };
+-  }
++  },
+ };
+-const _withScopeId = (n) => (pushScopeId("data-v-94518ffc"), n = n(), popScopeId(), n);
++const _withScopeId = (n) => (pushScopeId('data-v-94518ffc'), (n = n()), popScopeId(), n);
+ const _hoisted_1 = {
+   key: 0,
+-  class: "jeecg-basic-table-form-container p-0"
++  class: 'jeecg-basic-table-form-container p-0',
+ };
+-const _hoisted_2 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createElementVNode("span", { class: "group-query-string" }, "~", -1));
+-const _hoisted_3 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createElementVNode("span", { class: "group-query-string" }, "~", -1));
+-const _hoisted_4 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createElementVNode("span", { class: "group-query-string" }, "~", -1));
++const _hoisted_2 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createElementVNode('span', { class: 'group-query-string' }, '~', -1));
++const _hoisted_3 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createElementVNode('span', { class: 'group-query-string' }, '~', -1));
++const _hoisted_4 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createElementVNode('span', { class: 'group-query-string' }, '~', -1));
+ const _hoisted_5 = {
+-  style: { "float": "left", "overflow": "hidden", "margin-left": "10px" },
+-  class: "table-page-search-submitButtons"
++  style: { float: 'left', overflow: 'hidden', 'margin-left': '10px' },
++  class: 'table-page-search-submitButtons',
+ };
+-const _hoisted_6 = /* @__PURE__ */ createTextVNode("\u67E5\u8BE2");
+-const _hoisted_7 = /* @__PURE__ */ createTextVNode("\u91CD\u7F6E");
++// yg 查询按钮
++const _hoisted_6 = /* @__PURE__ */ createTextVNode('\u67E5\u8BE2');
++const _hoisted_7 = /* @__PURE__ */ createTextVNode('\u91CD\u7F6E');
+ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+-  const _component_a_date_picker = resolveComponent("a-date-picker");
+-  const _component_a_input_number = resolveComponent("a-input-number");
+-  const _component_a_button = resolveComponent("a-button");
+-  const _component_a_icon = resolveComponent("a-icon");
+-  const _component_a_col = resolveComponent("a-col");
+-  const _component_BasicForm = resolveComponent("BasicForm");
+-  return $setup.formSchemas && $setup.formSchemas.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_1, [
+-    createVNode(_component_BasicForm, {
+-      ref: "onlineQueryFormRef",
+-      onRegister: $setup.registerForm
+-    }, {
+-      groupDate: withCtx(({ model, field }) => [
+-        createVNode(_component_a_date_picker, {
+-          showTime: false,
+-          valueFormat: "YYYY-MM-DD",
+-          placeholder: "\u5F00\u59CB\u65E5\u671F",
+-          value: model[field + "_begin"],
+-          "onUpdate:value": ($event) => model[field + "_begin"] = $event,
+-          style: { "width": "calc(50% - 15px)" }
+-        }, null, 8, ["value", "onUpdate:value"]),
+-        _hoisted_2,
+-        createVNode(_component_a_date_picker, {
+-          showTime: false,
+-          valueFormat: "YYYY-MM-DD",
+-          placeholder: "\u7ED3\u675F\u65E5\u671F",
+-          value: model[field + "_end"],
+-          "onUpdate:value": ($event) => model[field + "_end"] = $event,
+-          style: { "width": "calc(50% - 15px)" }
+-        }, null, 8, ["value", "onUpdate:value"])
+-      ]),
+-      groupDatetime: withCtx(({ model, field }) => [
+-        createVNode(_component_a_date_picker, {
+-          showTime: true,
+-          valueFormat: "YYYY-MM-DD HH:mm:ss",
+-          placeholder: "\u5F00\u59CB\u65F6\u95F4",
+-          value: model[field + "_begin"],
+-          "onUpdate:value": ($event) => model[field + "_begin"] = $event,
+-          style: { "width": "calc(50% - 15px)" }
+-        }, null, 8, ["value", "onUpdate:value"]),
+-        _hoisted_3,
+-        createVNode(_component_a_date_picker, {
+-          showTime: true,
+-          valueFormat: "YYYY-MM-DD HH:mm:ss",
+-          placeholder: "\u7ED3\u675F\u65F6\u95F4",
+-          value: model[field + "_end"],
+-          "onUpdate:value": ($event) => model[field + "_end"] = $event,
+-          style: { "width": "calc(50% - 15px)" }
+-        }, null, 8, ["value", "onUpdate:value"])
+-      ]),
+-      groupNumber: withCtx(({ model, field }) => [
+-        createVNode(_component_a_input_number, {
+-          placeholder: "\u5F00\u59CB\u503C",
+-          value: model[field + "_begin"],
+-          "onUpdate:value": ($event) => model[field + "_begin"] = $event,
+-          style: { "width": "calc(50% - 15px)" }
+-        }, null, 8, ["value", "onUpdate:value"]),
+-        _hoisted_4,
+-        createVNode(_component_a_input_number, {
+-          placeholder: "\u7ED3\u675F\u503C",
+-          value: model[field + "_end"],
+-          "onUpdate:value": ($event) => model[field + "_end"] = $event,
+-          style: { "width": "calc(50% - 15px)" }
+-        }, null, 8, ["value", "onUpdate:value"])
+-      ]),
+-      formFooter: withCtx(() => [
+-        createVNode(_component_a_col, {
+-          md: 6,
+-          sm: 8
+-        }, {
+-          default: withCtx(() => [
+-            createElementVNode("span", _hoisted_5, [
+-              createVNode(_component_a_button, {
+-                preIcon: "ant-design:search",
+-                type: "primary",
+-                onClick: $setup.doSearch
+-              }, {
+-                default: withCtx(() => [
+-                  _hoisted_6
+-                ]),
+-                _: 1
+-              }, 8, ["onClick"]),
+-              createVNode(_component_a_button, {
+-                preIcon: "ant-design:reload",
+-                type: "primary",
+-                onClick: $setup.resetSearch,
+-                style: { "margin-left": "8px" }
+-              }, {
+-                default: withCtx(() => [
+-                  _hoisted_7
+-                ]),
+-                _: 1
+-              }, 8, ["onClick"]),
+-              $setup.toggleButtonShow ? (openBlock(), createElementBlock("a", {
+-                key: 0,
+-                onClick: _cache[0] || (_cache[0] = ($event) => $setup.toggleSearchStatus = !$setup.toggleSearchStatus),
+-                style: { "margin-left": "8px" }
+-              }, [
+-                createTextVNode(toDisplayString($setup.toggleSearchStatus ? "\u6536\u8D77" : "\u5C55\u5F00") + " ", 1),
+-                createVNode(_component_a_icon, {
+-                  type: $setup.toggleSearchStatus ? "up" : "down"
+-                }, null, 8, ["type"])
+-              ])) : createCommentVNode("", true)
+-            ])
+-          ]),
+-          _: 1
+-        })
+-      ]),
+-      _: 1
+-    }, 8, ["onRegister"])
+-  ])) : createCommentVNode("", true);
++  const _component_a_date_picker = resolveComponent('a-date-picker');
++  const _component_a_input_number = resolveComponent('a-input-number');
++  const _component_a_button = resolveComponent('a-button');
++  const _component_a_icon = resolveComponent('a-icon');
++  const _component_a_col = resolveComponent('a-col');
++  const _component_BasicForm = resolveComponent('BasicForm');
++  return $setup.formSchemas && $setup.formSchemas.length > 0
++    ? (openBlock(),
++      createElementBlock('div', _hoisted_1, [
++        createVNode(
++          _component_BasicForm,
++          {
++            ref: 'onlineQueryFormRef',
++            onRegister: $setup.registerForm,
++          },
++          {
++            groupDate: withCtx(({ model, field }) => [
++              createVNode(
++                _component_a_date_picker,
++                {
++                  showTime: false,
++                  valueFormat: 'YYYY-MM-DD',
++                  placeholder: '\u5F00\u59CB\u65E5\u671F',
++                  value: model[field + '_begin'],
++                  'onUpdate:value': ($event) => (model[field + '_begin'] = $event),
++                  style: { width: 'calc(50% - 15px)' },
++                },
++                null,
++                8,
++                ['value', 'onUpdate:value']
++              ),
++              _hoisted_2,
++              createVNode(
++                _component_a_date_picker,
++                {
++                  showTime: false,
++                  valueFormat: 'YYYY-MM-DD',
++                  placeholder: '\u7ED3\u675F\u65E5\u671F',
++                  value: model[field + '_end'],
++                  'onUpdate:value': ($event) => (model[field + '_end'] = $event),
++                  style: { width: 'calc(50% - 15px)' },
++                },
++                null,
++                8,
++                ['value', 'onUpdate:value']
++              ),
++            ]),
++            groupDatetime: withCtx(({ model, field }) => [
++              createVNode(
++                _component_a_date_picker,
++                {
++                  showTime: true,
++                  valueFormat: 'YYYY-MM-DD HH:mm:ss',
++                  placeholder: '\u5F00\u59CB\u65F6\u95F4',
++                  value: model[field + '_begin'],
++                  'onUpdate:value': ($event) => (model[field + '_begin'] = $event),
++                  style: { width: 'calc(50% - 15px)' },
++                },
++                null,
++                8,
++                ['value', 'onUpdate:value']
++              ),
++              _hoisted_3,
++              createVNode(
++                _component_a_date_picker,
++                {
++                  showTime: true,
++                  valueFormat: 'YYYY-MM-DD HH:mm:ss',
++                  placeholder: '\u7ED3\u675F\u65F6\u95F4',
++                  value: model[field + '_end'],
++                  'onUpdate:value': ($event) => (model[field + '_end'] = $event),
++                  style: { width: 'calc(50% - 15px)' },
++                },
++                null,
++                8,
++                ['value', 'onUpdate:value']
++              ),
++            ]),
++            groupNumber: withCtx(({ model, field }) => [
++              createVNode(
++                _component_a_input_number,
++                {
++                  placeholder: '\u5F00\u59CB\u503C',
++                  value: model[field + '_begin'],
++                  'onUpdate:value': ($event) => (model[field + '_begin'] = $event),
++                  style: { width: 'calc(50% - 15px)' },
++                },
++                null,
++                8,
++                ['value', 'onUpdate:value']
++              ),
++              _hoisted_4,
++              createVNode(
++                _component_a_input_number,
++                {
++                  placeholder: '\u7ED3\u675F\u503C',
++                  value: model[field + '_end'],
++                  'onUpdate:value': ($event) => (model[field + '_end'] = $event),
++                  style: { width: 'calc(50% - 15px)' },
++                },
++                null,
++                8,
++                ['value', 'onUpdate:value']
++              ),
++            ]),
++            formFooter: withCtx(() => [
++              createVNode(
++                _component_a_col,
++                {
++                  md: 6,
++                  sm: 8,
++                },
++                {
++                  default: withCtx(() => [
++                    createElementVNode('span', _hoisted_5, [
++                      createVNode(
++                        _component_a_button,
++                        {
++                          preIcon: 'ant-design:search',
++                          type: 'primary',
++                          onClick: $setup.doSearch_update,
++                        },
++                        {
++                          default: withCtx(() => [_hoisted_6]),
++                          _: 1,
++                        },
++                        8,
++                        ['onClick']
++                      ),
++                      createVNode(
++                        _component_a_button,
++                        {
++                          preIcon: 'ant-design:reload',
++                          type: 'primary',
++                          onClick: $setup.resetSearch,
++                          style: { 'margin-left': '8px' },
++                        },
++                        {
++                          default: withCtx(() => [_hoisted_7]),
++                          _: 1,
++                        },
++                        8,
++                        ['onClick']
++                      ),
++                      $setup.toggleButtonShow
++                        ? (openBlock(),
++                          createElementBlock(
++                            'a',
++                            {
++                              key: 0,
++                              onClick: _cache[0] || (_cache[0] = ($event) => ($setup.toggleSearchStatus = !$setup.toggleSearchStatus)),
++                              style: { 'margin-left': '8px' },
++                            },
++                            [
++                              createTextVNode(toDisplayString($setup.toggleSearchStatus ? '\u6536\u8D77' : '\u5C55\u5F00') + ' ', 1),
++                              createVNode(
++                                _component_a_icon,
++                                {
++                                  type: $setup.toggleSearchStatus ? 'up' : 'down',
++                                },
++                                null,
++                                8,
++                                ['type']
++                              ),
++                            ]
++                          ))
++                        : createCommentVNode('', true),
++                    ]),
++                  ]),
++                  _: 1,
++                }
++              ),
++            ]),
++            _: 1,
++          },
++          8,
++          ['onRegister']
++        ),
++      ]))
++    : createCommentVNode('', true);
+ }
+-var OnlineQueryForm = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-94518ffc"]]);
++var OnlineQueryForm = /* @__PURE__ */ _export_sfc(_sfc_main, [
++  ['render', _sfc_render],
++  ['__scopeId', 'data-v-94518ffc'],
++]);
+ export { OnlineQueryForm as default };
 diff --git a/node_modules/@jeecg/online/README.md b/node_modules/@jeecg/online/README.md
 deleted file mode 100644
 index 642e43b..0000000
