@@ -1,3 +1,1152 @@
+diff --git a/node_modules/@jeecg/online/FormSchemaFactory.js b/node_modules/@jeecg/online/FormSchemaFactory.js
+index 48636b1..39248de 100644
+--- a/node_modules/@jeecg/online/FormSchemaFactory.js
++++ b/node_modules/@jeecg/online/FormSchemaFactory.js
+@@ -2,15 +2,12 @@ var __defProp = Object.defineProperty;
+ var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+ var __hasOwnProp = Object.prototype.hasOwnProperty;
+ var __propIsEnum = Object.prototype.propertyIsEnumerable;
+-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
++var __defNormalProp = (obj, key, value) => (key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : (obj[key] = value));
+ var __spreadValues = (a, b) => {
+-  for (var prop in b || (b = {}))
+-    if (__hasOwnProp.call(b, prop))
+-      __defNormalProp(a, prop, b[prop]);
++  for (var prop in b || (b = {})) if (__hasOwnProp.call(b, prop)) __defNormalProp(a, prop, b[prop]);
+   if (__getOwnPropSymbols)
+     for (var prop of __getOwnPropSymbols(b)) {
+-      if (__propIsEnum.call(b, prop))
+-        __defNormalProp(a, prop, b[prop]);
++      if (__propIsEnum.call(b, prop)) __defNormalProp(a, prop, b[prop]);
+     }
+   return a;
+ };
+@@ -30,27 +27,149 @@ var __async = (__this, __arguments, generator) => {
+         reject(e);
+       }
+     };
+-    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
++    var step = (x) => (x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected));
+     step((generator = generator.apply(__this, __arguments)).next());
+   });
+ };
+-import { UploadTypeEnum } from "/@/components/Form/src/jeecg/components/JUpload";
+-const SUBMIT_FLOW_KEY = "jeecg_submit_form_and_flow";
+-const SUBMIT_FLOW_ID = "flow_submit_id";
+-const VALIDATE_FAILED = "validate-failed";
+-const SETUP = "setup";
+-const ENHANCEJS = "EnhanceJS";
++import { UploadTypeEnum } from '/@/components/Form/src/jeecg/components/JUpload';
++const SUBMIT_FLOW_KEY = 'jeecg_submit_form_and_flow';
++const SUBMIT_FLOW_ID = 'flow_submit_id';
++const VALIDATE_FAILED = 'validate-failed';
++const SETUP = 'setup';
++const ENHANCEJS = 'EnhanceJS';
+ const FORM_VIEW_TO_QUERY_VIEW = {
+-  "password": "text",
+-  "file": "text",
+-  "image": "text",
+-  "textarea": "text",
+-  "umeditor": "text",
+-  "markdown": "text",
+-  "checkbox": "list_multi",
+-  "radio": "list"
++  password: 'text',
++  file: 'text',
++  image: 'text',
++  textarea: 'text',
++  umeditor: 'text',
++  markdown: 'text',
++  checkbox: 'list_multi',
++  radio: 'list',
+ };
+-const POP_CONTAINER = ".jeecg-online-modal .ant-modal-content";
++const POP_CONTAINER = '.jeecg-online-modal .ant-modal-content';
++function debounce(func, wait, options = null) {
++  let lastArgs, lastThis, maxWait, result, timerId, lastCallTime;
++
++  // 参数初始化
++  let lastInvokeTime = 0; // func 上一次执行的时间
++  let leading = false;
++  let maxing = false;
++  let trailing = true;
++
++  // 基本的类型判断和处理
++  if (typeof func != 'function') {
++    throw new TypeError('Expected a function');
++  }
++  wait = +wait || 0;
++  // if (isObject(options)) {
++  //     // 对配置的一些初始化
++  // }
++
++  function invokeFunc(time) {
++    const args = lastArgs;
++    const thisArg = lastThis;
++
++    lastArgs = lastThis = undefined;
++    lastInvokeTime = time;
++    result = func.apply(thisArg, args);
++    return result;
++  }
++
++  function leadingEdge(time) {
++    // Reset any `maxWait` timer.
++    lastInvokeTime = time;
++    // 为 trailing edge 触发函数调用设定定时器
++    timerId = setTimeout(timerExpired, wait);
++    // leading = true 执行函数
++    return leading ? invokeFunc(time) : result;
++  }
++
++  function remainingWait(time) {
++    const timeSinceLastCall = time - lastCallTime; // 距离上次debounced函数被调用的时间
++    const timeSinceLastInvoke = time - lastInvokeTime; // 距离上次函数被执行的时间
++    const timeWaiting = wait - timeSinceLastCall; // 用 wait 减去 timeSinceLastCall 计算出下一次trailing的位置
++
++    // 两种情况
++    // 有maxing:比较出下一次maxing和下一次trailing的最小值，作为下一次函数要执行的时间
++    // 无maxing：在下一次trailing时执行 timerExpired
++    return maxing ? Math.min(timeWaiting, maxWait - timeSinceLastInvoke) : timeWaiting;
++  }
++
++  // 根据时间判断 func 能否被执行
++  function shouldInvoke(time) {
++    const timeSinceLastCall = time - lastCallTime;
++    const timeSinceLastInvoke = time - lastInvokeTime;
++
++    // 几种满足条件的情况
++    return (
++      lastCallTime === undefined || //首次
++      timeSinceLastCall >= wait || // 距离上次被调用已经超过 wait
++      timeSinceLastCall < 0 || //系统时间倒退
++      (maxing && timeSinceLastInvoke >= maxWait)
++    ); //超过最大等待时间
++  }
++
++  function timerExpired() {
++    const time = Date.now();
++    // 在 trailing edge 且时间符合条件时，调用 trailingEdge函数，否则重启定时器
++    if (shouldInvoke(time)) {
++      return trailingEdge(time);
++    }
++    // 重启定时器，保证下一次时延的末尾触发
++    timerId = setTimeout(timerExpired, remainingWait(time));
++  }
++
++  function trailingEdge(time) {
++    timerId = undefined;
++
++    // 有lastArgs才执行，意味着只有 func 已经被 debounced 过一次以后才会在 trailing edge 执行
++    if (trailing && lastArgs) {
++      return invokeFunc(time);
++    }
++    // 每次 trailingEdge 都会清除 lastArgs 和 lastThis，目的是避免最后一次函数被执行了两次
++    // 举个例子：最后一次函数执行的时候，可能恰巧是前一次的 trailing edge，函数被调用，而这个函数又需要在自己时延的 trailing edge 触发，导致触发多次
++    lastArgs = lastThis = undefined;
++    return result;
++  }
++
++  function cancel() {}
++
++  function flush() {}
++
++  function pending() {}
++
++  function debounced(...args) {
++    const time = Date.now();
++    const isInvoking = shouldInvoke(time); //是否满足时间条件
++
++    lastArgs = args;
++    lastThis = this;
++    lastCallTime = time; //函数被调用的时间
++
++    if (isInvoking) {
++      if (timerId === undefined) {
++        // 无timerId的情况有两种：1.首次调用 2.trailingEdge执行过函数
++        return leadingEdge(lastCallTime);
++      }
++      if (maxing) {
++        // Handle invocations in a tight loop.
++        timerId = setTimeout(timerExpired, wait);
++        return invokeFunc(lastCallTime);
++      }
++    }
++    // 负责一种case：trailing 为 true 的情况下，在前一个 wait 的 trailingEdge 已经执行了函数；
++    // 而这次函数被调用时 shouldInvoke 不满足条件，因此要设置定时器，在本次的 trailingEdge 保证函数被执行
++    if (timerId === undefined) {
++      timerId = setTimeout(timerExpired, wait);
++    }
++    return result;
++  }
++  debounced.cancel = cancel;
++  debounced.flush = flush;
++  debounced.pending = pending;
++  return debounced;
++}
+ class IFormSchema {
+   constructor(key, data) {
+     this._data = data;
+@@ -59,13 +178,13 @@ class IFormSchema {
+     this.hidden = false;
+     this.order = data.order || 999;
+     this.required = false;
+-    this.onlyValidator = "";
+-    this.setFieldsValue = "";
++    this.onlyValidator = '';
++    this.setFieldsValue = '';
+     this.hasChange = true;
+-    if (key.indexOf("@") > 0) {
+-      this.pre = key.substring(0, key.indexOf("@") + 1);
++    if (key.indexOf('@') > 0) {
++      this.pre = key.substring(0, key.indexOf('@') + 1);
+     } else {
+-      this.pre = "";
++      this.pre = '';
+     }
+     this.schemaProp = {};
+     this.searchForm = false;
+@@ -81,14 +200,14 @@ class IFormSchema {
+     let fs = {
+       field: this.field,
+       label: this.label,
+-      component: "Input"
++      component: 'Input',
+     };
+     let rules = this.getRule();
+     if (rules.length > 0 && this.onlyValidator) {
+-      fs["rules"] = rules;
++      fs['rules'] = rules;
+     }
+     if (this.hidden === true) {
+-      fs["show"] = false;
++      fs['show'] = false;
+     }
+     return fs;
+   }
+@@ -111,7 +230,7 @@ class IFormSchema {
+     let extend = {};
+     let { fieldExtendJson } = this._data;
+     if (fieldExtendJson) {
+-      if (typeof fieldExtendJson == "string") {
++      if (typeof fieldExtendJson == 'string') {
+         try {
+           let json = JSON.parse(fieldExtendJson);
+           extend = __spreadValues({}, json);
+@@ -126,18 +245,19 @@ class IFormSchema {
+     return [];
+   }
+   getPlaceholder() {
+-    return "\u8BF7\u8F93\u5165" + this.label;
++    return '\u8BF7\u8F93\u5165' + this.label;
+   }
+   setOnlyValidateFun(validateFun) {
+     if (validateFun) {
+-      this.onlyValidator = (rule, value) => __async(this, null, function* () {
+-        let error = yield validateFun(rule, value);
+-        if (!error) {
+-          return Promise.resolve();
+-        } else {
+-          return Promise.reject(error);
+-        }
+-      });
++      this.onlyValidator = (rule, value) =>
++        __async(this, null, function* () {
++          let error = yield validateFun(rule, value);
++          if (!error) {
++            return Promise.resolve();
++          } else {
++            return Promise.reject(error);
++          }
++        });
+     }
+   }
+   getRule() {
+@@ -148,36 +268,35 @@ class IFormSchema {
+       if (errorInfo) {
+         msg = errorInfo;
+       }
+-      if (view == "sel_depart" || view == "sel_user") {
+-        this.schemaProp["required"] = true;
++      if (view == 'sel_depart' || view == 'sel_user') {
++        this.schemaProp['required'] = true;
+       } else {
+         rules.push({ required: true, message: msg });
+       }
+     }
+-    if (view == "sel_user") {
+-      if (pattern === "only" && this.onlyValidator) {
++    if (view == 'sel_user') {
++      if (pattern === 'only' && this.onlyValidator) {
+         rules.push({ validator: this.onlyValidator });
+       }
+     }
+-    if (view === "list" || view === "radio" || view === "markdown" || view === "pca" || view.indexOf("sel") >= 0 || view === "time") {
++    if (view === 'list' || view === 'radio' || view === 'markdown' || view === 'pca' || view.indexOf('sel') >= 0 || view === 'time') {
+       return rules;
+     }
+-    if (view.indexOf("upload") >= 0 || view.indexOf("file") >= 0 || view.indexOf("image") >= 0) {
++    if (view.indexOf('upload') >= 0 || view.indexOf('file') >= 0 || view.indexOf('image') >= 0) {
+       return rules;
+     }
+     if (pattern) {
+-      if (pattern === "only") {
++      if (pattern === 'only') {
+         if (this.onlyValidator) {
+           rules.push({ validator: this.onlyValidator });
+         }
+-      } else if (pattern === "z") {
+-        if (type == "number" || type == "integer")
+-          ;
++      } else if (pattern === 'z') {
++        if (type == 'number' || type == 'integer');
+         else {
+-          rules.push({ pattern: /^-?\d+$/, message: "\u8BF7\u8F93\u5165\u6574\u6570" });
++          rules.push({ pattern: /^-?\d+$/, message: '\u8BF7\u8F93\u5165\u6574\u6570' });
+         }
+       } else {
+-        let msg = errorInfo || "\u6B63\u5219\u8868\u8FBE\u5F0F\u4E0D\u6B63\u786E";
++        let msg = errorInfo || '\u6B63\u5219\u8868\u8FBE\u5F0F\u4E0D\u6B63\u786E';
+         rules.push({ pattern, message: msg });
+       }
+     }
+@@ -191,16 +310,16 @@ class IFormSchema {
+       if (this.disabled == true) {
+         schema.componentProps.disabled = true;
+       }
+-      if (!schema.componentProps.hasOwnProperty("onChange")) {
+-        schema.componentProps["onChange"] = (value) => {
++      if (!schema.componentProps.hasOwnProperty('onChange')) {
++        schema.componentProps['onChange'] = (value) => {
+           if (value instanceof Event) {
+             value = value.target.value;
+           }
+           if (value instanceof Array) {
+-            value = value.join(",");
++            value = value.join(',');
+           }
+           if (!this.formRef.value.$formValueChange) {
+-            console.log("\u5F53\u524D\u8868\u5355\u65E0\u6CD5\u89E6\u53D1change\u4E8B\u4EF6,field\uFF1A" + this.field);
++            console.log('\u5F53\u524D\u8868\u5355\u65E0\u6CD5\u89E6\u53D1change\u4E8B\u4EF6,field\uFF1A' + this.field);
+           } else {
+             this.formRef.value.$formValueChange(this.field, value);
+           }
+@@ -231,7 +350,7 @@ class IFormSchema {
+   }
+   getPopContainer() {
+     if (this.searchForm === true) {
+-      return "body";
++      return 'body';
+     } else {
+       return POP_CONTAINER;
+     }
+@@ -250,58 +369,92 @@ class InputWidget extends IFormSchema {
+   getItem() {
+     let item = super.getItem();
+     if (this.hidden === true) {
+-      item["show"] = false;
++      item['show'] = false;
+     }
+     return item;
+   }
+ }
+ var DateFormat = /* @__PURE__ */ ((DateFormat2) => {
+-  DateFormat2["datetime"] = "YYYY-MM-DD HH:mm:ss";
+-  DateFormat2["date"] = "YYYY-MM-DD";
++  DateFormat2['datetime'] = 'YYYY-MM-DD HH:mm:ss';
++  DateFormat2['date'] = 'YYYY-MM-DD';
+   return DateFormat2;
+ })(DateFormat || {});
+ class DateWidget extends IFormSchema {
+   constructor(key, data) {
+     super(key, data);
+     this.format = DateFormat[data.view];
+-    this.showTime = data.view == "date" ? false : true;
++    this.showTime = data.view == 'date' ? false : true;
+   }
+   getItem() {
+     let item = super.getItem();
+     return Object.assign({}, item, {
+-      component: "DatePicker",
++      component: 'DatePicker',
+       componentProps: {
+         placeholder: `\u8BF7\u9009\u62E9${this.label}`,
+         showTime: this.showTime,
+         valueFormat: this.format,
+         style: {
+-          width: "100%"
+-        }
+-      }
++          width: '100%',
++        },
++      },
+     });
+   }
+ }
+ class SelectWidget extends IFormSchema {
+   constructor(key, data) {
+     super(key, data);
+-    this.options = this.getOptions(data["enum"]);
++    this.options = this.getOptions(data['enum']);
++    this.allOptions = [...this.options];
+   }
++
++  // yg
+   getItem() {
+     let item = super.getItem();
+     return Object.assign({}, item, {
+-      component: "Select",
++      component: 'Select',
+       componentProps: {
+         options: this.options,
+-        allowClear: true,
++        // 会导致bug
++        allowClear: false,
++        showSearch: true,
++        defaultActiveFirstOption: false,
+         style: {
+-          width: "100%"
++          width: '100%',
++        },
++        showArrow: false,
++        filterOption: false,
++        notFoundContent: null,
++        onSearch: debounce((val) => {
++          if (typeof val === 'undefined') {
++            val = '';
++          }
++          this.options = this.allOptions.filter((option) => {
++            return option.value.indexOf(val) !== -1 || option.label.indexOf(val) !== -1;
++          });
++          // 如果没有搜索到 则当前数据作为select的唯一数据
++          if (this.options.length === 0) {
++            this.options = [{ value: val, label: val }];
++          }
++          // 获取当前schema
++          const currSchema = this.getFormItemSchema();
++          currSchema.componentProps.options = [...this.options];
++
++          this.formRef.value.updateSchema(currSchema).then();
++        }, 120),
++        onChange: (value) => {
++          // this.formRef.value.$formValueChange(this.field, value);
++        },
++        onSelect: (value, option) => {
++          this.formRef.value.$formValueChange(this.field, value);
+         },
++
+         getPopupContainer: (_node) => {
+           return this.getModalAsContainer();
+-        }
+-      }
++        },
++      },
+     });
+   }
++  // 获取全部option
+   getOptions(array) {
+     if (!array || array.length == 0) {
+       return [];
+@@ -310,7 +463,7 @@ class SelectWidget extends IFormSchema {
+     for (let item of array) {
+       arr.push({
+         value: item.value,
+-        label: item.title
++        label: item.title,
+       });
+     }
+     return arr;
+@@ -320,7 +473,7 @@ class PasswordWidget extends IFormSchema {
+   getItem() {
+     let item = super.getItem();
+     return Object.assign({}, item, {
+-      component: "InputPassword"
++      component: 'InputPassword',
+     });
+   }
+ }
+@@ -329,15 +482,15 @@ class FileWidget extends IFormSchema {
+     let item = super.getItem();
+     let componentProps = this.getComponentProps();
+     return Object.assign({}, item, {
+-      component: "JUpload",
+-      componentProps
++      component: 'JUpload',
++      componentProps,
+     });
+   }
+   getComponentProps() {
+     let json = this.getExtendData();
+     if (json && json.uploadnum) {
+       return {
+-        maxCount: Number(json.uploadnum)
++        maxCount: Number(json.uploadnum),
+       };
+     }
+     return {};
+@@ -348,17 +501,17 @@ class ImageWidget extends IFormSchema {
+     let item = super.getItem();
+     let componentProps = this.getComponentProps();
+     return Object.assign({}, item, {
+-      component: "JUpload",
+-      componentProps
++      component: 'JUpload',
++      componentProps,
+     });
+   }
+   getComponentProps() {
+     let props = {
+-      fileType: UploadTypeEnum.image
++      fileType: UploadTypeEnum.image,
+     };
+     let json = this.getExtendData();
+     if (json && json.uploadnum) {
+-      props["maxCount"] = Number(json.uploadnum);
++      props['maxCount'] = Number(json.uploadnum);
+     }
+     return props;
+   }
+@@ -367,23 +520,23 @@ class TextAreaWidget extends IFormSchema {
+   getItem() {
+     let item = super.getItem();
+     return Object.assign({}, item, {
+-      component: "InputTextArea"
++      component: 'InputTextArea',
+     });
+   }
+ }
+ class SelectMultiWidget extends IFormSchema {
+   constructor(key, data) {
+     super(key, data);
+-    this.dictTable = data["dictTable"];
+-    this.dictText = data["dictText"];
+-    this.dictCode = data["dictCode"];
++    this.dictTable = data['dictTable'];
++    this.dictText = data['dictText'];
++    this.dictCode = data['dictCode'];
+   }
+   getItem() {
+     let item = super.getItem();
+     let componentProps = this.getComponentProps();
+     return Object.assign({}, item, {
+-      component: "JSelectMultiple",
+-      componentProps
++      component: 'JSelectMultiple',
++      componentProps,
+     });
+   }
+   getComponentProps() {
+@@ -392,13 +545,13 @@ class SelectMultiWidget extends IFormSchema {
+     } else {
+       let props = {};
+       if (!this.dictTable) {
+-        props["dictCode"] = this.dictCode;
++        props['dictCode'] = this.dictCode;
+       } else {
+         let temp = `${this.dictTable},${this.dictText},${this.dictCode}`;
+-        props["dictCode"] = encodeURI(temp);
++        props['dictCode'] = encodeURI(temp);
+       }
+-      props["triggerChange"] = true;
+-      props["popContainer"] = this.getPopContainer();
++      props['triggerChange'] = true;
++      props['popContainer'] = this.getPopContainer();
+       return props;
+     }
+   }
+@@ -412,41 +565,41 @@ class SelectSearchWidget extends IFormSchema {
+     let item = super.getItem();
+     let popContainer = this.getPopContainer();
+     return Object.assign({}, item, {
+-      component: "JSearchSelect",
++      component: 'JSearchSelect',
+       componentProps: {
+         dict: this.dict,
+         pageSize: 6,
+         async: true,
+-        popContainer
+-      }
++        popContainer,
++      },
+     });
+   }
+ }
+ class PopupWidget extends IFormSchema {
+   constructor(key, data) {
+     super(key, data);
+-    this.code = data["code"];
+-    this.multi = data["popupMulti"];
++    this.code = data['code'];
++    this.multi = data['popupMulti'];
+     this.fieldConfig = this.getFieldConfig(data);
+   }
+   getItem() {
+     let item = super.getItem();
+     let componentProps = this.getComponentProps();
+     return Object.assign({}, item, {
+-      component: "JPopup",
+-      componentProps
++      component: 'JPopup',
++      componentProps,
+     });
+   }
+   getComponentProps() {
+     let props = {
+       code: this.code,
+       multi: this.multi,
+-      fieldConfig: this.fieldConfig
++      fieldConfig: this.fieldConfig,
+     };
+     if (this.formRef) {
+-      props["formElRef"] = this.formRef;
++      props['formElRef'] = this.formRef;
+     } else {
+-      props["setFieldsValue"] = this.setFieldsValue;
++      props['setFieldsValue'] = this.setFieldsValue;
+     }
+     return props;
+   }
+@@ -455,14 +608,14 @@ class PopupWidget extends IFormSchema {
+     if (!destFields || destFields.length == 0) {
+       return [];
+     }
+-    let arr1 = destFields.split(",");
+-    let arr2 = orgFields.split(",");
++    let arr1 = destFields.split(',');
++    let arr2 = orgFields.split(',');
+     let config = [];
+     const pre = this.pre;
+     for (let i = 0; i < arr1.length; i++) {
+       config.push({
+         target: pre + arr1[i],
+-        source: arr2[i]
++        source: arr2[i],
+       });
+     }
+     return config;
+@@ -472,23 +625,23 @@ class TreeCategoryWidget extends IFormSchema {
+   constructor(key, data) {
+     super(key, data);
+     this.multi = false;
+-    this.pid = data["pidValue"];
+-    this.textField = data["textField"];
++    this.pid = data['pidValue'];
++    this.textField = data['textField'];
+   }
+   getItem() {
+     let item = super.getItem();
+     let componentProps = this.getComponentProps();
+     return Object.assign({}, item, {
+       componentProps,
+-      component: "JCategorySelect"
++      component: 'JCategorySelect',
+     });
+   }
+   getComponentProps() {
+-    let pidValue = this.pid || "EMPTY_PID";
++    let pidValue = this.pid || 'EMPTY_PID';
+     if (!this.textField) {
+       return {
+         multiple: this.multi,
+-        pid: pidValue
++        pid: pidValue,
+       };
+     } else {
+       return {
+@@ -500,7 +653,7 @@ class TreeCategoryWidget extends IFormSchema {
+           if (this.formRef) {
+             this.formRef.value.setFieldsValue(backVal);
+           }
+-        }
++        },
+       };
+     }
+   }
+@@ -517,24 +670,24 @@ class SelectDepartWidget extends IFormSchema {
+     let item = super.getItem();
+     let componentProps = this.getComponentProps();
+     return Object.assign({}, item, {
+-      component: "JSelectDept",
+-      componentProps
++      component: 'JSelectDept',
++      componentProps,
+     });
+   }
+   getComponentProps() {
+     let extend = this.getExtendData();
+     let props = {
+       checkStrictly: true,
+-      showButton: false
++      showButton: false,
+     };
+     if (extend.text) {
+-      props["labelKey"] = extend.text;
++      props['labelKey'] = extend.text;
+     }
+     if (extend.store) {
+-      props["rowKey"] = extend.store;
++      props['rowKey'] = extend.store;
+     }
+     if (extend.multiSelect === false) {
+-      props["multiple"] = false;
++      props['multiple'] = false;
+     }
+     return props;
+   }
+@@ -544,8 +697,8 @@ class SelectUserWidget extends IFormSchema {
+     let item = super.getItem();
+     let componentProps = this.getComponentProps();
+     return Object.assign({}, item, {
+-      component: "JSelectUser",
+-      componentProps
++      component: 'JSelectUser',
++      componentProps,
+     });
+   }
+   getComponentProps() {
+@@ -553,16 +706,16 @@ class SelectUserWidget extends IFormSchema {
+     let props = {
+       showSelected: false,
+       allowClear: true,
+-      isRadioSelection: false
++      isRadioSelection: false,
+     };
+     if (extend.text) {
+-      props["labelKey"] = extend.text;
++      props['labelKey'] = extend.text;
+     }
+     if (extend.store) {
+-      props["rowKey"] = extend.store;
++      props['rowKey'] = extend.store;
+     }
+     if (extend.multiSelect === false) {
+-      props["isRadioSelection"] = true;
++      props['isRadioSelection'] = true;
+     }
+     return props;
+   }
+@@ -571,8 +724,8 @@ class EditorWidget extends IFormSchema {
+   getItem() {
+     let item = super.getItem();
+     return Object.assign({}, item, {
+-      component: "JEditor",
+-      componentProps: {}
++      component: 'JEditor',
++      componentProps: {},
+     });
+   }
+ }
+@@ -580,8 +733,8 @@ class MarkdownWidget extends IFormSchema {
+   getItem() {
+     let item = super.getItem();
+     return Object.assign({}, item, {
+-      component: "JMarkdownEditor",
+-      componentProps: {}
++      component: 'JMarkdownEditor',
++      componentProps: {},
+     });
+   }
+ }
+@@ -589,42 +742,42 @@ class PcaWidget extends IFormSchema {
+   getItem() {
+     let item = super.getItem();
+     return Object.assign({}, item, {
+-      component: "JAreaSelect"
++      component: 'JAreaSelect',
+     });
+   }
+ }
+ class TreeSelectWidget extends IFormSchema {
+   constructor(key, data) {
+     super(key, data);
+-    this.dict = data["dict"];
+-    this.pidField = data["pidField"];
+-    this.pidValue = data["pidValue"];
++    this.dict = data['dict'];
++    this.pidField = data['pidField'];
++    this.pidValue = data['pidValue'];
+   }
+   getItem() {
+     let item = super.getItem();
+     return Object.assign({}, item, {
+-      component: "JTreeSelect",
++      component: 'JTreeSelect',
+       componentProps: {
+         dict: this.dict,
+         pidField: this.pidField,
+-        pidValue: this.pidValue
+-      }
++        pidValue: this.pidValue,
++      },
+     });
+   }
+ }
+ class RadioWidget extends IFormSchema {
+   constructor(key, data) {
+     super(key, data);
+-    this.dictTable = data["dictTable"];
+-    this.dictText = data["dictText"];
+-    this.dictCode = data["dictCode"];
++    this.dictTable = data['dictTable'];
++    this.dictText = data['dictText'];
++    this.dictCode = data['dictCode'];
+   }
+   getItem() {
+     let item = super.getItem();
+     let componentProps = this.getComponentProps();
+     return Object.assign({}, item, {
+-      component: "JDictSelectTag",
+-      componentProps
++      component: 'JDictSelectTag',
++      componentProps,
+     });
+   }
+   getComponentProps() {
+@@ -634,13 +787,13 @@ class RadioWidget extends IFormSchema {
+       if (!this.dictTable) {
+         return {
+           dictCode: this.dictCode,
+-          type: "radio"
++          type: 'radio',
+         };
+       } else {
+         let temp = `${this.dictTable},${this.dictText},${this.dictCode}`;
+         return {
+           dictCode: encodeURI(temp),
+-          type: "radio"
++          type: 'radio',
+         };
+       }
+     }
+@@ -649,16 +802,16 @@ class RadioWidget extends IFormSchema {
+ class CheckboxWidget extends IFormSchema {
+   constructor(key, data) {
+     super(key, data);
+-    this.options = this.getOptions(data["enum"]);
++    this.options = this.getOptions(data['enum']);
+   }
+   getItem() {
+     let item = super.getItem();
+     return Object.assign({}, item, {
+-      component: "JCheckbox",
++      component: 'JCheckbox',
+       componentProps: {
+         options: this.options,
+-        triggerChange: true
+-      }
++        triggerChange: true,
++      },
+     });
+   }
+   getOptions(array) {
+@@ -669,7 +822,7 @@ class CheckboxWidget extends IFormSchema {
+     for (let item of array) {
+       arr.push({
+         value: item.value,
+-        label: item.title
++        label: item.title,
+       });
+     }
+     return arr;
+@@ -684,15 +837,15 @@ class SwitchWidget extends IFormSchema {
+     let item = super.getItem();
+     let componentProps = this.getComponentProps();
+     return Object.assign({}, item, {
+-      component: "JSwitch",
+-      componentProps
++      component: 'JSwitch',
++      componentProps,
+     });
+   }
+   getComponentProps() {
+     let { fieldExtendJson } = this._data;
+-    let options = ["Y", "N"];
++    let options = ['Y', 'N'];
+     if (fieldExtendJson) {
+-      if (typeof fieldExtendJson == "string") {
++      if (typeof fieldExtendJson == 'string') {
+         let arr = JSON.parse(fieldExtendJson);
+         if (arr.length == 2) {
+           options = arr;
+@@ -700,7 +853,7 @@ class SwitchWidget extends IFormSchema {
+       }
+     }
+     return {
+-      options
++      options,
+     };
+   }
+ }
+@@ -708,17 +861,17 @@ class TimeWidget extends IFormSchema {
+   getItem() {
+     let item = super.getItem();
+     return Object.assign({}, item, {
+-      component: "TimePicker",
++      component: 'TimePicker',
+       componentProps: {
+         placeholder: `\u8BF7\u9009\u62E9${this.label}`,
+-        valueFormat: "HH:mm:ss",
++        valueFormat: 'HH:mm:ss',
+         getPopupContainer: (_node) => {
+           return this.getModalAsContainer();
+         },
+         style: {
+-          width: "100%"
+-        }
+-      }
++          width: '100%',
++        },
++      },
+     });
+   }
+ }
+@@ -734,15 +887,15 @@ class LinkDownWidget extends IFormSchema {
+     this.origin = origin;
+     this.condition = condition;
+     this.options = [];
+-    this.next = data.next || "";
++    this.next = data.next || '';
+     this.type = data.type;
+   }
+   getItem() {
+     let item = super.getItem();
+     let componentProps = this.getComponentProps();
+     return Object.assign({}, item, {
+-      component: "OnlineSelectCascade",
+-      componentProps
++      component: 'OnlineSelectCascade',
++      componentProps,
+     });
+   }
+   getComponentProps() {
+@@ -753,28 +906,28 @@ class LinkDownWidget extends IFormSchema {
+       pidField: this.pidField,
+       idField: this.idField,
+       origin: this.origin,
+-      pidValue: "-1",
++      pidValue: '-1',
+       style: {
+-        width: "100%"
++        width: '100%',
+       },
+       onChange: (value) => {
+-        console.log("\u7EA7\u8054\u7EC4\u4EF6-onChange", value);
++        console.log('\u7EA7\u8054\u7EC4\u4EF6-onChange', value);
+         this.valueChange(value);
+       },
+       onNext: (pidValue) => {
+-        console.log("\u7EA7\u8054\u7EC4\u4EF6-onNext", pidValue);
++        console.log('\u7EA7\u8054\u7EC4\u4EF6-onNext', pidValue);
+         this.nextOptionsChange(pidValue);
+-      }
++      },
+     };
+     if (this._data.origin === true) {
+-      baseProp["condition"] = this.condition;
++      baseProp['condition'] = this.condition;
+     }
+     return baseProp;
+   }
+   nextOptionsChange(pidValue) {
+     return __async(this, null, function* () {
+       if (!this.formRef) {
+-        console.error("\u8868\u5355\u5F15\u7528\u627E\u4E0D\u5230");
++        console.error('\u8868\u5355\u5F15\u7528\u627E\u4E0D\u5230');
+         return;
+       }
+       if (!this.next) {
+@@ -784,15 +937,15 @@ class LinkDownWidget extends IFormSchema {
+       yield ref.updateSchema({
+         field: this.next,
+         componentProps: {
+-          pidValue
+-        }
++          pidValue,
++        },
+       });
+     });
+   }
+   valueChange(value) {
+     return __async(this, null, function* () {
+       if (!this.formRef) {
+-        console.error("\u8868\u5355\u5F15\u7528\u627E\u4E0D\u5230");
++        console.error('\u8868\u5355\u5F15\u7528\u627E\u4E0D\u5230');
+         return;
+       }
+       if (!this.next) {
+@@ -800,14 +953,14 @@ class LinkDownWidget extends IFormSchema {
+       }
+       let ref = this.formRef.value;
+       ref.$formValueChange(this.field, value);
+-      yield ref.setFieldsValue({ [this.next]: "" });
++      yield ref.setFieldsValue({ [this.next]: '' });
+     });
+   }
+ }
+ class SlotWidget extends IFormSchema {
+   constructor(key, data) {
+     super(key, data);
+-    this.slot = "";
++    this.slot = '';
+   }
+   getItem() {
+     let item = super.getItem();
+@@ -815,15 +968,15 @@ class SlotWidget extends IFormSchema {
+     return Object.assign({}, item, { slot });
+   }
+   groupDate() {
+-    this.slot = "groupDate";
++    this.slot = 'groupDate';
+     return this;
+   }
+   groupDatetime() {
+-    this.slot = "groupDatetime";
++    this.slot = 'groupDatetime';
+     return this;
+   }
+   groupNumber() {
+-    this.slot = "groupNumber";
++    this.slot = 'groupNumber';
+     return this;
+   }
+ }
+@@ -836,18 +989,18 @@ class NumberWidget extends IFormSchema {
+     let item = super.getItem();
+     let componentProps = this.getComponentProps();
+     return Object.assign({}, item, {
+-      component: "InputNumber",
+-      componentProps
++      component: 'InputNumber',
++      componentProps,
+     });
+   }
+   getComponentProps() {
+     const props = {
+       style: {
+-        width: "100%"
+-      }
++        width: '100%',
++      },
+     };
+     if (this.dbPointLength >= 0) {
+-      props["precision"] = this.dbPointLength;
++      props['precision'] = this.dbPointLength;
+     }
+     return props;
+   }
+@@ -856,55 +1009,55 @@ class FormSchemaFactory {
+   static createFormSchema(key, data) {
+     let view = data.view;
+     switch (view) {
+-      case "password":
++      case 'password':
+         return new PasswordWidget(key, data);
+-      case "list":
++      case 'list':
+         return new SelectWidget(key, data);
+-      case "radio":
++      case 'radio':
+         return new RadioWidget(key, data);
+-      case "checkbox":
++      case 'checkbox':
+         return new CheckboxWidget(key, data);
+-      case "date":
+-      case "datetime":
++      case 'date':
++      case 'datetime':
+         return new DateWidget(key, data);
+-      case "time":
++      case 'time':
+         return new TimeWidget(key, data);
+-      case "file":
++      case 'file':
+         return new FileWidget(key, data);
+-      case "image":
++      case 'image':
+         return new ImageWidget(key, data);
+-      case "textarea":
++      case 'textarea':
+         return new TextAreaWidget(key, data);
+-      case "list_multi":
++      case 'list_multi':
+         return new SelectMultiWidget(key, data);
+-      case "sel_search":
++      case 'sel_search':
+         return new SelectSearchWidget(key, data);
+-      case "popup":
++      case 'popup':
+         return new PopupWidget(key, data);
+-      case "cat_tree":
++      case 'cat_tree':
+         return new TreeCategoryWidget(key, data);
+-      case "sel_depart":
++      case 'sel_depart':
+         return new SelectDepartWidget(key, data);
+-      case "sel_user":
++      case 'sel_user':
+         return new SelectUserWidget(key, data);
+-      case "umeditor":
++      case 'umeditor':
+         return new EditorWidget(key, data);
+-      case "markdown":
++      case 'markdown':
+         return new MarkdownWidget(key, data);
+-      case "pca":
++      case 'pca':
+         return new PcaWidget(key, data);
+-      case "link_down":
++      case 'link_down':
+         return new LinkDownWidget(key, data);
+-      case "sel_tree":
++      case 'sel_tree':
+         return new TreeSelectWidget(key, data);
+-      case "switch":
++      case 'switch':
+         return new SwitchWidget(key, data);
+-      case "slot":
++      case 'slot':
+         return new SlotWidget(key, data);
+-      case "hidden":
++      case 'hidden':
+         return new InputWidget(key, data).isHidden();
+       default:
+-        if (data.type == "number") {
++        if (data.type == 'number') {
+           return new NumberWidget(key, data);
+         } else {
+           return new InputWidget(key, data);
+@@ -914,13 +1067,13 @@ class FormSchemaFactory {
+   static createSlotFormSchema(key, data) {
+     let slotFs = new SlotWidget(key, data);
+     let view = data.view;
+-    if (view == "date") {
++    if (view == 'date') {
+       slotFs.groupDate();
+-    } else if (view == "datetime") {
++    } else if (view == 'datetime') {
+       slotFs.groupDatetime();
+     } else {
+       let type = data.type;
+-      if (type == "number" || type == "integer") {
++      if (type == 'number' || type == 'integer') {
+         slotFs.groupNumber();
+       }
+     }
+@@ -928,10 +1081,10 @@ class FormSchemaFactory {
+   }
+   static createIdField() {
+     return {
+-      label: "",
+-      field: "id",
+-      component: "Input",
+-      show: false
++      label: '',
++      field: 'id',
++      component: 'Input',
++      show: false,
+     };
+   }
+ }
 diff --git a/node_modules/@jeecg/online/OnlineAutoList.js b/node_modules/@jeecg/online/OnlineAutoList.js
 index 454118f..5b9c54a 100644
 --- a/node_modules/@jeecg/online/OnlineAutoList.js
@@ -783,6 +1932,18 @@ index 454118f..5b9c54a 100644
 -var OnlineAutoList = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render]]);
 +var OnlineAutoList = /* @__PURE__ */ _export_sfc(_sfc_main, [['render', _sfc_render]]);
  export { OnlineAutoList as default };
+diff --git a/node_modules/@jeecg/online/OnlineAutoModal.js b/node_modules/@jeecg/online/OnlineAutoModal.js
+index 3ad6a16..57f9497 100644
+--- a/node_modules/@jeecg/online/OnlineAutoModal.js
++++ b/node_modules/@jeecg/online/OnlineAutoModal.js
+@@ -96,6 +96,7 @@ const _sfc_main = defineComponent({
+       }
+     }
+     watch(() => props.id, renderFormItems, { immediate: true });
++    // yg 表单渲染第一步
+     function renderFormItems() {
+       return __async(this, null, function* () {
+         formRendered.value = false;
 diff --git a/node_modules/@jeecg/online/OnlineQueryForm.js b/node_modules/@jeecg/online/OnlineQueryForm.js
 index f0a63ff..25fbd6b 100644
 --- a/node_modules/@jeecg/online/OnlineQueryForm.js
@@ -1470,6 +2631,980 @@ index f0a63ff..25fbd6b 100644
 +  ['__scopeId', 'data-v-94518ffc'],
 +]);
  export { OnlineQueryForm as default };
+diff --git a/node_modules/@jeecg/online/OnlineSearchFormItem.js b/node_modules/@jeecg/online/OnlineSearchFormItem.js
+index cc2dbc5..ab6ed02 100644
+--- a/node_modules/@jeecg/online/OnlineSearchFormItem.js
++++ b/node_modules/@jeecg/online/OnlineSearchFormItem.js
+@@ -2,30 +2,47 @@ var __defProp = Object.defineProperty;
+ var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+ var __hasOwnProp = Object.prototype.hasOwnProperty;
+ var __propIsEnum = Object.prototype.propertyIsEnumerable;
+-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
++var __defNormalProp = (obj, key, value) => (key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : (obj[key] = value));
+ var __spreadValues = (a, b) => {
+-  for (var prop in b || (b = {}))
+-    if (__hasOwnProp.call(b, prop))
+-      __defNormalProp(a, prop, b[prop]);
++  for (var prop in b || (b = {})) if (__hasOwnProp.call(b, prop)) __defNormalProp(a, prop, b[prop]);
+   if (__getOwnPropSymbols)
+     for (var prop of __getOwnPropSymbols(b)) {
+-      if (__propIsEnum.call(b, prop))
+-        __defNormalProp(a, prop, b[prop]);
++      if (__propIsEnum.call(b, prop)) __defNormalProp(a, prop, b[prop]);
+     }
+   return a;
+ };
+-import { defineComponent, ref, watch, resolveComponent, openBlock, createBlock, normalizeClass, withCtx, createElementVNode, toDisplayString, createElementBlock, Fragment, createVNode, renderList, createTextVNode, mergeProps, useCssVars, pushScopeId, popScopeId } from "vue";
+-import { JDictSelectTag, JTreeSelect, JCategorySelect, JSelectUser, JSelectUserByDept, JSelectDept, JPopup, JAreaLinkage, JAreaSelect, JSelectMultiple } from "/@/components/Form";
+-import JOnlineSearchSelect from "./JOnlineSearchSelect.js";
+-import { _ as _export_sfc } from "./index.js";
+-import "@vueuse/core";
+-import "/@/utils/http/axios";
+-import "/@/hooks/web/useMessage";
+-import "/@/components/jeecg/OnLine/JPopupOnlReport.vue";
+-import "vue-router";
+-var OnlineSearchFormItem_vue_vue_type_style_index_0_scoped_true_lang = "";
++import {
++  defineComponent,
++  ref,
++  watch,
++  resolveComponent,
++  openBlock,
++  createBlock,
++  normalizeClass,
++  withCtx,
++  createElementVNode,
++  toDisplayString,
++  createElementBlock,
++  Fragment,
++  createVNode,
++  renderList,
++  createTextVNode,
++  mergeProps,
++  useCssVars,
++  pushScopeId,
++  popScopeId,
++} from 'vue';
++import { JDictSelectTag, JTreeSelect, JCategorySelect, JSelectUser, JSelectUserByDept, JSelectDept, JPopup, JAreaLinkage, JAreaSelect, JSelectMultiple } from '/@/components/Form';
++import JOnlineSearchSelect from './JOnlineSearchSelect.js';
++import { _ as _export_sfc } from './index.js';
++import '@vueuse/core';
++import '/@/utils/http/axios';
++import '/@/hooks/web/useMessage';
++import '/@/components/jeecg/OnLine/JPopupOnlReport.vue';
++import 'vue-router';
++var OnlineSearchFormItem_vue_vue_type_style_index_0_scoped_true_lang = '';
+ const __default__ = defineComponent({
+-  name: "OnlineSearchFormItem",
++  name: 'OnlineSearchFormItem',
+   components: {
+     JOnlineSearchSelect,
+     JDictSelectTag,
+@@ -37,69 +54,74 @@ const __default__ = defineComponent({
+     JPopup,
+     JAreaLinkage,
+     JAreaSelect,
+-    JSelectMultiple
++    JSelectMultiple,
+   },
+   props: {
+     value: {
+       type: String,
+-      default: ""
++      default: '',
+     },
+     item: {
+       type: Object,
+-      default: () => {
+-      },
+-      required: true
++      default: () => {},
++      required: true,
+     },
+     dictOptions: {
+       type: Object,
+-      default: () => {
+-      },
+-      required: false
++      default: () => {},
++      required: false,
+     },
+     onlineForm: {
+       type: Object,
+-      default: () => {
+-      },
+-      required: false
+-    }
++      default: () => {},
++      required: false,
++    },
+   },
+-  emits: ["update:value", "change"],
++  emits: ['update:value', 'change'],
+   setup(props, { emit }) {
+-    const labelTextMaxWidth = "120px";
++    const labelTextMaxWidth = '120px';
+     const labelCol = {
+       style: {
+-        "max-width": labelTextMaxWidth
+-      }
++        'max-width': labelTextMaxWidth,
++      },
+     };
+-    const single_mode = "single";
+-    let innerValue = ref("");
+-    let beginValue = ref("");
+-    let endValue = ref("");
+-    watch(() => props.value, () => {
+-      if (isEasySelect()) {
+-        innerValue.value = !!props.value ? props.value : void 0;
+-      } else {
+-        innerValue.value = props.value;
+-      }
+-      if (!props.value) {
+-        beginValue.value = "";
+-        endValue.value = "";
+-      }
+-    }, { deep: true, immediate: true });
+-    watch(innerValue, (newVal) => {
+-      console.log("innerValue-change", newVal);
+-      emit("update:value", newVal);
+-    }, { immediate: true });
++    const single_mode = 'single';
++    let innerValue = ref('');
++    let beginValue = ref('');
++    let endValue = ref('');
++    watch(
++      () => props.value,
++      () => {
++        if (isEasySelect()) {
++          innerValue.value = !!props.value ? props.value : void 0;
++        } else {
++          innerValue.value = props.value;
++        }
++        if (!props.value) {
++          beginValue.value = '';
++          endValue.value = '';
++        }
++      },
++      { deep: true, immediate: true }
++    );
++    watch(
++      innerValue,
++      (newVal) => {
++        console.log('innerValue-change', newVal);
++        emit('update:value', newVal);
++      },
++      { immediate: true }
++    );
+     watch(beginValue, (newVal) => {
+-      emit("change", props.item.field + "_begin", newVal);
+-      emit("update:value", "1");
++      emit('change', props.item.field + '_begin', newVal);
++      emit('update:value', '1');
+     });
+     watch(endValue, (newVal) => {
+-      emit("change", props.item.field + "_end", newVal);
+-      emit("update:value", "1");
++      emit('change', props.item.field + '_end', newVal);
++      emit('update:value', '1');
+     });
+     function getDictOptionKey(item) {
+-      console.log("ddictOptions", props.dictOptions);
++      console.log('ddictOptions', props.dictOptions);
+       if (item.dbField) {
+         return item.dbField;
+       } else {
+@@ -111,12 +133,12 @@ const __default__ = defineComponent({
+       if (!item) {
+         return false;
+       }
+-      return item.view == "list" || item.view == "radio" || item.view == "switch";
++      return item.view == 'list' || item.view == 'radio' || item.view == 'switch';
+     }
+     function getDictCode() {
+       let item = props.item;
+       if (item.dictTable && item.dictTable.length > 0) {
+-        return item.dictTable + "," + item.dictText + "," + item.dictCode;
++        return item.dictTable + ',' + item.dictText + ',' + item.dictCode;
+       } else {
+         return item.dictCode;
+       }
+@@ -125,13 +147,13 @@ const __default__ = defineComponent({
+       let item = props.item;
+       let { dictTable, dictCode, dictText } = item;
+       let temp = dictTable.toLowerCase();
+-      let arr = temp.split("where");
+-      let condition = "";
++      let arr = temp.split('where');
++      let condition = '';
+       if (arr.length > 1) {
+-        condition = " where" + arr[1];
++        condition = ' where' + arr[1];
+       }
+-      let sql = "select " + dictCode + " as 'value', " + dictText + " as 'text' from " + arr[0] + condition;
+-      console.log("sql", sql);
++      let sql = 'select ' + dictCode + " as 'value', " + dictText + " as 'text' from " + arr[0] + condition;
++      console.log('sql', sql);
+       return sql;
+     }
+     function getPopupFieldConfig(item) {
+@@ -139,54 +161,54 @@ const __default__ = defineComponent({
+       if (!destFields || destFields.length == 0) {
+         return [];
+       }
+-      let arr1 = destFields.split(",");
+-      let arr2 = orgFields.split(",");
++      let arr1 = destFields.split(',');
++      let arr2 = orgFields.split(',');
+       let config = [];
+       for (let i = 0; i < arr1.length; i++) {
+         config.push({
+           target: arr1[i],
+-          source: arr2[i]
++          source: arr2[i],
+         });
+       }
+       return config;
+     }
+     function setFieldsValue(values) {
+       let { dictText: destFields } = props.item;
+-      let arr1 = destFields.split(",");
++      let arr1 = destFields.split(',');
+       let field = arr1[0];
+-      emit("change", field, values[field]);
++      emit('change', field, values[field]);
+     }
+     function handleCategoryTreeChange(value) {
+-      emit("update:value", value);
++      emit('update:value', value);
+     }
+     function getComponentProps(item, labelKey, rowKey) {
+       let props2 = {
+         labelKey,
+-        rowKey
++        rowKey,
+       };
+       let fieldExtendJson = item.fieldExtendJson;
+       if (fieldExtendJson) {
+-        if (typeof fieldExtendJson == "string") {
++        if (typeof fieldExtendJson == 'string') {
+           let json = JSON.parse(fieldExtendJson);
+           let extend = __spreadValues({}, json);
+           if (extend.text) {
+-            props2["labelKey"] = extend.text;
++            props2['labelKey'] = extend.text;
+           }
+           if (extend.store) {
+-            props2["rowKey"] = extend.store;
++            props2['rowKey'] = extend.store;
+           }
+         }
+       }
+       return props2;
+     }
+-    let userSelectProp = getComponentProps(props.item, "realname", "username");
+-    console.log("userSelectProp", userSelectProp);
+-    let depSelectProp = getComponentProps(props.item, "departName", "id");
++    let userSelectProp = getComponentProps(props.item, 'realname', 'username');
++    console.log('userSelectProp', userSelectProp);
++    let depSelectProp = getComponentProps(props.item, 'departName', 'id');
+     function handleSelectChange(array) {
+       if (array && array.length > 0) {
+-        emit("update:value", array.join(","));
++        emit('update:value', array.join(','));
+       } else {
+-        emit("update:value", "");
++        emit('update:value', '');
+       }
+     }
+     return {
+@@ -205,224 +227,475 @@ const __default__ = defineComponent({
+       labelCol,
+       single_mode,
+       getSqlByDictCode,
+-      handleCategoryTreeChange
++      handleCategoryTreeChange,
+     };
+-  }
++  },
+ });
+ const __injectCSSVars__ = () => {
+   useCssVars((_ctx) => ({
+-    "0d13e305": _ctx.labelTextMaxWidth
++    '0d13e305': _ctx.labelTextMaxWidth,
+   }));
+ };
+ const __setup__ = __default__.setup;
+-__default__.setup = __setup__ ? (props, ctx) => {
+-  __injectCSSVars__();
+-  return __setup__(props, ctx);
+-} : __injectCSSVars__;
++__default__.setup = __setup__
++  ? (props, ctx) => {
++      __injectCSSVars__();
++      return __setup__(props, ctx);
++    }
++  : __injectCSSVars__;
+ const _sfc_main = __default__;
+-const _withScopeId = (n) => (pushScopeId("data-v-213184f5"), n = n(), popScopeId(), n);
+-const _hoisted_1 = ["title"];
+-const _hoisted_2 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createElementVNode("span", { class: "group-query-strig" }, "~", -1));
+-const _hoisted_3 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createElementVNode("span", { class: "group-query-strig" }, "~", -1));
+-const _hoisted_4 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createElementVNode("span", { class: "group-query-strig" }, "~", -1));
++const _withScopeId = (n) => (pushScopeId('data-v-213184f5'), (n = n()), popScopeId(), n);
++const _hoisted_1 = ['title'];
++const _hoisted_2 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createElementVNode('span', { class: 'group-query-strig' }, '~', -1));
++const _hoisted_3 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createElementVNode('span', { class: 'group-query-strig' }, '~', -1));
++const _hoisted_4 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createElementVNode('span', { class: 'group-query-strig' }, '~', -1));
+ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+-  const _component_a_date_picker = resolveComponent("a-date-picker");
+-  const _component_JDictSelectTag = resolveComponent("JDictSelectTag");
+-  const _component_a_select_option = resolveComponent("a-select-option");
+-  const _component_a_select = resolveComponent("a-select");
+-  const _component_JTreeSelect = resolveComponent("JTreeSelect");
+-  const _component_JCategorySelect = resolveComponent("JCategorySelect");
+-  const _component_JOnlineSearchSelect = resolveComponent("JOnlineSearchSelect");
+-  const _component_JSelectUser = resolveComponent("JSelectUser");
+-  const _component_JSelectDept = resolveComponent("JSelectDept");
+-  const _component_JPopup = resolveComponent("JPopup");
+-  const _component_JAreaSelect = resolveComponent("JAreaSelect");
+-  const _component_JSelectMultiple = resolveComponent("JSelectMultiple");
+-  const _component_a_input = resolveComponent("a-input");
+-  const _component_a_form_item = resolveComponent("a-form-item");
+-  return openBlock(), createBlock(_component_a_form_item, {
+-    labelCol: _ctx.labelCol,
+-    class: normalizeClass("jeecg-online-search")
+-  }, {
+-    label: withCtx(() => [
+-      createElementVNode("span", {
+-        title: _ctx.item.label,
+-        class: "label-text"
+-      }, toDisplayString(_ctx.item.label), 9, _hoisted_1)
+-    ]),
+-    default: withCtx(() => [
+-      _ctx.item.view == "date" ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
+-        _ctx.single_mode === _ctx.item.mode ? (openBlock(), createBlock(_component_a_date_picker, {
+-          key: 0,
+-          style: { "width": "100%" },
+-          showTime: false,
+-          valueFormat: "YYYY-MM-DD",
+-          placeholder: "\u8BF7\u9009\u62E9" + _ctx.item.label,
+-          value: _ctx.innerValue,
+-          "onUpdate:value": _cache[0] || (_cache[0] = ($event) => _ctx.innerValue = $event)
+-        }, null, 8, ["placeholder", "value"])) : (openBlock(), createElementBlock(Fragment, { key: 1 }, [
+-          createVNode(_component_a_date_picker, {
+-            showTime: false,
+-            valueFormat: "YYYY-MM-DD",
+-            placeholder: "\u5F00\u59CB\u65E5\u671F",
+-            value: _ctx.beginValue,
+-            "onUpdate:value": _cache[1] || (_cache[1] = ($event) => _ctx.beginValue = $event),
+-            style: { "width": "calc(50% - 15px)" }
+-          }, null, 8, ["value"]),
+-          _hoisted_2,
+-          createVNode(_component_a_date_picker, {
+-            showTime: false,
+-            valueFormat: "YYYY-MM-DD",
+-            placeholder: "\u7ED3\u675F\u65E5\u671F",
+-            value: _ctx.endValue,
+-            "onUpdate:value": _cache[2] || (_cache[2] = ($event) => _ctx.endValue = $event),
+-            style: { "width": "calc(50% - 15px)" }
+-          }, null, 8, ["value"])
+-        ], 64))
+-      ], 64)) : _ctx.item.view == "datetime" ? (openBlock(), createElementBlock(Fragment, { key: 1 }, [
+-        _ctx.single_mode === _ctx.item.mode ? (openBlock(), createBlock(_component_a_date_picker, {
+-          key: 0,
+-          style: { "width": "100%" },
+-          showTime: true,
+-          valueFormat: "YYYY-MM-DD hh:mm:ss",
+-          placeholder: "\u8BF7\u9009\u62E9" + _ctx.item.label,
+-          value: _ctx.innerValue,
+-          "onUpdate:value": _cache[3] || (_cache[3] = ($event) => _ctx.innerValue = $event)
+-        }, null, 8, ["placeholder", "value"])) : (openBlock(), createElementBlock(Fragment, { key: 1 }, [
+-          createVNode(_component_a_date_picker, {
+-            showTime: true,
+-            valueFormat: "YYYY-MM-DD hh:mm:ss",
+-            placeholder: "\u5F00\u59CB\u65F6\u95F4",
+-            value: _ctx.beginValue,
+-            "onUpdate:value": _cache[4] || (_cache[4] = ($event) => _ctx.beginValue = $event),
+-            style: { "width": "calc(50% - 15px)" }
+-          }, null, 8, ["value"]),
+-          _hoisted_3,
+-          createVNode(_component_a_date_picker, {
+-            showTime: true,
+-            valueFormat: "YYYY-MM-DD hh:mm:ss",
+-            placeholder: "\u7ED3\u675F\u65F6\u95F4",
+-            value: _ctx.endValue,
+-            "onUpdate:value": _cache[5] || (_cache[5] = ($event) => _ctx.endValue = $event),
+-            style: { "width": "calc(50% - 15px)" }
+-          }, null, 8, ["value"])
+-        ], 64))
+-      ], 64)) : _ctx.isEasySelect() ? (openBlock(), createElementBlock(Fragment, { key: 2 }, [
+-        _ctx.item.config === "1" ? (openBlock(), createBlock(_component_JDictSelectTag, {
+-          key: 0,
+-          placeholder: "\u8BF7\u9009\u62E9" + _ctx.item.label,
+-          value: _ctx.innerValue,
+-          "onUpdate:value": _cache[6] || (_cache[6] = ($event) => _ctx.innerValue = $event),
+-          dictCode: _ctx.getDictCode()
+-        }, null, 8, ["placeholder", "value", "dictCode"])) : (openBlock(), createBlock(_component_a_select, {
+-          key: 1,
+-          placeholder: "\u8BF7\u9009\u62E9" + _ctx.item.label,
+-          value: _ctx.innerValue,
+-          "onUpdate:value": _cache[7] || (_cache[7] = ($event) => _ctx.innerValue = $event)
+-        }, {
+-          default: withCtx(() => [
+-            (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.dictOptions[_ctx.getDictOptionKey(_ctx.item)], (obj, index) => {
+-              return openBlock(), createBlock(_component_a_select_option, {
+-                key: index,
+-                value: obj.value
+-              }, {
+-                default: withCtx(() => [
+-                  createTextVNode(toDisplayString(obj.text), 1)
+-                ]),
+-                _: 2
+-              }, 1032, ["value"]);
+-            }), 128))
+-          ]),
+-          _: 1
+-        }, 8, ["placeholder", "value"]))
+-      ], 64)) : _ctx.item.view === "sel_tree" ? (openBlock(), createBlock(_component_JTreeSelect, {
+-        key: 3,
+-        placeholder: "\u8BF7\u9009\u62E9" + _ctx.item.label,
+-        value: _ctx.innerValue,
+-        "onUpdate:value": _cache[8] || (_cache[8] = ($event) => _ctx.innerValue = $event),
+-        dict: _ctx.item.dict,
+-        pidField: _ctx.item.pidField,
+-        pidValue: _ctx.item.pidValue,
+-        hasChildField: _ctx.item.hasChildField,
+-        "load-triggle-change": ""
+-      }, null, 8, ["placeholder", "value", "dict", "pidField", "pidValue", "hasChildField"])) : _ctx.item.view === "cat_tree" ? (openBlock(), createBlock(_component_JCategorySelect, {
+-        key: 4,
+-        onChange: _ctx.handleCategoryTreeChange,
+-        loadTriggleChange: true,
+-        pcode: _ctx.item.pcode,
+-        value: _ctx.innerValue,
+-        "onUpdate:value": _cache[9] || (_cache[9] = ($event) => _ctx.innerValue = $event),
+-        placeholder: "\u8BF7\u9009\u62E9" + _ctx.item.label
+-      }, null, 8, ["onChange", "pcode", "value", "placeholder"])) : _ctx.item.view === "sel_search" ? (openBlock(), createElementBlock(Fragment, { key: 5 }, [
+-        _ctx.item.config === "1" ? (openBlock(), createBlock(_component_JDictSelectTag, {
+-          key: 0,
+-          value: _ctx.innerValue,
+-          "onUpdate:value": _cache[10] || (_cache[10] = ($event) => _ctx.innerValue = $event),
+-          placeholder: "\u8BF7\u9009\u62E9" + _ctx.item.label,
+-          dict: _ctx.getDictCode()
+-        }, null, 8, ["value", "placeholder", "dict"])) : (openBlock(), createBlock(_component_JOnlineSearchSelect, {
+-          key: 1,
+-          value: _ctx.innerValue,
+-          "onUpdate:value": _cache[11] || (_cache[11] = ($event) => _ctx.innerValue = $event),
+-          placeholder: "\u8BF7\u9009\u62E9" + _ctx.item.label,
+-          sql: _ctx.getSqlByDictCode()
+-        }, null, 8, ["value", "placeholder", "sql"]))
+-      ], 64)) : _ctx.item.view == "sel_user" ? (openBlock(), createBlock(_component_JSelectUser, mergeProps({ key: 6 }, _ctx.userSelectProp, {
+-        value: _ctx.innerValue,
+-        "onUpdate:value": _cache[12] || (_cache[12] = ($event) => _ctx.innerValue = $event),
+-        placeholder: "\u8BF7\u9009\u62E9" + _ctx.item.label
+-      }), null, 16, ["value", "placeholder"])) : _ctx.item.view == "sel_depart" ? (openBlock(), createBlock(_component_JSelectDept, mergeProps({
+-        key: 7,
+-        showButton: false
+-      }, _ctx.depSelectProp, {
+-        value: _ctx.innerValue,
+-        "onUpdate:value": _cache[13] || (_cache[13] = ($event) => _ctx.innerValue = $event),
+-        placeholder: "\u8BF7\u9009\u62E9" + _ctx.item.label
+-      }), null, 16, ["value", "placeholder"])) : _ctx.item.view == "popup" ? (openBlock(), createBlock(_component_JPopup, {
+-        key: 8,
+-        placeholder: "\u8BF7\u9009\u62E9" + _ctx.item.label,
+-        value: _ctx.innerValue,
+-        "onUpdate:value": _cache[14] || (_cache[14] = ($event) => _ctx.innerValue = $event),
+-        code: _ctx.item.dictTable,
+-        setFieldsValue: _ctx.setFieldsValue,
+-        "field-config": _ctx.getPopupFieldConfig(_ctx.item),
+-        multi: true
+-      }, null, 8, ["placeholder", "value", "code", "setFieldsValue", "field-config"])) : _ctx.item.view == "pca" ? (openBlock(), createBlock(_component_JAreaSelect, {
+-        key: 9,
+-        placeholder: "\u8BF7\u9009\u62E9" + _ctx.item.label,
+-        value: _ctx.innerValue,
+-        "onUpdate:value": _cache[15] || (_cache[15] = ($event) => _ctx.innerValue = $event)
+-      }, null, 8, ["placeholder", "value"])) : _ctx.item.view == "checkbox" || _ctx.item.view == "list_multi" ? (openBlock(), createBlock(_component_JSelectMultiple, {
+-        key: 10,
+-        dictCode: _ctx.getDictCode(),
+-        placeholder: "\u8BF7\u9009\u62E9" + _ctx.item.label,
+-        value: _ctx.innerValue,
+-        "onUpdate:value": _cache[16] || (_cache[16] = ($event) => _ctx.innerValue = $event)
+-      }, null, 8, ["dictCode", "placeholder", "value"])) : (openBlock(), createElementBlock(Fragment, { key: 11 }, [
+-        _ctx.single_mode === _ctx.item.mode ? (openBlock(), createBlock(_component_a_input, {
+-          key: 0,
+-          placeholder: "\u8BF7\u9009\u62E9" + _ctx.item.label,
+-          value: _ctx.innerValue,
+-          "onUpdate:value": _cache[17] || (_cache[17] = ($event) => _ctx.innerValue = $event)
+-        }, null, 8, ["placeholder", "value"])) : (openBlock(), createElementBlock(Fragment, { key: 1 }, [
+-          createVNode(_component_a_input, {
+-            placeholder: "\u5F00\u59CB\u503C",
+-            value: _ctx.beginValue,
+-            "onUpdate:value": _cache[18] || (_cache[18] = ($event) => _ctx.beginValue = $event),
+-            style: { "width": "calc(50% - 15px)" }
+-          }, null, 8, ["value"]),
+-          _hoisted_4,
+-          createVNode(_component_a_input, {
+-            placeholder: "\u7ED3\u675F\u503C",
+-            value: _ctx.endValue,
+-            "onUpdate:value": _cache[19] || (_cache[19] = ($event) => _ctx.endValue = $event),
+-            style: { "width": "calc(50% - 15px)" }
+-          }, null, 8, ["value"])
+-        ], 64))
+-      ], 64))
+-    ]),
+-    _: 1
+-  }, 8, ["labelCol"]);
++  const _component_a_date_picker = resolveComponent('a-date-picker');
++  const _component_JDictSelectTag = resolveComponent('JDictSelectTag');
++  const _component_a_select_option = resolveComponent('a-select-option');
++  const _component_a_select = resolveComponent('a-select');
++  const _component_JTreeSelect = resolveComponent('JTreeSelect');
++  const _component_JCategorySelect = resolveComponent('JCategorySelect');
++  const _component_JOnlineSearchSelect = resolveComponent('JOnlineSearchSelect');
++  const _component_JSelectUser = resolveComponent('JSelectUser');
++  const _component_JSelectDept = resolveComponent('JSelectDept');
++  const _component_JPopup = resolveComponent('JPopup');
++  const _component_JAreaSelect = resolveComponent('JAreaSelect');
++  const _component_JSelectMultiple = resolveComponent('JSelectMultiple');
++  const _component_a_input = resolveComponent('a-input');
++  const _component_a_form_item = resolveComponent('a-form-item');
++  return (
++    openBlock(),
++    createBlock(
++      _component_a_form_item,
++      {
++        labelCol: _ctx.labelCol,
++        class: normalizeClass('jeecg-online-search'),
++      },
++      {
++        label: withCtx(() => [
++          createElementVNode(
++            'span',
++            {
++              title: _ctx.item.label,
++              class: 'label-text',
++            },
++            toDisplayString(_ctx.item.label),
++            9,
++            _hoisted_1
++          ),
++        ]),
++        default: withCtx(() => [
++          _ctx.item.view == 'date'
++            ? (openBlock(),
++              createElementBlock(
++                Fragment,
++                { key: 0 },
++                [
++                  _ctx.single_mode === _ctx.item.mode
++                    ? (openBlock(),
++                      createBlock(
++                        _component_a_date_picker,
++                        {
++                          key: 0,
++                          style: { width: '100%' },
++                          showTime: false,
++                          valueFormat: 'YYYY-MM-DD',
++                          placeholder: '\u8BF7\u9009\u62E9' + _ctx.item.label,
++                          value: _ctx.innerValue,
++                          'onUpdate:value': _cache[0] || (_cache[0] = ($event) => (_ctx.innerValue = $event)),
++                        },
++                        null,
++                        8,
++                        ['placeholder', 'value']
++                      ))
++                    : (openBlock(),
++                      createElementBlock(
++                        Fragment,
++                        { key: 1 },
++                        [
++                          createVNode(
++                            _component_a_date_picker,
++                            {
++                              showTime: false,
++                              valueFormat: 'YYYY-MM-DD',
++                              placeholder: '\u5F00\u59CB\u65E5\u671F',
++                              value: _ctx.beginValue,
++                              'onUpdate:value': _cache[1] || (_cache[1] = ($event) => (_ctx.beginValue = $event)),
++                              style: { width: 'calc(50% - 15px)' },
++                            },
++                            null,
++                            8,
++                            ['value']
++                          ),
++                          _hoisted_2,
++                          createVNode(
++                            _component_a_date_picker,
++                            {
++                              showTime: false,
++                              valueFormat: 'YYYY-MM-DD',
++                              placeholder: '\u7ED3\u675F\u65E5\u671F',
++                              value: _ctx.endValue,
++                              'onUpdate:value': _cache[2] || (_cache[2] = ($event) => (_ctx.endValue = $event)),
++                              style: { width: 'calc(50% - 15px)' },
++                            },
++                            null,
++                            8,
++                            ['value']
++                          ),
++                        ],
++                        64
++                      )),
++                ],
++                64
++              ))
++            : _ctx.item.view == 'datetime'
++            ? (openBlock(),
++              createElementBlock(
++                Fragment,
++                { key: 1 },
++                [
++                  _ctx.single_mode === _ctx.item.mode
++                    ? (openBlock(),
++                      createBlock(
++                        _component_a_date_picker,
++                        {
++                          key: 0,
++                          style: { width: '100%' },
++                          showTime: true,
++                          valueFormat: 'YYYY-MM-DD hh:mm:ss',
++                          placeholder: '\u8BF7\u9009\u62E9' + _ctx.item.label,
++                          value: _ctx.innerValue,
++                          'onUpdate:value': _cache[3] || (_cache[3] = ($event) => (_ctx.innerValue = $event)),
++                        },
++                        null,
++                        8,
++                        ['placeholder', 'value']
++                      ))
++                    : (openBlock(),
++                      createElementBlock(
++                        Fragment,
++                        { key: 1 },
++                        [
++                          createVNode(
++                            _component_a_date_picker,
++                            {
++                              showTime: true,
++                              valueFormat: 'YYYY-MM-DD hh:mm:ss',
++                              placeholder: '\u5F00\u59CB\u65F6\u95F4',
++                              value: _ctx.beginValue,
++                              'onUpdate:value': _cache[4] || (_cache[4] = ($event) => (_ctx.beginValue = $event)),
++                              style: { width: 'calc(50% - 15px)' },
++                            },
++                            null,
++                            8,
++                            ['value']
++                          ),
++                          _hoisted_3,
++                          createVNode(
++                            _component_a_date_picker,
++                            {
++                              showTime: true,
++                              valueFormat: 'YYYY-MM-DD hh:mm:ss',
++                              placeholder: '\u7ED3\u675F\u65F6\u95F4',
++                              value: _ctx.endValue,
++                              'onUpdate:value': _cache[5] || (_cache[5] = ($event) => (_ctx.endValue = $event)),
++                              style: { width: 'calc(50% - 15px)' },
++                            },
++                            null,
++                            8,
++                            ['value']
++                          ),
++                        ],
++                        64
++                      )),
++                ],
++                64
++              ))
++            : _ctx.isEasySelect()
++            ? (openBlock(),
++              createElementBlock(
++                Fragment,
++                { key: 2 },
++                [
++                  _ctx.item.config === '1'
++                    ? (openBlock(),
++                      createBlock(
++                        _component_JDictSelectTag,
++                        {
++                          key: 0,
++                          placeholder: '\u8BF7\u9009\u62E9' + _ctx.item.label,
++                          value: _ctx.innerValue,
++                          'onUpdate:value': _cache[6] || (_cache[6] = ($event) => (_ctx.innerValue = $event)),
++                          dictCode: _ctx.getDictCode(),
++                        },
++                        null,
++                        8,
++                        ['placeholder', 'value', 'dictCode']
++                      ))
++                    : (openBlock(),
++                      createBlock(
++                        _component_a_select,
++                        {
++                          key: 1,
++                          placeholder: '\u8BF7\u9009\u62E9' + _ctx.item.label,
++                          value: _ctx.innerValue,
++                          'onUpdate:value': _cache[7] || (_cache[7] = ($event) => (_ctx.innerValue = $event)),
++                        },
++                        {
++                          default: withCtx(() => [
++                            (openBlock(true),
++                            createElementBlock(
++                              Fragment,
++                              null,
++                              renderList(_ctx.dictOptions[_ctx.getDictOptionKey(_ctx.item)], (obj, index) => {
++                                return (
++                                  openBlock(),
++                                  createBlock(
++                                    _component_a_select_option,
++                                    {
++                                      key: index,
++                                      value: obj.value,
++                                    },
++                                    {
++                                      default: withCtx(() => [createTextVNode(toDisplayString(obj.text), 1)]),
++                                      _: 2,
++                                    },
++                                    1032,
++                                    ['value']
++                                  )
++                                );
++                              }),
++                              128
++                            )),
++                          ]),
++                          _: 1,
++                        },
++                        8,
++                        ['placeholder', 'value']
++                      )),
++                ],
++                64
++              ))
++            : _ctx.item.view === 'sel_tree'
++            ? (openBlock(),
++              createBlock(
++                _component_JTreeSelect,
++                {
++                  key: 3,
++                  placeholder: '\u8BF7\u9009\u62E9' + _ctx.item.label,
++                  value: _ctx.innerValue,
++                  'onUpdate:value': _cache[8] || (_cache[8] = ($event) => (_ctx.innerValue = $event)),
++                  dict: _ctx.item.dict,
++                  pidField: _ctx.item.pidField,
++                  pidValue: _ctx.item.pidValue,
++                  hasChildField: _ctx.item.hasChildField,
++                  'load-triggle-change': '',
++                },
++                null,
++                8,
++                ['placeholder', 'value', 'dict', 'pidField', 'pidValue', 'hasChildField']
++              ))
++            : _ctx.item.view === 'cat_tree'
++            ? (openBlock(),
++              createBlock(
++                _component_JCategorySelect,
++                {
++                  key: 4,
++                  onChange: _ctx.handleCategoryTreeChange,
++                  loadTriggleChange: true,
++                  pcode: _ctx.item.pcode,
++                  value: _ctx.innerValue,
++                  'onUpdate:value': _cache[9] || (_cache[9] = ($event) => (_ctx.innerValue = $event)),
++                  placeholder: '\u8BF7\u9009\u62E9' + _ctx.item.label,
++                },
++                null,
++                8,
++                ['onChange', 'pcode', 'value', 'placeholder']
++              ))
++            : _ctx.item.view === 'sel_search'
++            ? (openBlock(),
++              createElementBlock(
++                Fragment,
++                { key: 5 },
++                [
++                  _ctx.item.config === '1'
++                    ? (openBlock(),
++                      createBlock(
++                        _component_JDictSelectTag,
++                        {
++                          key: 0,
++                          value: _ctx.innerValue,
++                          'onUpdate:value': _cache[10] || (_cache[10] = ($event) => (_ctx.innerValue = $event)),
++                          placeholder: '\u8BF7\u9009\u62E9' + _ctx.item.label,
++                          dict: _ctx.getDictCode(),
++                        },
++                        null,
++                        8,
++                        ['value', 'placeholder', 'dict']
++                      ))
++                    : (openBlock(),
++                      createBlock(
++                        _component_JOnlineSearchSelect,
++                        {
++                          key: 1,
++                          value: _ctx.innerValue,
++                          'onUpdate:value': _cache[11] || (_cache[11] = ($event) => (_ctx.innerValue = $event)),
++                          placeholder: '\u8BF7\u9009\u62E9' + _ctx.item.label,
++                          sql: _ctx.getSqlByDictCode(),
++                        },
++                        null,
++                        8,
++                        ['value', 'placeholder', 'sql']
++                      )),
++                ],
++                64
++              ))
++            : _ctx.item.view == 'sel_user'
++            ? (openBlock(),
++              createBlock(
++                _component_JSelectUser,
++                mergeProps({ key: 6 }, _ctx.userSelectProp, {
++                  value: _ctx.innerValue,
++                  'onUpdate:value': _cache[12] || (_cache[12] = ($event) => (_ctx.innerValue = $event)),
++                  placeholder: '\u8BF7\u9009\u62E9' + _ctx.item.label,
++                }),
++                null,
++                16,
++                ['value', 'placeholder']
++              ))
++            : _ctx.item.view == 'sel_depart'
++            ? (openBlock(),
++              createBlock(
++                _component_JSelectDept,
++                mergeProps(
++                  {
++                    key: 7,
++                    showButton: false,
++                  },
++                  _ctx.depSelectProp,
++                  {
++                    value: _ctx.innerValue,
++                    'onUpdate:value': _cache[13] || (_cache[13] = ($event) => (_ctx.innerValue = $event)),
++                    placeholder: '\u8BF7\u9009\u62E9' + _ctx.item.label,
++                  }
++                ),
++                null,
++                16,
++                ['value', 'placeholder']
++              ))
++            : _ctx.item.view == 'popup'
++            ? (openBlock(),
++              createBlock(
++                _component_JPopup,
++                {
++                  key: 8,
++                  placeholder: '\u8BF7\u9009\u62E9' + _ctx.item.label,
++                  value: _ctx.innerValue,
++                  'onUpdate:value': _cache[14] || (_cache[14] = ($event) => (_ctx.innerValue = $event)),
++                  code: _ctx.item.dictTable,
++                  setFieldsValue: _ctx.setFieldsValue,
++                  'field-config': _ctx.getPopupFieldConfig(_ctx.item),
++                  multi: true,
++                },
++                null,
++                8,
++                ['placeholder', 'value', 'code', 'setFieldsValue', 'field-config']
++              ))
++            : _ctx.item.view == 'pca'
++            ? (openBlock(),
++              createBlock(
++                _component_JAreaSelect,
++                {
++                  key: 9,
++                  placeholder: '\u8BF7\u9009\u62E9' + _ctx.item.label,
++                  value: _ctx.innerValue,
++                  'onUpdate:value': _cache[15] || (_cache[15] = ($event) => (_ctx.innerValue = $event)),
++                },
++                null,
++                8,
++                ['placeholder', 'value']
++              ))
++            : _ctx.item.view == 'checkbox' || _ctx.item.view == 'list_multi'
++            ? (openBlock(),
++              createBlock(
++                _component_JSelectMultiple,
++                {
++                  key: 10,
++                  dictCode: _ctx.getDictCode(),
++                  placeholder: '\u8BF7\u9009\u62E9' + _ctx.item.label,
++                  value: _ctx.innerValue,
++                  'onUpdate:value': _cache[16] || (_cache[16] = ($event) => (_ctx.innerValue = $event)),
++                },
++                null,
++                8,
++                ['dictCode', 'placeholder', 'value']
++              ))
++            : (openBlock(),
++              createElementBlock(
++                Fragment,
++                { key: 11 },
++                [
++                  _ctx.single_mode === _ctx.item.mode
++                    ? (openBlock(),
++                      createBlock(
++                        _component_a_input,
++                        {
++                          key: 0,
++                          placeholder: '\u8BF7\u9009\u62E9' + _ctx.item.label,
++                          value: _ctx.innerValue,
++                          'onUpdate:value': _cache[17] || (_cache[17] = ($event) => (_ctx.innerValue = $event)),
++                        },
++                        null,
++                        8,
++                        ['placeholder', 'value']
++                      ))
++                    : (openBlock(),
++                      createElementBlock(
++                        Fragment,
++                        { key: 1 },
++                        [
++                          createVNode(
++                            _component_a_input,
++                            {
++                              placeholder: '\u5F00\u59CB\u503C',
++                              value: _ctx.beginValue,
++                              'onUpdate:value': _cache[18] || (_cache[18] = ($event) => (_ctx.beginValue = $event)),
++                              style: { width: 'calc(50% - 15px)' },
++                            },
++                            null,
++                            8,
++                            ['value']
++                          ),
++                          _hoisted_4,
++                          createVNode(
++                            _component_a_input,
++                            {
++                              placeholder: '\u7ED3\u675F\u503C',
++                              value: _ctx.endValue,
++                              'onUpdate:value': _cache[19] || (_cache[19] = ($event) => (_ctx.endValue = $event)),
++                              style: { width: 'calc(50% - 15px)' },
++                            },
++                            null,
++                            8,
++                            ['value']
++                          ),
++                        ],
++                        64
++                      )),
++                ],
++                64
++              )),
++        ]),
++        _: 1,
++      },
++      8,
++      ['labelCol']
++    )
++  );
+ }
+-var OnlineSearchFormItem = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-213184f5"]]);
++var OnlineSearchFormItem = /* @__PURE__ */ _export_sfc(_sfc_main, [
++  ['render', _sfc_render],
++  ['__scopeId', 'data-v-213184f5'],
++]);
+ export { OnlineSearchFormItem as default };
 diff --git a/node_modules/@jeecg/online/README.md b/node_modules/@jeecg/online/README.md
 deleted file mode 100644
 index 642e43b..0000000
