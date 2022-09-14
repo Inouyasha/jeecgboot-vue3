@@ -11,6 +11,7 @@
     :value="treeValue"
     :treeData="treeData"
     :multiple="multiple"
+    :isDictQuery="isDictQuery"
     @change="onChange"
   >
   </a-tree-select>
@@ -20,10 +21,13 @@
   import { useRuleFormItem } from '/@/hooks/component/useFormItem';
   import { propTypes } from '/@/utils/propTypes';
   import { useAttrs } from '/@/hooks/core/useAttrs';
-  import { loadDictItem, loadTreeData } from '/@/api/common/api';
+  import { loadCategoryData, loadDictItem, loadTreeData } from '/@/api/common/api';
   import { useMessage } from '/@/hooks/web/useMessage';
 
   const { createMessage, createErrorModal } = useMessage();
+
+  type TreeNode = any;
+
   export default defineComponent({
     name: 'JCategorySelect',
     components: {},
@@ -50,6 +54,12 @@
         type: [Boolean, String],
         default: false,
       },
+      // 是否为选择类型
+      isDictQuery: {
+        type: Boolean,
+        default: false,
+        required: false,
+      },
       loadTriggleChange: {
         type: Boolean,
         default: false,
@@ -75,9 +85,8 @@
     setup(props, { emit, refs }) {
       console.info(props);
       const emitData = ref<any[]>([]);
-      const treeData = ref<any[]>([]);
-      const treeValue = ref();
-      treeValue.value = '';
+      const treeData = ref<TreeNode[]>([]);
+      const treeValue = ref('');
       const attrs = useAttrs();
       const [state] = useRuleFormItem(props, 'value', 'change', emitData);
       watch(
@@ -125,8 +134,10 @@
             treeValue.value = null;
           }
         } else {
-          loadDictItem({ ids: props.value }).then((res) => {
-            let values = props.value.split(',');
+          const propsValue = props.isDictQuery ? (props.value as string).slice(12).split(',')[0] : props.value;
+
+          loadDictItem({ ids: propsValue }).then((res) => {
+            let values = (propsValue as string).split(',');
             treeValue.value = res.map((item, index) => ({
               key: values[index],
               value: values[index],
@@ -202,13 +213,33 @@
         }
       }
 
-      function onChange(value) {
+      function onChange(value: { value: string; label: string }, label: string, extra: any) {
         if (!value) {
           emit('change', '');
           treeValue.value = '';
           emit("update:value",'')
         } else if (Array.isArray(value)) {
           let labels = [];
+          return;
+        }
+
+        // yg 增加特殊处理
+        if (props.isDictQuery) {
+          const code: string = extra.triggerNode.$attrs.code as string;
+
+          // 根据string查询所有用到的dict数据
+          loadCategoryData({ code }).then((result: { value: string; text: string; label: string }[]) => {
+            const searchValue = `searchRange:${result.map((item) => item.value).join(',')}`;
+
+            emit('change', value.value, { searchValue });
+            treeValue.value = value.value;
+          });
+
+          return;
+        }
+
+        if (Array.isArray(value)) {
+          let labels: string[] = [];
           let values = value.map((item) => {
             labels.push(item.label);
             return item.value;

@@ -1,5 +1,5 @@
 diff --git a/node_modules/@jeecg/online/FormSchemaFactory.js b/node_modules/@jeecg/online/FormSchemaFactory.js
-index 48636b1..39248de 100644
+index 48636b1..3405edd 100644
 --- a/node_modules/@jeecg/online/FormSchemaFactory.js
 +++ b/node_modules/@jeecg/online/FormSchemaFactory.js
 @@ -2,15 +2,12 @@ var __defProp = Object.defineProperty;
@@ -606,7 +606,7 @@ index 48636b1..39248de 100644
      }
      return props;
    }
-@@ -455,14 +608,14 @@ class PopupWidget extends IFormSchema {
+@@ -455,52 +608,58 @@ class PopupWidget extends IFormSchema {
      if (!destFields || destFields.length == 0) {
        return [];
      }
@@ -624,9 +624,15 @@ index 48636b1..39248de 100644
        });
      }
      return config;
-@@ -472,23 +625,23 @@ class TreeCategoryWidget extends IFormSchema {
+   }
+ }
++// yg 级联选择
+ class TreeCategoryWidget extends IFormSchema {
    constructor(key, data) {
      super(key, data);
++
++    // 新增字段 辨别是否是query
++    this.isDictQuery = 'isDictQuery' in data;
      this.multi = false;
 -    this.pid = data["pidValue"];
 -    this.textField = data["textField"];
@@ -650,10 +656,16 @@ index 48636b1..39248de 100644
          multiple: this.multi,
 -        pid: pidValue
 +        pid: pidValue,
++        isDictQuery: this.isDictQuery,
        };
      } else {
        return {
-@@ -500,7 +653,7 @@ class TreeCategoryWidget extends IFormSchema {
+         loadTriggleChange: true,
+         multiple: this.multi,
+         pid: pidValue,
++        isDictQuery: this.isDictQuery,
+         back: this.textField,
+         onChange: (_val, backVal) => {
            if (this.formRef) {
              this.formRef.value.setFieldsValue(backVal);
            }
@@ -662,7 +674,7 @@ index 48636b1..39248de 100644
        };
      }
    }
-@@ -517,24 +670,24 @@ class SelectDepartWidget extends IFormSchema {
+@@ -517,24 +676,24 @@ class SelectDepartWidget extends IFormSchema {
      let item = super.getItem();
      let componentProps = this.getComponentProps();
      return Object.assign({}, item, {
@@ -693,7 +705,7 @@ index 48636b1..39248de 100644
      }
      return props;
    }
-@@ -544,8 +697,8 @@ class SelectUserWidget extends IFormSchema {
+@@ -544,8 +703,8 @@ class SelectUserWidget extends IFormSchema {
      let item = super.getItem();
      let componentProps = this.getComponentProps();
      return Object.assign({}, item, {
@@ -704,7 +716,7 @@ index 48636b1..39248de 100644
      });
    }
    getComponentProps() {
-@@ -553,16 +706,16 @@ class SelectUserWidget extends IFormSchema {
+@@ -553,16 +712,16 @@ class SelectUserWidget extends IFormSchema {
      let props = {
        showSelected: false,
        allowClear: true,
@@ -725,7 +737,7 @@ index 48636b1..39248de 100644
      }
      return props;
    }
-@@ -571,8 +724,8 @@ class EditorWidget extends IFormSchema {
+@@ -571,8 +730,8 @@ class EditorWidget extends IFormSchema {
    getItem() {
      let item = super.getItem();
      return Object.assign({}, item, {
@@ -736,7 +748,7 @@ index 48636b1..39248de 100644
      });
    }
  }
-@@ -580,8 +733,8 @@ class MarkdownWidget extends IFormSchema {
+@@ -580,8 +739,8 @@ class MarkdownWidget extends IFormSchema {
    getItem() {
      let item = super.getItem();
      return Object.assign({}, item, {
@@ -747,7 +759,7 @@ index 48636b1..39248de 100644
      });
    }
  }
-@@ -589,42 +742,42 @@ class PcaWidget extends IFormSchema {
+@@ -589,42 +748,42 @@ class PcaWidget extends IFormSchema {
    getItem() {
      let item = super.getItem();
      return Object.assign({}, item, {
@@ -802,7 +814,7 @@ index 48636b1..39248de 100644
      });
    }
    getComponentProps() {
-@@ -634,13 +787,13 @@ class RadioWidget extends IFormSchema {
+@@ -634,13 +793,13 @@ class RadioWidget extends IFormSchema {
        if (!this.dictTable) {
          return {
            dictCode: this.dictCode,
@@ -818,7 +830,7 @@ index 48636b1..39248de 100644
          };
        }
      }
-@@ -649,16 +802,16 @@ class RadioWidget extends IFormSchema {
+@@ -649,16 +808,16 @@ class RadioWidget extends IFormSchema {
  class CheckboxWidget extends IFormSchema {
    constructor(key, data) {
      super(key, data);
@@ -839,7 +851,7 @@ index 48636b1..39248de 100644
      });
    }
    getOptions(array) {
-@@ -669,7 +822,7 @@ class CheckboxWidget extends IFormSchema {
+@@ -669,7 +828,7 @@ class CheckboxWidget extends IFormSchema {
      for (let item of array) {
        arr.push({
          value: item.value,
@@ -848,7 +860,7 @@ index 48636b1..39248de 100644
        });
      }
      return arr;
-@@ -684,15 +837,15 @@ class SwitchWidget extends IFormSchema {
+@@ -684,15 +843,15 @@ class SwitchWidget extends IFormSchema {
      let item = super.getItem();
      let componentProps = this.getComponentProps();
      return Object.assign({}, item, {
@@ -868,7 +880,7 @@ index 48636b1..39248de 100644
          let arr = JSON.parse(fieldExtendJson);
          if (arr.length == 2) {
            options = arr;
-@@ -700,7 +853,7 @@ class SwitchWidget extends IFormSchema {
+@@ -700,7 +859,7 @@ class SwitchWidget extends IFormSchema {
        }
      }
      return {
@@ -877,7 +889,7 @@ index 48636b1..39248de 100644
      };
    }
  }
-@@ -708,17 +861,17 @@ class TimeWidget extends IFormSchema {
+@@ -708,17 +867,17 @@ class TimeWidget extends IFormSchema {
    getItem() {
      let item = super.getItem();
      return Object.assign({}, item, {
@@ -900,7 +912,7 @@ index 48636b1..39248de 100644
      });
    }
  }
-@@ -734,15 +887,15 @@ class LinkDownWidget extends IFormSchema {
+@@ -734,15 +893,15 @@ class LinkDownWidget extends IFormSchema {
      this.origin = origin;
      this.condition = condition;
      this.options = [];
@@ -919,7 +931,7 @@ index 48636b1..39248de 100644
      });
    }
    getComponentProps() {
-@@ -753,28 +906,28 @@ class LinkDownWidget extends IFormSchema {
+@@ -753,28 +912,28 @@ class LinkDownWidget extends IFormSchema {
        pidField: this.pidField,
        idField: this.idField,
        origin: this.origin,
@@ -955,7 +967,7 @@ index 48636b1..39248de 100644
          return;
        }
        if (!this.next) {
-@@ -784,15 +937,15 @@ class LinkDownWidget extends IFormSchema {
+@@ -784,15 +943,15 @@ class LinkDownWidget extends IFormSchema {
        yield ref.updateSchema({
          field: this.next,
          componentProps: {
@@ -974,7 +986,7 @@ index 48636b1..39248de 100644
          return;
        }
        if (!this.next) {
-@@ -800,14 +953,14 @@ class LinkDownWidget extends IFormSchema {
+@@ -800,14 +959,14 @@ class LinkDownWidget extends IFormSchema {
        }
        let ref = this.formRef.value;
        ref.$formValueChange(this.field, value);
@@ -991,7 +1003,7 @@ index 48636b1..39248de 100644
    }
    getItem() {
      let item = super.getItem();
-@@ -815,15 +968,15 @@ class SlotWidget extends IFormSchema {
+@@ -815,15 +974,15 @@ class SlotWidget extends IFormSchema {
      return Object.assign({}, item, { slot });
    }
    groupDate() {
@@ -1010,7 +1022,7 @@ index 48636b1..39248de 100644
      return this;
    }
  }
-@@ -836,18 +989,18 @@ class NumberWidget extends IFormSchema {
+@@ -836,18 +995,18 @@ class NumberWidget extends IFormSchema {
      let item = super.getItem();
      let componentProps = this.getComponentProps();
      return Object.assign({}, item, {
@@ -1034,7 +1046,7 @@ index 48636b1..39248de 100644
      }
      return props;
    }
-@@ -856,55 +1009,55 @@ class FormSchemaFactory {
+@@ -856,55 +1015,55 @@ class FormSchemaFactory {
    static createFormSchema(key, data) {
      let view = data.view;
      switch (view) {
@@ -1115,7 +1127,7 @@ index 48636b1..39248de 100644
            return new NumberWidget(key, data);
          } else {
            return new InputWidget(key, data);
-@@ -914,13 +1067,13 @@ class FormSchemaFactory {
+@@ -914,13 +1073,13 @@ class FormSchemaFactory {
    static createSlotFormSchema(key, data) {
      let slotFs = new SlotWidget(key, data);
      let view = data.view;
@@ -1132,7 +1144,7 @@ index 48636b1..39248de 100644
          slotFs.groupNumber();
        }
      }
-@@ -928,10 +1081,10 @@ class FormSchemaFactory {
+@@ -928,10 +1087,10 @@ class FormSchemaFactory {
    }
    static createIdField() {
      return {
@@ -3605,6 +3617,1826 @@ index cc2dbc5..ab6ed02 100644
 +  ['__scopeId', 'data-v-213184f5'],
 +]);
  export { OnlineSearchFormItem as default };
+diff --git a/node_modules/@jeecg/online/OnlineSuperQuery.js b/node_modules/@jeecg/online/OnlineSuperQuery.js
+index 7d4d49c..5054e0c 100644
+--- a/node_modules/@jeecg/online/OnlineSuperQuery.js
++++ b/node_modules/@jeecg/online/OnlineSuperQuery.js
+@@ -1,41 +1,63 @@
+-import { ref, reactive, toRaw, watch, resolveComponent, openBlock, createElementBlock, Fragment, createElementVNode, createBlock, withCtx, createVNode, Teleport, createCommentVNode, normalizeClass, withDirectives, vShow, renderList, toDisplayString, pushScopeId, popScopeId, createTextVNode } from "vue";
+-import { useModalInner, BasicModal, useModal } from "/@/components/Modal";
+-import { randomString } from "/@/utils/common/compUtils";
+-import { useMessage } from "/@/hooks/web/useMessage";
+-import { Modal, Divider } from "ant-design-vue";
+-import { createLocalStorage } from "/@/utils/cache";
+-import { useRoute } from "vue-router";
+-import { b as FORM_VIEW_TO_QUERY_VIEW, F as FormSchemaFactory } from "./FormSchemaFactory.js";
+-import { _ as _sfc_main$1 } from "./OnlineSuperQueryValComponent.vue_vue_type_script_lang.js";
+-import { MinusCircleOutlined, PlusOutlined, FileTextOutlined, CloseCircleOutlined, AppstoreTwoTone } from "@ant-design/icons-vue";
+-import { _ as _export_sfc } from "./index.js";
+-import "/@/components/Form/src/jeecg/components/JUpload";
+-import "/@/components/Form/src/componentMap";
+-import "/@/components/Form/src/helper";
+-import "/@/utils/is";
+-import "./toString.js";
+-import "./isArray.js";
+-import "/@/components/jeecg/OnLine/JPopupOnlReport.vue";
+-const SAVE_CODE_PRE = "JSuperQuerySaved_";
++import {
++  ref,
++  reactive,
++  toRaw,
++  watch,
++  resolveComponent,
++  openBlock,
++  createElementBlock,
++  Fragment,
++  createElementVNode,
++  createBlock,
++  withCtx,
++  createVNode,
++  Teleport,
++  createCommentVNode,
++  normalizeClass,
++  withDirectives,
++  vShow,
++  renderList,
++  toDisplayString,
++  pushScopeId,
++  popScopeId,
++  createTextVNode,
++} from 'vue';
++import { useModalInner, BasicModal, useModal } from '/@/components/Modal';
++import { randomString } from '/@/utils/common/compUtils';
++import { useMessage } from '/@/hooks/web/useMessage';
++import { Modal, Divider } from 'ant-design-vue';
++import { createLocalStorage } from '/@/utils/cache';
++import { useRoute } from 'vue-router';
++import { b as FORM_VIEW_TO_QUERY_VIEW, F as FormSchemaFactory } from './FormSchemaFactory.js';
++import { _ as _sfc_main$1 } from './OnlineSuperQueryValComponent.vue_vue_type_script_lang.js';
++import { MinusCircleOutlined, PlusOutlined, FileTextOutlined, CloseCircleOutlined, AppstoreTwoTone } from '@ant-design/icons-vue';
++import { _ as _export_sfc } from './index.js';
++import '/@/components/Form/src/jeecg/components/JUpload';
++import '/@/components/Form/src/componentMap';
++import '/@/components/Form/src/helper';
++import '/@/utils/is';
++import './toString.js';
++import './isArray.js';
++import '/@/components/jeecg/OnLine/JPopupOnlReport.vue';
++const SAVE_CODE_PRE = 'JSuperQuerySaved_';
+ function useSuperQuery() {
+   const { createMessage: $message } = useMessage();
+   const formRef = ref();
+   const dynamicRowValues = reactive({
+-    values: []
++    values: [],
+   });
+-  const matchType = ref("and");
++  const matchType = ref('and');
+   const [registerModal, { setModalProps }] = useModalInner(() => {
+     setModalProps({ confirmLoading: false });
+   });
+-  const view2QueryViewMap = Object.assign({}, { "link_down": "text" }, FORM_VIEW_TO_QUERY_VIEW);
++  const view2QueryViewMap = Object.assign({}, { link_down: 'text' }, FORM_VIEW_TO_QUERY_VIEW);
+   function handleSubmit() {
+-    console.log("handleSubmit", dynamicRowValues.values);
+-  }
+-  function handleCancel() {
++    console.log('handleSubmit', dynamicRowValues.values);
+   }
++  function handleCancel() {}
+   function setFormModel(key, value, item) {
+-    console.log("setFormModel", key, value);
+-    item["val"] = value;
++    console.log('setFormModel', key, value);
++    item['val'] = value;
+   }
+   const fieldProperties = ref({});
+   const fieldTreeData = ref([]);
+@@ -47,9 +69,9 @@ function useSuperQuery() {
+   function addOne(index) {
+     let item = {
+       field: void 0,
+-      rule: "eq",
+-      val: "",
+-      key: randomString(16)
++      rule: 'eq',
++      val: '',
++      key: randomString(16),
+     };
+     if (index === false) {
+       dynamicRowValues.values = [];
+@@ -76,9 +98,9 @@ function useSuperQuery() {
+     }
+   }
+   const defaultInput = {
+-    field: "val",
+-    label: "\u6D4B\u8BD5",
+-    component: "Input"
++    field: 'val',
++    label: '\u6D4B\u8BD5',
++    component: 'Input',
+   };
+   function getSchema(item, index) {
+     let map = fieldProperties.value;
+@@ -89,46 +111,58 @@ function useSuperQuery() {
+     if (view2QueryViewMap[prop.view]) {
+       prop.view = view2QueryViewMap[prop.view];
+     }
++
++    if (prop.view === 'cat_tree') {
++      prop.isDictQuery = true;
++    }
++
+     let temp = FormSchemaFactory.createFormSchema(item.field, prop);
+     temp.noChange();
+     temp.asSearchForm();
+     temp.updateField(item.field + index);
+     const setFieldValue = (values) => {
+-      item["val"] = values[item.field];
++      item['val'] = values[item.field];
+     };
+     temp.setFunctionForFieldValue(setFieldValue);
+     let schema = temp.getFormItemSchema();
+     return schema;
+   }
+-  const saveTreeData = ref("");
++  const saveTreeData = ref('');
+   const $ls = createLocalStorage();
+   const saveInfo = reactive({
+     visible: false,
+-    title: "",
+-    content: "",
+-    saveCode: ""
++    title: '',
++    content: '',
++    saveCode: '',
+   });
+   const loading = ref(false);
+   const route = useRoute();
+-  watch(() => route.fullPath, (val) => {
+-    console.log("fullpath", val);
+-    initSaveQueryInfoCode();
+-  });
++  watch(
++    () => route.fullPath,
++    (val) => {
++      console.log('fullpath', val);
++      initSaveQueryInfoCode();
++    }
++  );
+   const currentPageSavedArray = ref([]);
+-  watch(() => currentPageSavedArray.value, (val) => {
+-    let temp = [];
+-    if (val && val.length > 0) {
+-      val.map((item) => {
+-        let key = randomString(16);
+-        temp.push({
+-          title: item.title,
+-          slots: { icon: "custom" },
+-          value: key
++  watch(
++    () => currentPageSavedArray.value,
++    (val) => {
++      let temp = [];
++      if (val && val.length > 0) {
++        val.map((item) => {
++          let key = randomString(16);
++          temp.push({
++            title: item.title,
++            slots: { icon: 'custom' },
++            value: key,
++          });
+         });
+-      });
+-    }
+-    saveTreeData.value = temp;
+-  }, { immediate: true, deep: true });
++      }
++      saveTreeData.value = temp;
++    },
++    { immediate: true, deep: true }
++  );
+   function initSaveQueryInfoCode() {
+     let code = SAVE_CODE_PRE + route.fullPath;
+     saveInfo.saveCode = code;
+@@ -141,7 +175,7 @@ function useSuperQuery() {
+   function handleSave() {
+     let fieldArray = getQueryInfo();
+     if (!fieldArray) {
+-      $message.warning("\u7A7A\u6761\u4EF6\u4E0D\u80FD\u4FDD\u5B58");
++      $message.warning('\u7A7A\u6761\u4EF6\u4E0D\u80FD\u4FDD\u5B58');
+       return;
+     }
+     let content = JSON.stringify(fieldArray);
+@@ -149,7 +183,7 @@ function useSuperQuery() {
+   }
+   function openSaveInfoModal(content) {
+     saveInfo.visible = true;
+-    saveInfo.title = "";
++    saveInfo.title = '';
+     saveInfo.content = content;
+   }
+   function doSaveQueryInfo() {
+@@ -157,25 +191,25 @@ function useSuperQuery() {
+     let index = getTitleIndex(title);
+     if (index >= 0) {
+       Modal.confirm({
+-        title: "\u63D0\u793A",
++        title: '\u63D0\u793A',
+         content: `${title} \u5DF2\u5B58\u5728\uFF0C\u662F\u5426\u8986\u76D6\uFF1F`,
+-        okText: "\u786E\u8BA4",
+-        cancelText: "\u53D6\u6D88",
++        okText: '\u786E\u8BA4',
++        cancelText: '\u53D6\u6D88',
+         onOk: () => {
+           currentPageSavedArray.value.splice(index, 1, {
+             content,
+             title,
+-            type: matchType.value
++            type: matchType.value,
+           });
+           $ls.set(saveCode, currentPageSavedArray.value);
+           saveInfo.visible = false;
+-        }
++        },
+       });
+     } else {
+       currentPageSavedArray.value.push({
+         content,
+         title,
+-        type: matchType.value
++        type: matchType.value,
+       });
+       $ls.set(saveCode, currentPageSavedArray.value);
+       saveInfo.visible = false;
+@@ -203,18 +237,18 @@ function useSuperQuery() {
+       if (item.field && (item.val || item.val === 0) && item.rule) {
+         let tempVal = toRaw(item.val);
+         if (tempVal instanceof Array) {
+-          tempVal = tempVal.join(",");
++          tempVal = tempVal.join(',');
+         }
+         let obj = {
+           field: item.field,
+           rule: item.rule,
+-          val: tempVal
++          val: tempVal,
+         };
+         if (isEmit === true) {
+           let prop = fieldProps[item.field];
+           if (prop) {
+-            obj["type"] = prop.view;
+-            obj["dbType"] = prop.type;
++            obj['type'] = prop.view;
++            obj['dbType'] = prop.type;
+           }
+         }
+         fieldArray.push(obj);
+@@ -257,43 +291,43 @@ function useSuperQuery() {
+       title,
+       value: table,
+       disabled: true,
+-      children: []
++      children: [],
+     };
+     treeData.push(mainNode);
+     Object.keys(properties).map((field) => {
+       let item = properties[field];
+-      if (item.view == "table") {
+-        let subProps = item["properties"];
++      if (item.view == 'table') {
++        let subProps = item['properties'];
+         let subTableOrder = order * 100;
+         let subNode = {
+           title: item.title,
+           value: field,
+           disabled: true,
+-          children: []
++          children: [],
+         };
+         Object.keys(subProps).map((subField) => {
+           let subItem = subProps[subField];
+-          subItem["order"] = subTableOrder + subItem["order"];
+-          let subFieldKey = field + "@" + subField;
++          subItem['order'] = subTableOrder + subItem['order'];
++          let subFieldKey = field + '@' + subField;
+           allFields[subFieldKey] = subItem;
+           subNode.children.push({
+             title: subItem.title,
+             value: subFieldKey,
+             isLeaf: true,
+-            order: subItem["order"]
++            order: subItem['order'],
+           });
+         });
+         orderField(subNode);
+         treeData.push(subNode);
+         order++;
+       } else {
+-        let fieldKey = table + "@" + field;
++        let fieldKey = table + '@' + field;
+         allFields[fieldKey] = item;
+         mainNode.children.push({
+           title: item.title,
+           value: fieldKey,
+           isLeaf: true,
+-          order: item.order
++          order: item.order,
+         });
+       }
+     });
+@@ -302,7 +336,7 @@ function useSuperQuery() {
+   }
+   function orderField(data) {
+     let arr = data.children;
+-    arr.sort(function(a, b) {
++    arr.sort(function (a, b) {
+       return a.order - b.order;
+     });
+   }
+@@ -338,21 +372,21 @@ function useSuperQuery() {
+     getSchema,
+     loading,
+     getQueryInfo,
+-    initDefaultValues
++    initDefaultValues,
+   };
+ }
+-var OnlineSuperQuery_vue_vue_type_style_index_0_scoped_true_lang = "";
++var OnlineSuperQuery_vue_vue_type_style_index_0_scoped_true_lang = '';
+ const _sfc_main = {
+-  name: "OnlineSuperQuery",
++  name: 'OnlineSuperQuery',
+   props: {
+     config: {
+       type: Object,
+-      default: []
++      default: [],
+     },
+     status: {
+       type: Boolean,
+-      default: false
+-    }
++      default: false,
++    },
+   },
+   components: {
+     BasicModal,
+@@ -362,9 +396,9 @@ const _sfc_main = {
+     FileTextOutlined,
+     CloseCircleOutlined,
+     AppstoreTwoTone,
+-    Divider
++    Divider,
+   },
+-  emits: ["search"],
++  emits: ['search'],
+   setup(props, { emit }) {
+     const [registerFormModal, formModal] = useModal();
+     const { createMessage: $message } = useMessage();
+@@ -372,18 +406,18 @@ const _sfc_main = {
+       formModal.closeModal();
+     }
+     function handleSubmit() {
+-      console.log("handleSubmit", dynamicRowValues.values);
++      console.log('handleSubmit', dynamicRowValues.values);
+       let dataArray = getQueryInfo(true);
+       if (dataArray && dataArray.length > 0) {
+-        emit("search", dataArray, matchType.value);
++        emit('search', dataArray, matchType.value);
+       } else {
+-        $message.warning("\u7A7A\u6761\u4EF6\u65E0\u6CD5\u67E5\u8BE2\uFF01");
++        $message.warning('\u7A7A\u6761\u4EF6\u65E0\u6CD5\u67E5\u8BE2\uFF01');
+       }
+     }
+     function handleReset() {
+       dynamicRowValues.values = [];
+       addOne(false);
+-      emit("search", [], matchType.value);
++      emit('search', [], matchType.value);
+     }
+     const {
+       formRef,
+@@ -404,24 +438,28 @@ const _sfc_main = {
+       getSchema,
+       loading,
+       getQueryInfo,
+-      initDefaultValues
++      initDefaultValues,
+     } = useSuperQuery();
+     const superQueryFlag = ref(false);
+-    watch(() => props.status, (val) => {
+-      superQueryFlag.value = val;
+-    }, { immediate: true });
++    watch(
++      () => props.status,
++      (val) => {
++        superQueryFlag.value = val;
++      },
++      { immediate: true }
++    );
+     function handleOpen() {
+       formModal.openModal();
+       addOne(true);
+     }
+     function getPopupContainer() {
+-      return document.getElementsByClassName("jee-super-query-form")[0];
++      return document.getElementsByClassName('jee-super-query-form')[0];
+     }
+     function onFinish(a) {
+-      console.log("onfinish", a);
++      console.log('onfinish', a);
+     }
+     function handleChangeField(item) {
+-      item["val"] = "";
++      item['val'] = '';
+     }
+     return {
+       formRef,
+@@ -450,463 +488,685 @@ const _sfc_main = {
+       getPopupContainer,
+       superQueryFlag,
+       handleOpen,
+-      initDefaultValues
++      initDefaultValues,
+     };
+-  }
++  },
+ };
+-const _withScopeId = (n) => (pushScopeId("data-v-08fc9755"), n = n(), popScopeId(), n);
+-const _hoisted_1 = { class: "j-super-query-button" };
+-const _hoisted_2 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createElementVNode("span", null, "\u5DF2\u6709\u9AD8\u7EA7\u67E5\u8BE2\u6761\u4EF6\u751F\u6548", -1));
+-const _hoisted_3 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createElementVNode("span", null, "\u9AD8\u7EA7\u67E5\u8BE2", -1));
+-const _hoisted_4 = /* @__PURE__ */ createTextVNode(" \u9AD8\u7EA7\u67E5\u8BE2 ");
+-const _hoisted_5 = { style: { "float": "left" } };
+-const _hoisted_6 = /* @__PURE__ */ createTextVNode("\u91CD\u7F6E");
+-const _hoisted_7 = /* @__PURE__ */ createTextVNode("\u4FDD\u5B58\u67E5\u8BE2\u6761\u4EF6");
+-const _hoisted_8 = /* @__PURE__ */ createTextVNode("\u786E\u5B9A");
+-const _hoisted_9 = /* @__PURE__ */ createTextVNode("\u5173\u95ED");
+-const _hoisted_10 = { slot: "description" };
+-const _hoisted_11 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createElementVNode("span", null, "\u6CA1\u6709\u4EFB\u4F55\u67E5\u8BE2\u6761\u4EF6", -1));
+-const _hoisted_12 = /* @__PURE__ */ createTextVNode("AND\uFF08\u6240\u6709\u6761\u4EF6\u90FD\u8981\u6C42\u5339\u914D\uFF09");
+-const _hoisted_13 = /* @__PURE__ */ createTextVNode("OR\uFF08\u6761\u4EF6\u4E2D\u7684\u4EFB\u610F\u4E00\u4E2A\u5339\u914D\uFF09");
+-const _hoisted_14 = /* @__PURE__ */ createTextVNode("\u7B49\u4E8E");
+-const _hoisted_15 = /* @__PURE__ */ createTextVNode("\u6A21\u7CCA");
+-const _hoisted_16 = /* @__PURE__ */ createTextVNode("\u4EE5..\u5F00\u59CB");
+-const _hoisted_17 = /* @__PURE__ */ createTextVNode("\u4EE5..\u7ED3\u5C3E");
+-const _hoisted_18 = /* @__PURE__ */ createTextVNode("\u5728...\u4E2D");
+-const _hoisted_19 = /* @__PURE__ */ createTextVNode("\u4E0D\u7B49\u4E8E");
+-const _hoisted_20 = /* @__PURE__ */ createTextVNode("\u5927\u4E8E");
+-const _hoisted_21 = /* @__PURE__ */ createTextVNode("\u5927\u4E8E\u7B49\u4E8E");
+-const _hoisted_22 = /* @__PURE__ */ createTextVNode("\u5C0F\u4E8E");
+-const _hoisted_23 = /* @__PURE__ */ createTextVNode("\u5C0F\u4E8E\u7B49\u4E8E");
+-const _hoisted_24 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createElementVNode("div", null, "\u4FDD\u5B58\u7684\u67E5\u8BE2", -1));
+-const _hoisted_25 = ["title"];
+-const _hoisted_26 = { class: "icon-cancle" };
+-const _hoisted_27 = { style: { "height": "80px", "line-height": "75px", "width": "100%", "text-align": "center" } };
++const _withScopeId = (n) => (pushScopeId('data-v-08fc9755'), (n = n()), popScopeId(), n);
++const _hoisted_1 = { class: 'j-super-query-button' };
++const _hoisted_2 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createElementVNode('span', null, '\u5DF2\u6709\u9AD8\u7EA7\u67E5\u8BE2\u6761\u4EF6\u751F\u6548', -1));
++const _hoisted_3 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createElementVNode('span', null, '\u9AD8\u7EA7\u67E5\u8BE2', -1));
++// yg 高级查询按钮
++const _hoisted_4 = /* @__PURE__ */ createTextVNode(' \u9AD8\u7EA7\u67E5\u8BE2 ');
++const _hoisted_5 = { style: { float: 'left' } };
++const _hoisted_6 = /* @__PURE__ */ createTextVNode('\u91CD\u7F6E');
++const _hoisted_7 = /* @__PURE__ */ createTextVNode('\u4FDD\u5B58\u67E5\u8BE2\u6761\u4EF6');
++const _hoisted_8 = /* @__PURE__ */ createTextVNode('\u786E\u5B9A');
++const _hoisted_9 = /* @__PURE__ */ createTextVNode('\u5173\u95ED');
++const _hoisted_10 = { slot: 'description' };
++const _hoisted_11 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createElementVNode('span', null, '\u6CA1\u6709\u4EFB\u4F55\u67E5\u8BE2\u6761\u4EF6', -1));
++const _hoisted_12 = /* @__PURE__ */ createTextVNode('AND\uFF08\u6240\u6709\u6761\u4EF6\u90FD\u8981\u6C42\u5339\u914D\uFF09');
++const _hoisted_13 = /* @__PURE__ */ createTextVNode('OR\uFF08\u6761\u4EF6\u4E2D\u7684\u4EFB\u610F\u4E00\u4E2A\u5339\u914D\uFF09');
++const _hoisted_14 = /* @__PURE__ */ createTextVNode('\u7B49\u4E8E');
++const _hoisted_15 = /* @__PURE__ */ createTextVNode('\u6A21\u7CCA');
++const _hoisted_16 = /* @__PURE__ */ createTextVNode('\u4EE5..\u5F00\u59CB');
++const _hoisted_17 = /* @__PURE__ */ createTextVNode('\u4EE5..\u7ED3\u5C3E');
++const _hoisted_18 = /* @__PURE__ */ createTextVNode('\u5728...\u4E2D');
++const _hoisted_19 = /* @__PURE__ */ createTextVNode('\u4E0D\u7B49\u4E8E');
++const _hoisted_20 = /* @__PURE__ */ createTextVNode('\u5927\u4E8E');
++const _hoisted_21 = /* @__PURE__ */ createTextVNode('\u5927\u4E8E\u7B49\u4E8E');
++const _hoisted_22 = /* @__PURE__ */ createTextVNode('\u5C0F\u4E8E');
++const _hoisted_23 = /* @__PURE__ */ createTextVNode('\u5C0F\u4E8E\u7B49\u4E8E');
++const _hoisted_24 = /* @__PURE__ */ _withScopeId(() => /* @__PURE__ */ createElementVNode('div', null, '\u4FDD\u5B58\u7684\u67E5\u8BE2', -1));
++const _hoisted_25 = ['title'];
++const _hoisted_26 = { class: 'icon-cancle' };
++const _hoisted_27 = { style: { height: '80px', 'line-height': '75px', width: '100%', 'text-align': 'center' } };
+ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+-  const _component_divider = resolveComponent("divider");
+-  const _component_AppstoreTwoTone = resolveComponent("AppstoreTwoTone");
+-  const _component_a_button = resolveComponent("a-button");
+-  const _component_a_button_group = resolveComponent("a-button-group");
+-  const _component_a_tooltip = resolveComponent("a-tooltip");
+-  const _component_a_divider = resolveComponent("a-divider");
+-  const _component_a_empty = resolveComponent("a-empty");
+-  const _component_a_select_option = resolveComponent("a-select-option");
+-  const _component_a_select = resolveComponent("a-select");
+-  const _component_a_form_item = resolveComponent("a-form-item");
+-  const _component_a_col = resolveComponent("a-col");
+-  const _component_a_row = resolveComponent("a-row");
+-  const _component_a_tree_select = resolveComponent("a-tree-select");
+-  const _component_online_super_query_val_component = resolveComponent("online-super-query-val-component");
+-  const _component_PlusOutlined = resolveComponent("PlusOutlined");
+-  const _component_MinusCircleOutlined = resolveComponent("MinusCircleOutlined");
+-  const _component_a_space = resolveComponent("a-space");
+-  const _component_a_form = resolveComponent("a-form");
+-  const _component_close_circle_outlined = resolveComponent("close-circle-outlined");
+-  const _component_file_text_outlined = resolveComponent("file-text-outlined");
+-  const _component_a_tree = resolveComponent("a-tree");
+-  const _component_a_card = resolveComponent("a-card");
+-  const _component_BasicModal = resolveComponent("BasicModal");
+-  const _component_a_input = resolveComponent("a-input");
+-  const _component_a_modal = resolveComponent("a-modal");
+-  return openBlock(), createElementBlock(Fragment, null, [
+-    createElementVNode("div", _hoisted_1, [
+-      $setup.superQueryFlag ? (openBlock(), createBlock(_component_a_tooltip, {
+-        key: 0,
+-        mouseLeaveDelay: 0.2
+-      }, {
+-        title: withCtx(() => [
+-          _hoisted_2,
+-          createVNode(_component_divider, {
+-            type: "vertical",
+-            style: { "background-color": "#fff" }
+-          }),
+-          createElementVNode("a", {
+-            onClick: _cache[0] || (_cache[0] = (...args) => $setup.handleReset && $setup.handleReset(...args))
+-          }, "\u6E05\u7A7A")
++  const _component_divider = resolveComponent('divider');
++  const _component_AppstoreTwoTone = resolveComponent('AppstoreTwoTone');
++  const _component_a_button = resolveComponent('a-button');
++  const _component_a_button_group = resolveComponent('a-button-group');
++  const _component_a_tooltip = resolveComponent('a-tooltip');
++  const _component_a_divider = resolveComponent('a-divider');
++  const _component_a_empty = resolveComponent('a-empty');
++  const _component_a_select_option = resolveComponent('a-select-option');
++  const _component_a_select = resolveComponent('a-select');
++  const _component_a_form_item = resolveComponent('a-form-item');
++  const _component_a_col = resolveComponent('a-col');
++  const _component_a_row = resolveComponent('a-row');
++  const _component_a_tree_select = resolveComponent('a-tree-select');
++  const _component_online_super_query_val_component = resolveComponent('online-super-query-val-component');
++  const _component_PlusOutlined = resolveComponent('PlusOutlined');
++  const _component_MinusCircleOutlined = resolveComponent('MinusCircleOutlined');
++  const _component_a_space = resolveComponent('a-space');
++  const _component_a_form = resolveComponent('a-form');
++  const _component_close_circle_outlined = resolveComponent('close-circle-outlined');
++  const _component_file_text_outlined = resolveComponent('file-text-outlined');
++  const _component_a_tree = resolveComponent('a-tree');
++  const _component_a_card = resolveComponent('a-card');
++  const _component_BasicModal = resolveComponent('BasicModal');
++  const _component_a_input = resolveComponent('a-input');
++  const _component_a_modal = resolveComponent('a-modal');
++  return (
++    openBlock(),
++    createElementBlock(
++      Fragment,
++      null,
++      [
++        createElementVNode('div', _hoisted_1, [
++          $setup.superQueryFlag
++            ? (openBlock(),
++              createBlock(
++                _component_a_tooltip,
++                {
++                  key: 0,
++                  mouseLeaveDelay: 0.2,
++                },
++                {
++                  title: withCtx(() => [
++                    _hoisted_2,
++                    createVNode(_component_divider, {
++                      type: 'vertical',
++                      style: { 'background-color': '#fff' },
++                    }),
++                    createElementVNode(
++                      'a',
++                      {
++                        onClick: _cache[0] || (_cache[0] = (...args) => $setup.handleReset && $setup.handleReset(...args)),
++                      },
++                      '\u6E05\u7A7A'
++                    ),
++                  ]),
++                  default: withCtx(() => [
++                    createVNode(_component_a_button_group, null, {
++                      default: withCtx(() => [
++                        createVNode(
++                          _component_a_button,
++                          {
++                            type: 'primary',
++                            onClick: $setup.handleOpen,
++                          },
++                          {
++                            default: withCtx(() => [createVNode(_component_AppstoreTwoTone, { spin: true }), _hoisted_3]),
++                            _: 1,
++                          },
++                          8,
++                          ['onClick']
++                        ),
++                      ]),
++                      _: 1,
++                    }),
++                  ]),
++                  _: 1,
++                },
++                8,
++                ['mouseLeaveDelay']
++              ))
++            : (openBlock(),
++              createBlock(
++                _component_a_button,
++                {
++                  key: 1,
++                  type: 'primary',
++                  preIcon: 'ant-design:filter-outlined',
++                  onClick: $setup.handleOpen,
++                },
++                {
++                  default: withCtx(() => [_hoisted_4]),
++                  _: 1,
++                },
++                8,
++                ['onClick']
++              )),
+         ]),
+-        default: withCtx(() => [
+-          createVNode(_component_a_button_group, null, {
+-            default: withCtx(() => [
+-              createVNode(_component_a_button, {
+-                type: "primary",
+-                onClick: $setup.handleOpen
+-              }, {
+-                default: withCtx(() => [
+-                  createVNode(_component_AppstoreTwoTone, { spin: true }),
+-                  _hoisted_3
++        // yg 高级查询构造器
++        (openBlock(),
++        createBlock(Teleport, { to: 'body' }, [
++          createVNode(
++            _component_BasicModal,
++            {
++              title: '\u9AD8\u7EA7\u67E5\u8BE2\u6784\u9020\u5668',
++              canFullscreen: false,
++              width: 1050,
++              onRegister: $setup.registerFormModal,
++              onOk: $setup.handleSubmit,
++            },
++            {
++              footer: withCtx(() => [
++                createElementVNode('div', _hoisted_5, [
++                  createVNode(
++                    _component_a_button,
++                    {
++                      loading: $setup.loading,
++                      onClick: $setup.handleReset,
++                    },
++                    {
++                      default: withCtx(() => [_hoisted_6]),
++                      _: 1,
++                    },
++                    8,
++                    ['loading', 'onClick']
++                  ),
++                  createVNode(
++                    _component_a_button,
++                    {
++                      loading: $setup.loading,
++                      onClick: $setup.handleSave,
++                    },
++                    {
++                      default: withCtx(() => [_hoisted_7]),
++                      _: 1,
++                    },
++                    8,
++                    ['loading', 'onClick']
++                  ),
+                 ]),
+-                _: 1
+-              }, 8, ["onClick"])
+-            ]),
+-            _: 1
+-          })
+-        ]),
+-        _: 1
+-      }, 8, ["mouseLeaveDelay"])) : (openBlock(), createBlock(_component_a_button, {
+-        key: 1,
+-        type: "primary",
+-        preIcon: "ant-design:filter-outlined",
+-        onClick: $setup.handleOpen
+-      }, {
+-        default: withCtx(() => [
+-          _hoisted_4
+-        ]),
+-        _: 1
+-      }, 8, ["onClick"]))
+-    ]),
+-    (openBlock(), createBlock(Teleport, { to: "body" }, [
+-      createVNode(_component_BasicModal, {
+-        title: "\u9AD8\u7EA7\u67E5\u8BE2\u6784\u9020\u5668",
+-        canFullscreen: false,
+-        width: 1050,
+-        onRegister: $setup.registerFormModal,
+-        onOk: $setup.handleSubmit
+-      }, {
+-        footer: withCtx(() => [
+-          createElementVNode("div", _hoisted_5, [
+-            createVNode(_component_a_button, {
+-              loading: $setup.loading,
+-              onClick: $setup.handleReset
+-            }, {
+-              default: withCtx(() => [
+-                _hoisted_6
++                createVNode(
++                  _component_a_button,
++                  {
++                    key: 'submit',
++                    type: 'primary',
++                    onClick: $setup.handleSubmit,
++                  },
++                  {
++                    default: withCtx(() => [_hoisted_8]),
++                    _: 1,
++                  },
++                  8,
++                  ['onClick']
++                ),
++                createVNode(
++                  _component_a_button,
++                  {
++                    key: 'back',
++                    onClick: $setup.handleCancel,
++                  },
++                  {
++                    default: withCtx(() => [_hoisted_9]),
++                    _: 1,
++                  },
++                  8,
++                  ['onClick']
++                ),
+               ]),
+-              _: 1
+-            }, 8, ["loading", "onClick"]),
+-            createVNode(_component_a_button, {
+-              loading: $setup.loading,
+-              onClick: $setup.handleSave
+-            }, {
+               default: withCtx(() => [
+-                _hoisted_7
+-              ]),
+-              _: 1
+-            }, 8, ["loading", "onClick"])
+-          ]),
+-          createVNode(_component_a_button, {
+-            key: "submit",
+-            type: "primary",
+-            onClick: $setup.handleSubmit
+-          }, {
+-            default: withCtx(() => [
+-              _hoisted_8
+-            ]),
+-            _: 1
+-          }, 8, ["onClick"]),
+-          createVNode(_component_a_button, {
+-            key: "back",
+-            onClick: $setup.handleCancel
+-          }, {
+-            default: withCtx(() => [
+-              _hoisted_9
+-            ]),
+-            _: 1
+-          }, 8, ["onClick"])
+-        ]),
+-        default: withCtx(() => [
+-          $setup.dynamicRowValues.values.length == 0 ? (openBlock(), createBlock(_component_a_empty, { key: 0 }, {
+-            default: withCtx(() => [
+-              createElementVNode("div", _hoisted_10, [
+-                _hoisted_11,
+-                createVNode(_component_a_divider, { type: "vertical" }),
+-                createElementVNode("a", {
+-                  onClick: _cache[1] || (_cache[1] = ($event) => $setup.addOne(-1))
+-                }, "\u70B9\u51FB\u65B0\u589E")
+-              ])
+-            ]),
+-            _: 1
+-          })) : createCommentVNode("", true),
+-          createVNode(_component_a_row, {
+-            class: normalizeClass("j-super-query-modal-content")
+-          }, {
+-            default: withCtx(() => [
+-              createVNode(_component_a_col, {
+-                sm: 24,
+-                md: 18
+-              }, {
+-                default: withCtx(() => [
+-                  withDirectives(createVNode(_component_a_row, null, {
+-                    default: withCtx(() => [
+-                      createVNode(_component_a_col, {
+-                        md: 12,
+-                        xs: 24
+-                      }, {
++                $setup.dynamicRowValues.values.length == 0
++                  ? (openBlock(),
++                    createBlock(
++                      _component_a_empty,
++                      { key: 0 },
++                      {
+                         default: withCtx(() => [
+-                          createVNode(_component_a_form_item, {
+-                            label: "\u8FC7\u6EE4\u6761\u4EF6\u5339\u914D",
+-                            labelCol: { md: 6, xs: 24 },
+-                            wrapperCol: { md: 18, xs: 24 },
+-                            style: { "width": "100%" }
+-                          }, {
+-                            default: withCtx(() => [
+-                              createVNode(_component_a_select, {
+-                                value: $setup.matchType,
+-                                "onUpdate:value": _cache[2] || (_cache[2] = ($event) => $setup.matchType = $event),
+-                                getPopupContainer: (node) => node.parentNode,
+-                                style: { "width": "100%" }
+-                              }, {
+-                                default: withCtx(() => [
+-                                  createVNode(_component_a_select_option, { value: "and" }, {
+-                                    default: withCtx(() => [
+-                                      _hoisted_12
+-                                    ]),
+-                                    _: 1
+-                                  }),
+-                                  createVNode(_component_a_select_option, { value: "or" }, {
+-                                    default: withCtx(() => [
+-                                      _hoisted_13
+-                                    ]),
+-                                    _: 1
+-                                  })
+-                                ]),
+-                                _: 1
+-                              }, 8, ["value", "getPopupContainer"])
+-                            ]),
+-                            _: 1
+-                          })
++                          createElementVNode('div', _hoisted_10, [
++                            _hoisted_11,
++                            createVNode(_component_a_divider, { type: 'vertical' }),
++                            createElementVNode(
++                              'a',
++                              {
++                                onClick: _cache[1] || (_cache[1] = ($event) => $setup.addOne(-1)),
++                              },
++                              '\u70B9\u51FB\u65B0\u589E'
++                            ),
++                          ]),
+                         ]),
+-                        _: 1
+-                      })
+-                    ]),
+-                    _: 1
+-                  }, 512), [
+-                    [vShow, $setup.dynamicRowValues.values.length > 0]
+-                  ]),
+-                  withDirectives(createVNode(_component_a_form, {
+-                    ref: "formRef",
+-                    class: normalizeClass("jee-super-query-form"),
+-                    model: $setup.dynamicRowValues,
+-                    onFinish: $setup.onFinish
+-                  }, {
++                        _: 1,
++                      }
++                    ))
++                  : createCommentVNode('', true),
++                createVNode(
++                  _component_a_row,
++                  {
++                    class: normalizeClass('j-super-query-modal-content'),
++                  },
++                  {
+                     default: withCtx(() => [
+-                      (openBlock(true), createElementBlock(Fragment, null, renderList($setup.dynamicRowValues.values, (item, index) => {
+-                        return openBlock(), createBlock(_component_a_space, {
+-                          key: item.key,
+-                          style: { "display": "flex", "margin-bottom": "8px" },
+-                          align: "baseline"
+-                        }, {
++                      createVNode(
++                        _component_a_col,
++                        {
++                          sm: 24,
++                          md: 18,
++                        },
++                        {
+                           default: withCtx(() => [
+-                            createVNode(_component_a_form_item, {
+-                              name: ["values", index, "field"],
+-                              style: { "width": "180px" }
+-                            }, {
+-                              default: withCtx(() => [
+-                                createVNode(_component_a_tree_select, {
+-                                  style: { "width": "100%" },
+-                                  placeholder: "\u8BF7\u9009\u62E9\u5B57\u6BB5",
+-                                  value: item.field,
+-                                  "onUpdate:value": ($event) => item.field = $event,
+-                                  "show-search": "",
+-                                  "tree-node-filter-prop": "title",
+-                                  "allow-clear": "",
+-                                  "tree-default-expand-all": "",
+-                                  "dropdown-style": { maxHeight: "180px", overflow: "auto" },
+-                                  onChange: ($event) => $setup.handleChangeField(item),
+-                                  "tree-data": $setup.fieldTreeData
+-                                }, null, 8, ["value", "onUpdate:value", "onChange", "tree-data"])
+-                              ]),
+-                              _: 2
+-                            }, 1032, ["name"]),
+-                            createVNode(_component_a_form_item, {
+-                              name: ["values", index, "rule"],
+-                              style: { "width": "180px" }
+-                            }, {
+-                              default: withCtx(() => [
+-                                createVNode(_component_a_select, {
+-                                  style: { "width": "100%" },
+-                                  placeholder: "\u8BF7\u9009\u62E9\u5339\u914D\u89C4\u5219",
+-                                  value: item.rule,
+-                                  "onUpdate:value": ($event) => item.rule = $event
+-                                }, {
++                            withDirectives(
++                              createVNode(
++                                _component_a_row,
++                                null,
++                                {
+                                   default: withCtx(() => [
+-                                    createVNode(_component_a_select_option, { value: "eq" }, {
+-                                      default: withCtx(() => [
+-                                        _hoisted_14
+-                                      ]),
+-                                      _: 1
+-                                    }),
+-                                    createVNode(_component_a_select_option, { value: "like" }, {
+-                                      default: withCtx(() => [
+-                                        _hoisted_15
+-                                      ]),
+-                                      _: 1
+-                                    }),
+-                                    createVNode(_component_a_select_option, { value: "right_like" }, {
+-                                      default: withCtx(() => [
+-                                        _hoisted_16
+-                                      ]),
+-                                      _: 1
+-                                    }),
+-                                    createVNode(_component_a_select_option, { value: "left_like" }, {
+-                                      default: withCtx(() => [
+-                                        _hoisted_17
+-                                      ]),
+-                                      _: 1
+-                                    }),
+-                                    createVNode(_component_a_select_option, { value: "in" }, {
+-                                      default: withCtx(() => [
+-                                        _hoisted_18
+-                                      ]),
+-                                      _: 1
+-                                    }),
+-                                    createVNode(_component_a_select_option, { value: "ne" }, {
+-                                      default: withCtx(() => [
+-                                        _hoisted_19
+-                                      ]),
+-                                      _: 1
+-                                    }),
+-                                    createVNode(_component_a_select_option, { value: "gt" }, {
+-                                      default: withCtx(() => [
+-                                        _hoisted_20
+-                                      ]),
+-                                      _: 1
+-                                    }),
+-                                    createVNode(_component_a_select_option, { value: "ge" }, {
+-                                      default: withCtx(() => [
+-                                        _hoisted_21
+-                                      ]),
+-                                      _: 1
+-                                    }),
+-                                    createVNode(_component_a_select_option, { value: "lt" }, {
+-                                      default: withCtx(() => [
+-                                        _hoisted_22
+-                                      ]),
+-                                      _: 1
+-                                    }),
+-                                    createVNode(_component_a_select_option, { value: "le" }, {
+-                                      default: withCtx(() => [
+-                                        _hoisted_23
+-                                      ]),
+-                                      _: 1
+-                                    })
++                                    createVNode(
++                                      _component_a_col,
++                                      {
++                                        md: 12,
++                                        xs: 24,
++                                      },
++                                      {
++                                        default: withCtx(() => [
++                                          createVNode(
++                                            _component_a_form_item,
++                                            {
++                                              label: '\u8FC7\u6EE4\u6761\u4EF6\u5339\u914D',
++                                              labelCol: { md: 6, xs: 24 },
++                                              wrapperCol: { md: 18, xs: 24 },
++                                              style: { width: '100%' },
++                                            },
++                                            {
++                                              default: withCtx(() => [
++                                                createVNode(
++                                                  _component_a_select,
++                                                  {
++                                                    value: $setup.matchType,
++                                                    'onUpdate:value': _cache[2] || (_cache[2] = ($event) => ($setup.matchType = $event)),
++                                                    getPopupContainer: (node) => node.parentNode,
++                                                    style: { width: '100%' },
++                                                  },
++                                                  {
++                                                    default: withCtx(() => [
++                                                      createVNode(
++                                                        _component_a_select_option,
++                                                        { value: 'and' },
++                                                        {
++                                                          default: withCtx(() => [_hoisted_12]),
++                                                          _: 1,
++                                                        }
++                                                      ),
++                                                      createVNode(
++                                                        _component_a_select_option,
++                                                        { value: 'or' },
++                                                        {
++                                                          default: withCtx(() => [_hoisted_13]),
++                                                          _: 1,
++                                                        }
++                                                      ),
++                                                    ]),
++                                                    _: 1,
++                                                  },
++                                                  8,
++                                                  ['value', 'getPopupContainer']
++                                                ),
++                                              ]),
++                                              _: 1,
++                                            }
++                                          ),
++                                        ]),
++                                        _: 1,
++                                      }
++                                    ),
+                                   ]),
+-                                  _: 2
+-                                }, 1032, ["value", "onUpdate:value"])
+-                              ]),
+-                              _: 2
+-                            }, 1032, ["name"]),
+-                            createVNode(_component_a_form_item, {
+-                              name: ["values", index, "val"],
+-                              style: { "width": "280px" }
+-                            }, {
+-                              default: withCtx(() => [
+-                                createVNode(_component_online_super_query_val_component, {
+-                                  style: { "width": "100%" },
+-                                  schema: $setup.getSchema(item, index),
+-                                  formModel: item,
+-                                  setFormModel: (key, value) => {
+-                                    $setup.setFormModel(key, value, item);
+-                                  }
+-                                }, null, 8, ["schema", "formModel", "setFormModel"])
+-                              ]),
+-                              _: 2
+-                            }, 1032, ["name"]),
+-                            createVNode(_component_a_form_item, null, {
+-                              default: withCtx(() => [
+-                                createVNode(_component_a_button, {
+-                                  onClick: ($event) => $setup.addOne(index),
+-                                  style: { "margin-right": "6px" }
+-                                }, {
++                                  _: 1,
++                                },
++                                512
++                              ),
++                              [[vShow, $setup.dynamicRowValues.values.length > 0]]
++                            ),
++                            withDirectives(
++                              createVNode(
++                                _component_a_form,
++                                {
++                                  ref: 'formRef',
++                                  class: normalizeClass('jee-super-query-form'),
++                                  model: $setup.dynamicRowValues,
++                                  onFinish: $setup.onFinish,
++                                },
++                                {
+                                   default: withCtx(() => [
+-                                    createVNode(_component_PlusOutlined)
++                                    (openBlock(true),
++                                    createElementBlock(
++                                      Fragment,
++                                      null,
++                                      renderList($setup.dynamicRowValues.values, (item, index) => {
++                                        return (
++                                          openBlock(),
++                                          createBlock(
++                                            _component_a_space,
++                                            {
++                                              key: item.key,
++                                              style: { display: 'flex', 'margin-bottom': '8px' },
++                                              align: 'baseline',
++                                            },
++                                            {
++                                              default: withCtx(() => [
++                                                createVNode(
++                                                  _component_a_form_item,
++                                                  {
++                                                    name: ['values', index, 'field'],
++                                                    style: { width: '180px' },
++                                                  },
++                                                  {
++                                                    default: withCtx(() => [
++                                                      createVNode(
++                                                        _component_a_tree_select,
++                                                        {
++                                                          style: { width: '100%' },
++                                                          placeholder: '\u8BF7\u9009\u62E9\u5B57\u6BB5',
++                                                          value: item.field,
++                                                          'onUpdate:value': ($event) => (item.field = $event),
++                                                          'show-search': '',
++                                                          'tree-node-filter-prop': 'title',
++                                                          'allow-clear': '',
++                                                          'tree-default-expand-all': '',
++                                                          'dropdown-style': { maxHeight: '180px', overflow: 'auto' },
++                                                          onChange: ($event) => $setup.handleChangeField(item),
++                                                          'tree-data': $setup.fieldTreeData,
++                                                        },
++                                                        null,
++                                                        8,
++                                                        ['value', 'onUpdate:value', 'onChange', 'tree-data']
++                                                      ),
++                                                    ]),
++                                                    _: 2,
++                                                  },
++                                                  1032,
++                                                  ['name']
++                                                ),
++                                                createVNode(
++                                                  _component_a_form_item,
++                                                  {
++                                                    name: ['values', index, 'rule'],
++                                                    style: { width: '180px' },
++                                                  },
++                                                  {
++                                                    default: withCtx(() => [
++                                                      createVNode(
++                                                        _component_a_select,
++                                                        {
++                                                          style: { width: '100%' },
++                                                          placeholder: '\u8BF7\u9009\u62E9\u5339\u914D\u89C4\u5219',
++                                                          value: item.rule,
++                                                          'onUpdate:value': ($event) => (item.rule = $event),
++                                                        },
++                                                        {
++                                                          default: withCtx(() => [
++                                                            createVNode(
++                                                              _component_a_select_option,
++                                                              { value: 'eq' },
++                                                              {
++                                                                default: withCtx(() => [_hoisted_14]),
++                                                                _: 1,
++                                                              }
++                                                            ),
++                                                            createVNode(
++                                                              _component_a_select_option,
++                                                              { value: 'like' },
++                                                              {
++                                                                default: withCtx(() => [_hoisted_15]),
++                                                                _: 1,
++                                                              }
++                                                            ),
++                                                            createVNode(
++                                                              _component_a_select_option,
++                                                              { value: 'right_like' },
++                                                              {
++                                                                default: withCtx(() => [_hoisted_16]),
++                                                                _: 1,
++                                                              }
++                                                            ),
++                                                            createVNode(
++                                                              _component_a_select_option,
++                                                              { value: 'left_like' },
++                                                              {
++                                                                default: withCtx(() => [_hoisted_17]),
++                                                                _: 1,
++                                                              }
++                                                            ),
++                                                            createVNode(
++                                                              _component_a_select_option,
++                                                              { value: 'in' },
++                                                              {
++                                                                default: withCtx(() => [_hoisted_18]),
++                                                                _: 1,
++                                                              }
++                                                            ),
++                                                            createVNode(
++                                                              _component_a_select_option,
++                                                              { value: 'ne' },
++                                                              {
++                                                                default: withCtx(() => [_hoisted_19]),
++                                                                _: 1,
++                                                              }
++                                                            ),
++                                                            createVNode(
++                                                              _component_a_select_option,
++                                                              { value: 'gt' },
++                                                              {
++                                                                default: withCtx(() => [_hoisted_20]),
++                                                                _: 1,
++                                                              }
++                                                            ),
++                                                            createVNode(
++                                                              _component_a_select_option,
++                                                              { value: 'ge' },
++                                                              {
++                                                                default: withCtx(() => [_hoisted_21]),
++                                                                _: 1,
++                                                              }
++                                                            ),
++                                                            createVNode(
++                                                              _component_a_select_option,
++                                                              { value: 'lt' },
++                                                              {
++                                                                default: withCtx(() => [_hoisted_22]),
++                                                                _: 1,
++                                                              }
++                                                            ),
++                                                            createVNode(
++                                                              _component_a_select_option,
++                                                              { value: 'le' },
++                                                              {
++                                                                default: withCtx(() => [_hoisted_23]),
++                                                                _: 1,
++                                                              }
++                                                            ),
++                                                          ]),
++                                                          _: 2,
++                                                        },
++                                                        1032,
++                                                        ['value', 'onUpdate:value']
++                                                      ),
++                                                    ]),
++                                                    _: 2,
++                                                  },
++                                                  1032,
++                                                  ['name']
++                                                ),
++                                                createVNode(
++                                                  _component_a_form_item,
++                                                  {
++                                                    name: ['values', index, 'val'],
++                                                    style: { width: '280px' },
++                                                  },
++                                                  {
++                                                    default: withCtx(() => [
++                                                      createVNode(
++                                                        _component_online_super_query_val_component,
++                                                        {
++                                                          style: { width: '100%' },
++                                                          schema: $setup.getSchema(item, index),
++                                                          formModel: item,
++                                                          setFormModel: (key, value) => {
++                                                            $setup.setFormModel(key, value, item);
++                                                          },
++                                                        },
++                                                        null,
++                                                        8,
++                                                        ['schema', 'formModel', 'setFormModel']
++                                                      ),
++                                                    ]),
++                                                    _: 2,
++                                                  },
++                                                  1032,
++                                                  ['name']
++                                                ),
++                                                createVNode(
++                                                  _component_a_form_item,
++                                                  null,
++                                                  {
++                                                    default: withCtx(() => [
++                                                      createVNode(
++                                                        _component_a_button,
++                                                        {
++                                                          onClick: ($event) => $setup.addOne(index),
++                                                          style: { 'margin-right': '6px' },
++                                                        },
++                                                        {
++                                                          default: withCtx(() => [createVNode(_component_PlusOutlined)]),
++                                                          _: 2,
++                                                        },
++                                                        1032,
++                                                        ['onClick']
++                                                      ),
++                                                      createVNode(
++                                                        _component_a_button,
++                                                        {
++                                                          onClick: ($event) => $setup.removeOne(item),
++                                                        },
++                                                        {
++                                                          default: withCtx(() => [createVNode(_component_MinusCircleOutlined)]),
++                                                          _: 2,
++                                                        },
++                                                        1032,
++                                                        ['onClick']
++                                                      ),
++                                                    ]),
++                                                    _: 2,
++                                                  },
++                                                  1024
++                                                ),
++                                              ]),
++                                              _: 2,
++                                            },
++                                            1024
++                                          )
++                                        );
++                                      }),
++                                      128
++                                    )),
+                                   ]),
+-                                  _: 2
+-                                }, 1032, ["onClick"]),
+-                                createVNode(_component_a_button, {
+-                                  onClick: ($event) => $setup.removeOne(item)
+-                                }, {
+-                                  default: withCtx(() => [
+-                                    createVNode(_component_MinusCircleOutlined)
+-                                  ]),
+-                                  _: 2
+-                                }, 1032, ["onClick"])
+-                              ]),
+-                              _: 2
+-                            }, 1024)
++                                  _: 1,
++                                },
++                                8,
++                                ['model', 'onFinish']
++                              ),
++                              [[vShow, $setup.dynamicRowValues.values.length > 0]]
++                            ),
+                           ]),
+-                          _: 2
+-                        }, 1024);
+-                      }), 128))
+-                    ]),
+-                    _: 1
+-                  }, 8, ["model", "onFinish"]), [
+-                    [vShow, $setup.dynamicRowValues.values.length > 0]
+-                  ])
+-                ]),
+-                _: 1
+-              }),
+-              createVNode(_component_a_col, {
+-                sm: 24,
+-                md: 6
+-              }, {
+-                default: withCtx(() => [
+-                  createVNode(_component_a_card, {
+-                    class: "j-super-query-history-card",
+-                    bordered: true
+-                  }, {
+-                    title: withCtx(() => [
+-                      _hoisted_24
+-                    ]),
+-                    default: withCtx(() => [
+-                      $setup.saveTreeData.length === 0 ? (openBlock(), createBlock(_component_a_empty, {
+-                        key: 0,
+-                        class: "j-super-query-history-empty",
+-                        description: "\u6CA1\u6709\u4FDD\u5B58\u4EFB\u4F55\u67E5\u8BE2"
+-                      })) : (openBlock(), createBlock(_component_a_tree, {
+-                        key: 1,
+-                        class: "j-super-query-history-tree",
+-                        treeData: $setup.saveTreeData,
+-                        selectedKeys: [],
+-                        "show-icon": true,
+-                        onSelect: $setup.handleTreeSelect
+-                      }, {
+-                        title: withCtx(({ title }) => [
+-                          createElementVNode("div", null, [
+-                            createElementVNode("span", { title }, toDisplayString(title.length > 10 ? title.substring(0, 10) + "..." : title), 9, _hoisted_25),
+-                            createElementVNode("span", _hoisted_26, [
+-                              createVNode(_component_close_circle_outlined, {
+-                                onClick: ($event) => $setup.handleRemoveSaveInfo(title)
+-                              }, null, 8, ["onClick"])
+-                            ])
+-                          ])
+-                        ]),
+-                        custom: withCtx(() => [
+-                          createVNode(_component_file_text_outlined)
+-                        ]),
+-                        _: 1
+-                      }, 8, ["treeData", "onSelect"]))
++                          _: 1,
++                        }
++                      ),
++                      createVNode(
++                        _component_a_col,
++                        {
++                          sm: 24,
++                          md: 6,
++                        },
++                        {
++                          default: withCtx(() => [
++                            createVNode(
++                              _component_a_card,
++                              {
++                                class: 'j-super-query-history-card',
++                                bordered: true,
++                              },
++                              {
++                                title: withCtx(() => [_hoisted_24]),
++                                default: withCtx(() => [
++                                  $setup.saveTreeData.length === 0
++                                    ? (openBlock(),
++                                      createBlock(_component_a_empty, {
++                                        key: 0,
++                                        class: 'j-super-query-history-empty',
++                                        description: '\u6CA1\u6709\u4FDD\u5B58\u4EFB\u4F55\u67E5\u8BE2',
++                                      }))
++                                    : (openBlock(),
++                                      createBlock(
++                                        _component_a_tree,
++                                        {
++                                          key: 1,
++                                          class: 'j-super-query-history-tree',
++                                          treeData: $setup.saveTreeData,
++                                          selectedKeys: [],
++                                          'show-icon': true,
++                                          onSelect: $setup.handleTreeSelect,
++                                        },
++                                        {
++                                          title: withCtx(({ title }) => [
++                                            createElementVNode('div', null, [
++                                              createElementVNode('span', { title }, toDisplayString(title.length > 10 ? title.substring(0, 10) + '...' : title), 9, _hoisted_25),
++                                              createElementVNode('span', _hoisted_26, [
++                                                createVNode(
++                                                  _component_close_circle_outlined,
++                                                  {
++                                                    onClick: ($event) => $setup.handleRemoveSaveInfo(title),
++                                                  },
++                                                  null,
++                                                  8,
++                                                  ['onClick']
++                                                ),
++                                              ]),
++                                            ]),
++                                          ]),
++                                          custom: withCtx(() => [createVNode(_component_file_text_outlined)]),
++                                          _: 1,
++                                        },
++                                        8,
++                                        ['treeData', 'onSelect']
++                                      )),
++                                ]),
++                                _: 1,
++                              }
++                            ),
++                          ]),
++                          _: 1,
++                        }
++                      ),
+                     ]),
+-                    _: 1
+-                  })
+-                ]),
+-                _: 1
+-              })
++                    _: 1,
++                  }
++                ),
++              ]),
++              _: 1,
++            },
++            8,
++            ['onRegister', 'onOk']
++          ),
++        ])),
++        createVNode(
++          _component_a_modal,
++          {
++            title: '\u8BF7\u8F93\u5165\u4FDD\u5B58\u7684\u540D\u79F0',
++            visible: $setup.saveInfo.visible,
++            onCancel: _cache[4] || (_cache[4] = ($event) => ($setup.saveInfo.visible = false)),
++            onOk: $setup.doSaveQueryInfo,
++          },
++          {
++            default: withCtx(() => [
++              createElementVNode('div', _hoisted_27, [
++                createVNode(
++                  _component_a_input,
++                  {
++                    value: $setup.saveInfo.title,
++                    'onUpdate:value': _cache[3] || (_cache[3] = ($event) => ($setup.saveInfo.title = $event)),
++                    style: { width: '90%' },
++                    placeholder: '\u8BF7\u8F93\u5165\u4FDD\u5B58\u7684\u540D\u79F0',
++                  },
++                  null,
++                  8,
++                  ['value']
++                ),
++              ]),
+             ]),
+-            _: 1
+-          })
+-        ]),
+-        _: 1
+-      }, 8, ["onRegister", "onOk"])
+-    ])),
+-    createVNode(_component_a_modal, {
+-      title: "\u8BF7\u8F93\u5165\u4FDD\u5B58\u7684\u540D\u79F0",
+-      visible: $setup.saveInfo.visible,
+-      onCancel: _cache[4] || (_cache[4] = ($event) => $setup.saveInfo.visible = false),
+-      onOk: $setup.doSaveQueryInfo
+-    }, {
+-      default: withCtx(() => [
+-        createElementVNode("div", _hoisted_27, [
+-          createVNode(_component_a_input, {
+-            value: $setup.saveInfo.title,
+-            "onUpdate:value": _cache[3] || (_cache[3] = ($event) => $setup.saveInfo.title = $event),
+-            style: { "width": "90%" },
+-            placeholder: "\u8BF7\u8F93\u5165\u4FDD\u5B58\u7684\u540D\u79F0"
+-          }, null, 8, ["value"])
+-        ])
+-      ]),
+-      _: 1
+-    }, 8, ["visible", "onOk"])
+-  ], 64);
++            _: 1,
++          },
++          8,
++          ['visible', 'onOk']
++        ),
++      ],
++      64
++    )
++  );
+ }
+-var OnlineSuperQuery = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-08fc9755"]]);
++var OnlineSuperQuery = /* @__PURE__ */ _export_sfc(_sfc_main, [
++  ['render', _sfc_render],
++  ['__scopeId', 'data-v-08fc9755'],
++]);
+ export { OnlineSuperQuery as default };
+diff --git a/node_modules/@jeecg/online/OnlineSuperQueryValComponent.vue_vue_type_script_lang.js b/node_modules/@jeecg/online/OnlineSuperQueryValComponent.vue_vue_type_script_lang.js
+index 2bcbfe8..fc51b33 100644
+--- a/node_modules/@jeecg/online/OnlineSuperQueryValComponent.vue_vue_type_script_lang.js
++++ b/node_modules/@jeecg/online/OnlineSuperQueryValComponent.vue_vue_type_script_lang.js
+@@ -4,26 +4,24 @@ var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
+ var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+ var __hasOwnProp = Object.prototype.hasOwnProperty;
+ var __propIsEnum = Object.prototype.propertyIsEnumerable;
+-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
++var __defNormalProp = (obj, key, value) => (key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : (obj[key] = value));
+ var __spreadValues = (a, b) => {
+-  for (var prop in b || (b = {}))
+-    if (__hasOwnProp.call(b, prop))
+-      __defNormalProp(a, prop, b[prop]);
++  for (var prop in b || (b = {})) if (__hasOwnProp.call(b, prop)) __defNormalProp(a, prop, b[prop]);
+   if (__getOwnPropSymbols)
+     for (var prop of __getOwnPropSymbols(b)) {
+-      if (__propIsEnum.call(b, prop))
+-        __defNormalProp(a, prop, b[prop]);
++      if (__propIsEnum.call(b, prop)) __defNormalProp(a, prop, b[prop]);
+     }
+   return a;
+ };
+ var __spreadProps = (a, b) => __defProps(a, __getOwnPropDescs(b));
+-import { defineComponent, computed, createVNode, unref } from "vue";
+-import { componentMap } from "/@/components/Form/src/componentMap";
+-import { createPlaceholderMessage } from "/@/components/Form/src/helper";
+-import { isFunction } from "/@/utils/is";
+-import { t as toString } from "./toString.js";
++import { defineComponent, computed, createVNode, unref } from 'vue';
++import { componentMap } from '/@/components/Form/src/componentMap';
++import { createPlaceholderMessage } from '/@/components/Form/src/helper';
++import { isFunction } from '/@/utils/is';
++import { t as toString } from './toString.js';
+ function baseSlice(array, start, end) {
+-  var index = -1, length = array.length;
++  var index = -1,
++    length = array.length;
+   if (start < 0) {
+     start = -start > length ? 0 : length + start;
+   }
+@@ -31,7 +29,7 @@ function baseSlice(array, start, end) {
+   if (end < 0) {
+     end += length;
+   }
+-  length = start > end ? 0 : end - start >>> 0;
++  length = start > end ? 0 : (end - start) >>> 0;
+   start >>>= 0;
+   var result = Array(length);
+   while (++index < length) {
+@@ -44,19 +42,40 @@ function castSlice(array, start, end) {
+   end = end === void 0 ? length : end;
+   return !start && end >= length ? array : baseSlice(array, start, end);
+ }
+-var rsAstralRange$1 = "\\ud800-\\udfff", rsComboMarksRange$1 = "\\u0300-\\u036f", reComboHalfMarksRange$1 = "\\ufe20-\\ufe2f", rsComboSymbolsRange$1 = "\\u20d0-\\u20ff", rsComboRange$1 = rsComboMarksRange$1 + reComboHalfMarksRange$1 + rsComboSymbolsRange$1, rsVarRange$1 = "\\ufe0e\\ufe0f";
+-var rsZWJ$1 = "\\u200d";
+-var reHasUnicode = RegExp("[" + rsZWJ$1 + rsAstralRange$1 + rsComboRange$1 + rsVarRange$1 + "]");
++var rsAstralRange$1 = '\\ud800-\\udfff',
++  rsComboMarksRange$1 = '\\u0300-\\u036f',
++  reComboHalfMarksRange$1 = '\\ufe20-\\ufe2f',
++  rsComboSymbolsRange$1 = '\\u20d0-\\u20ff',
++  rsComboRange$1 = rsComboMarksRange$1 + reComboHalfMarksRange$1 + rsComboSymbolsRange$1,
++  rsVarRange$1 = '\\ufe0e\\ufe0f';
++var rsZWJ$1 = '\\u200d';
++var reHasUnicode = RegExp('[' + rsZWJ$1 + rsAstralRange$1 + rsComboRange$1 + rsVarRange$1 + ']');
+ function hasUnicode(string) {
+   return reHasUnicode.test(string);
+ }
+ function asciiToArray(string) {
+-  return string.split("");
++  return string.split('');
+ }
+-var rsAstralRange = "\\ud800-\\udfff", rsComboMarksRange = "\\u0300-\\u036f", reComboHalfMarksRange = "\\ufe20-\\ufe2f", rsComboSymbolsRange = "\\u20d0-\\u20ff", rsComboRange = rsComboMarksRange + reComboHalfMarksRange + rsComboSymbolsRange, rsVarRange = "\\ufe0e\\ufe0f";
+-var rsAstral = "[" + rsAstralRange + "]", rsCombo = "[" + rsComboRange + "]", rsFitz = "\\ud83c[\\udffb-\\udfff]", rsModifier = "(?:" + rsCombo + "|" + rsFitz + ")", rsNonAstral = "[^" + rsAstralRange + "]", rsRegional = "(?:\\ud83c[\\udde6-\\uddff]){2}", rsSurrPair = "[\\ud800-\\udbff][\\udc00-\\udfff]", rsZWJ = "\\u200d";
+-var reOptMod = rsModifier + "?", rsOptVar = "[" + rsVarRange + "]?", rsOptJoin = "(?:" + rsZWJ + "(?:" + [rsNonAstral, rsRegional, rsSurrPair].join("|") + ")" + rsOptVar + reOptMod + ")*", rsSeq = rsOptVar + reOptMod + rsOptJoin, rsSymbol = "(?:" + [rsNonAstral + rsCombo + "?", rsCombo, rsRegional, rsSurrPair, rsAstral].join("|") + ")";
+-var reUnicode = RegExp(rsFitz + "(?=" + rsFitz + ")|" + rsSymbol + rsSeq, "g");
++var rsAstralRange = '\\ud800-\\udfff',
++  rsComboMarksRange = '\\u0300-\\u036f',
++  reComboHalfMarksRange = '\\ufe20-\\ufe2f',
++  rsComboSymbolsRange = '\\u20d0-\\u20ff',
++  rsComboRange = rsComboMarksRange + reComboHalfMarksRange + rsComboSymbolsRange,
++  rsVarRange = '\\ufe0e\\ufe0f';
++var rsAstral = '[' + rsAstralRange + ']',
++  rsCombo = '[' + rsComboRange + ']',
++  rsFitz = '\\ud83c[\\udffb-\\udfff]',
++  rsModifier = '(?:' + rsCombo + '|' + rsFitz + ')',
++  rsNonAstral = '[^' + rsAstralRange + ']',
++  rsRegional = '(?:\\ud83c[\\udde6-\\uddff]){2}',
++  rsSurrPair = '[\\ud800-\\udbff][\\udc00-\\udfff]',
++  rsZWJ = '\\u200d';
++var reOptMod = rsModifier + '?',
++  rsOptVar = '[' + rsVarRange + ']?',
++  rsOptJoin = '(?:' + rsZWJ + '(?:' + [rsNonAstral, rsRegional, rsSurrPair].join('|') + ')' + rsOptVar + reOptMod + ')*',
++  rsSeq = rsOptVar + reOptMod + rsOptJoin,
++  rsSymbol = '(?:' + [rsNonAstral + rsCombo + '?', rsCombo, rsRegional, rsSurrPair, rsAstral].join('|') + ')';
++var reUnicode = RegExp(rsFitz + '(?=' + rsFitz + ')|' + rsSymbol + rsSeq, 'g');
+ function unicodeToArray(string) {
+   return string.match(reUnicode) || [];
+ }
+@@ -64,109 +83,112 @@ function stringToArray(string) {
+   return hasUnicode(string) ? unicodeToArray(string) : asciiToArray(string);
+ }
+ function createCaseFirst(methodName) {
+-  return function(string) {
++  return function (string) {
+     string = toString(string);
+     var strSymbols = hasUnicode(string) ? stringToArray(string) : void 0;
+     var chr = strSymbols ? strSymbols[0] : string.charAt(0);
+-    var trailing = strSymbols ? castSlice(strSymbols, 1).join("") : string.slice(1);
++    var trailing = strSymbols ? castSlice(strSymbols, 1).join('') : string.slice(1);
+     return chr[methodName]() + trailing;
+   };
+ }
+-var upperFirst = createCaseFirst("toUpperCase");
++var upperFirst = createCaseFirst('toUpperCase');
+ var upperFirst$1 = upperFirst;
+ var _sfc_main = defineComponent({
+-  name: "OnlineSuperQueryValComponent",
++  name: 'OnlineSuperQueryValComponent',
+   inheritAttrs: false,
+   props: {
+     schema: {
+       type: Object,
+-      default: () => ({})
++      default: () => ({}),
+     },
+     formModel: {
+       type: Object,
+-      default: () => ({})
++      default: () => ({}),
+     },
+     setFormModel: {
+       type: Function,
+-      default: null
+-    }
++      default: null,
++    },
+   },
+   setup(props) {
+     const getComponentsProps = computed(() => {
+       var _a;
+-      const {
+-        schema,
+-        formModel
+-      } = props;
+-      let {
+-        componentProps = {}
+-      } = schema;
++      const { schema, formModel } = props;
++      let { componentProps = {} } = schema;
+       if (isFunction(componentProps)) {
+-        componentProps = (_a = componentProps({
+-          schema,
+-          formModel
+-        })) != null ? _a : {};
++        componentProps =
++          (_a = componentProps({
++            schema,
++            formModel,
++          })) != null
++            ? _a
++            : {};
+       }
+       return componentProps;
+     });
+     const getValues = computed(() => {
+-      const {
+-        formModel,
+-        schema
+-      } = props;
++      const { formModel, schema } = props;
+       let obj = {
+         field: schema.field,
+         model: formModel,
+         values: __spreadValues({}, formModel),
+-        schema
++        schema,
+       };
+       return obj;
+     });
+     function renderComponent() {
+       var _a;
+-      const {
+-        component,
+-        changeEvent = "change",
+-        valueField
+-      } = props.schema;
+-      const field = "val";
+-      const isCheck = component && ["Switch", "Checkbox"].includes(component);
++      const { component, changeEvent = 'change', valueField } = props.schema;
++      const field = 'val';
++      const isCheck = component && ['Switch', 'Checkbox'].includes(component);
+       const eventKey = `on${upperFirst$1(changeEvent)}`;
+       const on = {
+         [eventKey]: (...args) => {
+-          const [e] = args;
++          const [e, sv] = args;
+           if (propsData[eventKey]) {
+             propsData[eventKey](...args);
+           }
+           const target = e ? e.target : null;
+-          const value = target ? isCheck ? target.checked : target.value : e;
+-          props.setFormModel(field, value);
+-        }
++          // yg 对于dict级联的特殊处理
++          const value = target ? (isCheck ? target.checked : target.value) : e;
++          if (sv && 'searchValue' in sv) {
++            props.setFormModel(field, sv.searchValue);
++          } else {
++            props.setFormModel(field, value);
++          }
++        },
+       };
+       const Comp = componentMap.get(component);
+-      const propsData = __spreadValues({
+-        allowClear: true,
+-        getPopupContainer: (trigger) => trigger.parentNode
+-      }, unref(getComponentsProps));
++      const propsData = __spreadValues(
++        {
++          allowClear: true,
++          getPopupContainer: (trigger) => trigger.parentNode,
++        },
++        unref(getComponentsProps)
++      );
+       const isCreatePlaceholder = !propsData.disabled;
+-      if (isCreatePlaceholder && component !== "RangePicker" && component) {
++      if (isCreatePlaceholder && component !== 'RangePicker' && component) {
+         propsData.placeholder = ((_a = unref(getComponentsProps)) == null ? void 0 : _a.placeholder) || createPlaceholderMessage(component) + props.schema.label;
+       }
+       propsData.codeField = field;
+       propsData.formValues = unref(getValues);
+       const bindValue = {
+-        [valueField || (isCheck ? "checked" : "value")]: props.formModel[field]
++        [valueField || (isCheck ? 'checked' : 'value')]: props.formModel[field],
+       };
+       const compAttr = __spreadProps(__spreadValues(__spreadValues(__spreadValues({}, propsData), on), bindValue), {
+-        allowClear: true
++        allowClear: true,
+       });
+       return createVNode(Comp, compAttr, null);
+     }
+     return () => {
+-      return createVNode("div", {
+-        "style": "width:100%"
+-      }, [renderComponent()]);
++      return createVNode(
++        'div',
++        {
++          style: 'width:100%',
++        },
++        [renderComponent()]
++      );
+     };
+-  }
++  },
+ });
+ export { _sfc_main as _ };
 diff --git a/node_modules/@jeecg/online/README.md b/node_modules/@jeecg/online/README.md
 deleted file mode 100644
 index 642e43b..0000000
@@ -3636,7 +5468,7 @@ index 642e43b..0000000
 -```
 \ No newline at end of file
 diff --git a/node_modules/@jeecg/online/useTableColumns.js b/node_modules/@jeecg/online/useTableColumns.js
-index c0ceb88..48f6799 100644
+index c0ceb88..ba3bcc9 100644
 --- a/node_modules/@jeecg/online/useTableColumns.js
 +++ b/node_modules/@jeecg/online/useTableColumns.js
 @@ -4,15 +4,12 @@ var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
@@ -4113,7 +5945,7 @@ index c0ceb88..48f6799 100644
            item.children = [loadChild];
          }
          return item;
-@@ -410,51 +415,54 @@ function useOnlineTableContext() {
+@@ -410,84 +415,99 @@ function useOnlineTableContext() {
      if (expandedRowKeysValue.length > 0) {
        const { sortField, sortType, pidField } = onlineTableContext2;
        let params = Object.assign({}, { column: sortField, order: sortType });
@@ -4206,7 +6038,9 @@ index c0ceb88..48f6799 100644
      } else {
        return Promise.resolve();
      }
-@@ -463,31 +471,34 @@ function useOnlineTableContext() {
+   }
++  // yg 高级查询级联的查询
+   function getSuperQueryData() {
      if (!onlineTableContext2.superQuery) {
        return {};
      }
@@ -4225,6 +6059,14 @@ index c0ceb88..48f6799 100644
          if (field2.startsWith(pre)) {
 -          item.field = field2.replace(pre, "");
 +          item.field = field2.replace(pre, '');
++        }
++        if (item.type === 'cat_tree' && item.val.startsWith('searchRange:') && typeof item.val === 'string') {
++          let val = item.val.slice(12);
++          // 如果是相等 只匹配第一项
++          if (item.rule === 'eq') {
++            val = val.split(',')[0];
++          }
++          item.val = val;
          }
          arr.push(item);
        }
@@ -4249,7 +6091,7 @@ index c0ceb88..48f6799 100644
      };
      if (params.length == 0) {
        superQueryStatus.value = false;
-@@ -502,43 +513,46 @@ function useOnlineTableContext() {
+@@ -502,43 +522,46 @@ function useOnlineTableContext() {
        param = {};
      }
      if (!param.row) {
@@ -4320,7 +6162,7 @@ index c0ceb88..48f6799 100644
  function useListButton(onlineTableContext2) {
    const buttonStatus = {
      add: true,
-@@ -550,7 +564,7 @@ function useListButton(onlineTableContext2) {
+@@ -550,7 +573,7 @@ function useListButton(onlineTableContext2) {
      export: true,
      detail: true,
      super_query: true,
@@ -4329,7 +6171,7 @@ index c0ceb88..48f6799 100644
    };
    const [registerModal, { openModal }] = useModal();
    const [registerImportModal, { openModal: openImportModal }] = useModal();
-@@ -563,10 +577,10 @@ function useListButton(onlineTableContext2) {
+@@ -563,10 +586,10 @@ function useListButton(onlineTableContext2) {
      cgTopButtonList.length = 0;
      if (btnList && btnList.length > 0) {
        for (let i = 0; i < btnList.length; i++) {
@@ -4343,7 +6185,7 @@ index c0ceb88..48f6799 100644
            cgLinkButtonList.push(temp);
          }
        }
-@@ -587,65 +601,71 @@ function useListButton(onlineTableContext2) {
+@@ -587,65 +610,71 @@ function useListButton(onlineTableContext2) {
    function handleAdd(param) {
      let data = { isUpdate: false };
      if (param) {
@@ -4442,7 +6284,7 @@ index c0ceb88..48f6799 100644
        arr.push(getSubmitFlowButton(record2));
      }
      if (toRaw(buttonSwitch.delete) === true) {
-@@ -654,10 +674,10 @@ function useListButton(onlineTableContext2) {
+@@ -654,10 +683,10 @@ function useListButton(onlineTableContext2) {
      let buttonList = cgLinkButtonList;
      if (buttonList && buttonList.length > 0) {
        for (let item of buttonList) {
@@ -4455,7 +6297,7 @@ index c0ceb88..48f6799 100644
            });
          }
        }
-@@ -668,19 +688,22 @@ function useListButton(onlineTableContext2) {
+@@ -668,19 +697,22 @@ function useListButton(onlineTableContext2) {
      openModal(true, {
        isUpdate: true,
        disableSubmit: true,
@@ -4483,7 +6325,7 @@ index c0ceb88..48f6799 100644
      };
      let postOption = { isTransformResponse: false };
      return new Promise((resolve, reject) => {
-@@ -702,103 +725,119 @@ function useListButton(onlineTableContext2) {
+@@ -702,103 +734,119 @@ function useListButton(onlineTableContext2) {
      });
    }
    function handleDelete(dataId) {
@@ -4664,7 +6506,7 @@ index c0ceb88..48f6799 100644
    }
    function onImportExcel() {
      openImportModal(true);
-@@ -806,12 +845,25 @@ function useListButton(onlineTableContext2) {
+@@ -806,12 +854,25 @@ function useListButton(onlineTableContext2) {
    const importUrl = () => {
      return `${onlineTableContext2.onlineUrl.importXls}${onlineTableContext2.ID}`;
    };
@@ -4693,7 +6535,7 @@ index c0ceb88..48f6799 100644
      }
      let paramsStr = JSON.stringify(filterObj(params));
      let url = `${onlineTableContext2.onlineUrl.exportXls}${onlineTableContext2.ID}`;
-@@ -819,24 +871,24 @@ function useListButton(onlineTableContext2) {
+@@ -819,24 +880,24 @@ function useListButton(onlineTableContext2) {
      handleExportXlsx(description, url, { paramsStr });
    }
    function showLinkButtonOfExpression(expression, row) {
@@ -4727,7 +6569,7 @@ index c0ceb88..48f6799 100644
        return arr2.indexOf(String(fieldValue)) >= 0;
      }
      return false;
-@@ -853,6 +905,7 @@ function useListButton(onlineTableContext2) {
+@@ -853,6 +914,7 @@ function useListButton(onlineTableContext2) {
      registerImportModal,
      onImportExcel,
      onExportExcel,
@@ -4735,7 +6577,7 @@ index c0ceb88..48f6799 100644
      getDropDownActions,
      getActions,
      cgButtonJsHandler,
-@@ -862,7 +915,7 @@ function useListButton(onlineTableContext2) {
+@@ -862,7 +924,7 @@ function useListButton(onlineTableContext2) {
      initButtonSwitch,
      getDeleteButton,
      handleSubmitFlow,
@@ -4744,7 +6586,7 @@ index c0ceb88..48f6799 100644
    };
  }
  function useTableColumns(onlineTableContext) {
-@@ -881,10 +934,10 @@ function useTableColumns(onlineTableContext) {
+@@ -881,10 +943,10 @@ function useTableColumns(onlineTableContext) {
    });
    function handleColumnResult(result) {
      dictOptionInfo.value = result.dictOptions;
@@ -4757,7 +6599,7 @@ index c0ceb88..48f6799 100644
        };
      } else {
        rowSelection.value = null;
-@@ -900,11 +953,11 @@ function useTableColumns(onlineTableContext) {
+@@ -900,11 +962,11 @@ function useTableColumns(onlineTableContext) {
      });
      let fieldHrefSlots = result.fieldHrefSlots;
      const fieldHrefSlotKeysMap = {};
@@ -4771,7 +6613,7 @@ index c0ceb88..48f6799 100644
      if (onlineTableContext.isTree() === true) {
        let firstField = result.textField;
        let index = -1;
-@@ -919,23 +972,23 @@ function useTableColumns(onlineTableContext) {
+@@ -919,23 +981,23 @@ function useTableColumns(onlineTableContext) {
          tableColumns.unshift(deleteColumns[0]);
        }
        if (tableColumns.length > 0) {
@@ -4800,7 +6642,7 @@ index c0ceb88..48f6799 100644
            }
            if (text2.length > 10) {
              return text2.substring(0, 10);
-@@ -943,36 +996,40 @@ function useTableColumns(onlineTableContext) {
+@@ -943,36 +1005,40 @@ function useTableColumns(onlineTableContext) {
            return text2;
          };
        } else {
@@ -4849,7 +6691,7 @@ index c0ceb88..48f6799 100644
                }
              }
              return value;
-@@ -981,7 +1038,7 @@ function useTableColumns(onlineTableContext) {
+@@ -981,7 +1047,7 @@ function useTableColumns(onlineTableContext) {
          if (column.scopedSlots) {
            column.ellipsis = true;
            let slots = column.scopedSlots;
@@ -4858,7 +6700,7 @@ index c0ceb88..48f6799 100644
            delete column.scopedSlots;
          }
        }
-@@ -993,10 +1050,10 @@ function useTableColumns(onlineTableContext) {
+@@ -993,10 +1059,10 @@ function useTableColumns(onlineTableContext) {
      let urlPattern = /(ht|f)tp(s?)\:\/\/[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_]*)?/;
      let compPattern = /\.vue(\?.*)?$/;
      let jsPattern = /{{([^}]+)}}/g;
@@ -4871,7 +6713,7 @@ index c0ceb88..48f6799 100644
            try {
              return eval(s0);
            } catch (e) {
-@@ -1006,7 +1063,7 @@ function useTableColumns(onlineTableContext) {
+@@ -1006,7 +1072,7 @@ function useTableColumns(onlineTableContext) {
          });
        }
        if (urlPattern.test(href)) {
@@ -4880,7 +6722,7 @@ index c0ceb88..48f6799 100644
        } else if (compPattern.test(href)) {
          openHrefCompModal(href);
        } else {
-@@ -1017,38 +1074,38 @@ function useTableColumns(onlineTableContext) {
+@@ -1017,38 +1083,38 @@ function useTableColumns(onlineTableContext) {
    const dialogStyle = {
      top: 0,
      left: 0,
@@ -4932,7 +6774,7 @@ index c0ceb88..48f6799 100644
          params[paramItem[0]] = paramItem[1];
        });
        hrefComponent.params = params;
-@@ -1056,57 +1113,59 @@ function useTableColumns(onlineTableContext) {
+@@ -1056,57 +1122,59 @@ function useTableColumns(onlineTableContext) {
        hrefComponent.params = {};
      }
      hrefComponent.model.visible = true;
@@ -5010,7 +6852,7 @@ index c0ceb88..48f6799 100644
      }
      let a = text2;
      if (a.length > 10) {
-@@ -1115,17 +1174,17 @@ function useTableColumns(onlineTableContext) {
+@@ -1115,17 +1183,17 @@ function useTableColumns(onlineTableContext) {
      return a;
    }
    watch(selectedKeys, () => {
@@ -5033,7 +6875,7 @@ index c0ceb88..48f6799 100644
        for (let str of arr) {
          if (str) {
            imgList.push(getFileAccessHttpUrl(str));
-@@ -1148,7 +1207,7 @@ function useTableColumns(onlineTableContext) {
+@@ -1148,7 +1216,7 @@ function useTableColumns(onlineTableContext) {
      handleColumnResult,
      onSelectChange,
      hrefComponent,
