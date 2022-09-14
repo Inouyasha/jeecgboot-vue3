@@ -1957,7 +1957,7 @@ index 3ad6a16..57f9497 100644
        return __async(this, null, function* () {
          formRendered.value = false;
 diff --git a/node_modules/@jeecg/online/OnlineQueryForm.js b/node_modules/@jeecg/online/OnlineQueryForm.js
-index f0a63ff..25fbd6b 100644
+index f0a63ff..33bffe2 100644
 --- a/node_modules/@jeecg/online/OnlineQueryForm.js
 +++ b/node_modules/@jeecg/online/OnlineQueryForm.js
 @@ -2,15 +2,12 @@ var __defProp = Object.defineProperty;
@@ -2233,7 +2233,7 @@ index f0a63ff..25fbd6b 100644
        });
      }
      const [registerForm, { resetFields, setFieldsValue, updateSchema, getFieldsValue }] = useForm({
-@@ -258,12 +283,21 @@ const _sfc_main = {
+@@ -258,12 +283,22 @@ const _sfc_main = {
        autoSubmitOnEnter: true,
        submitFunc() {
          doSearch();
@@ -2254,10 +2254,11 @@ index f0a63ff..25fbd6b 100644
 +      const storage = window.localStorage;
 +      storage.setItem('query_form_data', JSON.stringify(data));
 +      window.open(window.location.href);
++      // window.location.href = window.location.href;
      }
      function resetSearch() {
        return __async(this, null, function* () {
-@@ -273,32 +307,36 @@ const _sfc_main = {
+@@ -273,32 +308,36 @@ const _sfc_main = {
          if (Object.keys(rawValues).length > 0) {
            yield setFieldsValue(rawValues);
          }
@@ -2308,7 +2309,7 @@ index f0a63ff..25fbd6b 100644
      return {
        onlineQueryFormRef,
        registerForm,
-@@ -306,137 +344,212 @@ const _sfc_main = {
+@@ -306,137 +345,212 @@ const _sfc_main = {
        toggleButtonShow,
        toggleSearchStatus,
        doSearch,
@@ -5468,7 +5469,7 @@ index 642e43b..0000000
 -```
 \ No newline at end of file
 diff --git a/node_modules/@jeecg/online/useTableColumns.js b/node_modules/@jeecg/online/useTableColumns.js
-index c0ceb88..ba3bcc9 100644
+index c0ceb88..06525dc 100644
 --- a/node_modules/@jeecg/online/useTableColumns.js
 +++ b/node_modules/@jeecg/online/useTableColumns.js
 @@ -4,15 +4,12 @@ var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
@@ -5808,7 +5809,7 @@ index c0ceb88..ba3bcc9 100644
      });
    }
    function loadData() {
-@@ -278,41 +280,44 @@ function useOnlineTableContext() {
+@@ -278,41 +280,54 @@ function useOnlineTableContext() {
          url = `${onlineTableContext2.onlineUrl.getTreeData}${ID.value}`;
        }
        let params = getLoadDataParams();
@@ -5846,8 +5847,11 @@ index c0ceb88..ba3bcc9 100644
 +        });
      });
    }
++  // yg 修改请求参数的生成方式
    function getLoadDataParams() {
      const { sortField, sortType, acceptHrefParams, queryParam } = onlineTableContext2;
++    // 用于暂时的读取对应的param数据
++    const tempParam = { ...queryParam };
      let treeParam = {};
      if (onlineTableContext2.isTree() === true) {
 -      treeParam["hasQuery"] = "false";
@@ -5856,7 +5860,8 @@ index c0ceb88..ba3bcc9 100644
 -      treeParam["hasQuery"] = "true";
 +      treeParam['hasQuery'] = 'true';
      }
-     let params = Object.assign({}, treeParam, acceptHrefParams, queryParam, { column: sortField, order: sortType });
+-    let params = Object.assign({}, treeParam, acceptHrefParams, queryParam, { column: sortField, order: sortType });
++    let params = Object.assign({}, treeParam, acceptHrefParams, {}, { column: sortField, order: sortType });
      if (pagination.value) {
        params.pageNo = pagination.value.current;
        params.pageSize = pagination.value.pageSize;
@@ -5869,10 +5874,17 @@ index c0ceb88..ba3bcc9 100644
 -    params.superQueryParams = superQueryData.params || "";
 +    params.superQueryMatchType = superQueryData.matchType || '';
 +    params.superQueryParams = superQueryData.params || '';
++
++    // 无高级查询 构造高级查询 有高级查询 只考虑高级查询
++    if (params.superQueryMatchType === '' && Object.keys(tempParam).length !== 0) {
++      params.superQueryMatchType = 'and';
++      params.superQueryParams = createSuperQueryData(tempParam) || '';
++    }
++
      return filterObj(params);
    }
    function handleDataResult(result) {
-@@ -336,11 +341,11 @@ function useOnlineTableContext() {
+@@ -336,11 +351,11 @@ function useOnlineTableContext() {
    }
    function handleChangeInTable($pagination, _filters, sorter) {
      if (sorter && sorter.order) {
@@ -5888,7 +5900,7 @@ index c0ceb88..ba3bcc9 100644
      }
      if (pagination.value) {
        pagination.value = $pagination;
-@@ -348,24 +353,24 @@ function useOnlineTableContext() {
+@@ -348,24 +363,24 @@ function useOnlineTableContext() {
      loadData();
    }
    function handleSpecialConfig(result) {
@@ -5921,7 +5933,7 @@ index c0ceb88..ba3bcc9 100644
        pagination.value = __spreadValues(__spreadValues({}, metaPagination), { current: currentPage, pageSize });
      } else {
        pagination.value = false;
-@@ -373,7 +378,7 @@ function useOnlineTableContext() {
+@@ -373,7 +388,7 @@ function useOnlineTableContext() {
    }
    const add2Context = {
      loadData,
@@ -5930,7 +5942,7 @@ index c0ceb88..ba3bcc9 100644
    };
    Object.keys(add2Context).map((key) => {
      onlineTableContext2[key] = add2Context[key];
-@@ -391,10 +396,10 @@ function useOnlineTableContext() {
+@@ -391,10 +406,10 @@ function useOnlineTableContext() {
    function getTreeDataByResult(result) {
      if (result) {
        return result.map((item) => {
@@ -5945,7 +5957,7 @@ index c0ceb88..ba3bcc9 100644
            item.children = [loadChild];
          }
          return item;
-@@ -410,84 +415,99 @@ function useOnlineTableContext() {
+@@ -410,84 +425,130 @@ function useOnlineTableContext() {
      if (expandedRowKeysValue.length > 0) {
        const { sortField, sortType, pidField } = onlineTableContext2;
        let params = Object.assign({}, { column: sortField, order: sortType });
@@ -6039,6 +6051,37 @@ index c0ceb88..ba3bcc9 100644
        return Promise.resolve();
      }
    }
++  // yg 生成普通queryData的对应superQuery 将正常的condition转换为contain行为
++  function createSuperQueryData(queryData) {
++    if (!queryData) {
++      return {};
++    }
++    let arr = [];
++    // 获取表名
++    Object.entries(queryData).forEach(([key, value]) => {
++      // 多选
++      if (value.indexOf(',') !== -1) {
++        arr.push({
++          field: key,
++          rule: 'in',
++          val: value,
++          type: 'text',
++          dbType: 'string',
++        });
++      } else {
++        // 单选模糊
++        arr.push({
++          field: key,
++          rule: 'like',
++          val: `%${value}%`,
++          type: 'text',
++          dbType: 'string',
++        });
++      }
++    });
++    let str = arr.length > 0 ? JSON.stringify(arr) : '';
++    return encodeURIComponent(str);
++  }
 +  // yg 高级查询级联的查询
    function getSuperQueryData() {
      if (!onlineTableContext2.superQuery) {
@@ -6091,7 +6134,7 @@ index c0ceb88..ba3bcc9 100644
      };
      if (params.length == 0) {
        superQueryStatus.value = false;
-@@ -502,43 +522,46 @@ function useOnlineTableContext() {
+@@ -502,43 +563,46 @@ function useOnlineTableContext() {
        param = {};
      }
      if (!param.row) {
@@ -6162,7 +6205,7 @@ index c0ceb88..ba3bcc9 100644
  function useListButton(onlineTableContext2) {
    const buttonStatus = {
      add: true,
-@@ -550,7 +573,7 @@ function useListButton(onlineTableContext2) {
+@@ -550,7 +614,7 @@ function useListButton(onlineTableContext2) {
      export: true,
      detail: true,
      super_query: true,
@@ -6171,7 +6214,7 @@ index c0ceb88..ba3bcc9 100644
    };
    const [registerModal, { openModal }] = useModal();
    const [registerImportModal, { openModal: openImportModal }] = useModal();
-@@ -563,10 +586,10 @@ function useListButton(onlineTableContext2) {
+@@ -563,10 +627,10 @@ function useListButton(onlineTableContext2) {
      cgTopButtonList.length = 0;
      if (btnList && btnList.length > 0) {
        for (let i = 0; i < btnList.length; i++) {
@@ -6185,7 +6228,7 @@ index c0ceb88..ba3bcc9 100644
            cgLinkButtonList.push(temp);
          }
        }
-@@ -587,65 +610,71 @@ function useListButton(onlineTableContext2) {
+@@ -587,65 +651,71 @@ function useListButton(onlineTableContext2) {
    function handleAdd(param) {
      let data = { isUpdate: false };
      if (param) {
@@ -6284,7 +6327,7 @@ index c0ceb88..ba3bcc9 100644
        arr.push(getSubmitFlowButton(record2));
      }
      if (toRaw(buttonSwitch.delete) === true) {
-@@ -654,10 +683,10 @@ function useListButton(onlineTableContext2) {
+@@ -654,10 +724,10 @@ function useListButton(onlineTableContext2) {
      let buttonList = cgLinkButtonList;
      if (buttonList && buttonList.length > 0) {
        for (let item of buttonList) {
@@ -6297,7 +6340,7 @@ index c0ceb88..ba3bcc9 100644
            });
          }
        }
-@@ -668,19 +697,22 @@ function useListButton(onlineTableContext2) {
+@@ -668,19 +738,22 @@ function useListButton(onlineTableContext2) {
      openModal(true, {
        isUpdate: true,
        disableSubmit: true,
@@ -6325,7 +6368,7 @@ index c0ceb88..ba3bcc9 100644
      };
      let postOption = { isTransformResponse: false };
      return new Promise((resolve, reject) => {
-@@ -702,103 +734,119 @@ function useListButton(onlineTableContext2) {
+@@ -702,103 +775,119 @@ function useListButton(onlineTableContext2) {
      });
    }
    function handleDelete(dataId) {
@@ -6506,7 +6549,7 @@ index c0ceb88..ba3bcc9 100644
    }
    function onImportExcel() {
      openImportModal(true);
-@@ -806,12 +854,25 @@ function useListButton(onlineTableContext2) {
+@@ -806,12 +895,25 @@ function useListButton(onlineTableContext2) {
    const importUrl = () => {
      return `${onlineTableContext2.onlineUrl.importXls}${onlineTableContext2.ID}`;
    };
@@ -6535,7 +6578,7 @@ index c0ceb88..ba3bcc9 100644
      }
      let paramsStr = JSON.stringify(filterObj(params));
      let url = `${onlineTableContext2.onlineUrl.exportXls}${onlineTableContext2.ID}`;
-@@ -819,24 +880,24 @@ function useListButton(onlineTableContext2) {
+@@ -819,24 +921,24 @@ function useListButton(onlineTableContext2) {
      handleExportXlsx(description, url, { paramsStr });
    }
    function showLinkButtonOfExpression(expression, row) {
@@ -6569,7 +6612,7 @@ index c0ceb88..ba3bcc9 100644
        return arr2.indexOf(String(fieldValue)) >= 0;
      }
      return false;
-@@ -853,6 +914,7 @@ function useListButton(onlineTableContext2) {
+@@ -853,6 +955,7 @@ function useListButton(onlineTableContext2) {
      registerImportModal,
      onImportExcel,
      onExportExcel,
@@ -6577,7 +6620,7 @@ index c0ceb88..ba3bcc9 100644
      getDropDownActions,
      getActions,
      cgButtonJsHandler,
-@@ -862,7 +924,7 @@ function useListButton(onlineTableContext2) {
+@@ -862,7 +965,7 @@ function useListButton(onlineTableContext2) {
      initButtonSwitch,
      getDeleteButton,
      handleSubmitFlow,
@@ -6586,7 +6629,7 @@ index c0ceb88..ba3bcc9 100644
    };
  }
  function useTableColumns(onlineTableContext) {
-@@ -881,10 +943,10 @@ function useTableColumns(onlineTableContext) {
+@@ -881,10 +984,10 @@ function useTableColumns(onlineTableContext) {
    });
    function handleColumnResult(result) {
      dictOptionInfo.value = result.dictOptions;
@@ -6599,7 +6642,7 @@ index c0ceb88..ba3bcc9 100644
        };
      } else {
        rowSelection.value = null;
-@@ -900,11 +962,11 @@ function useTableColumns(onlineTableContext) {
+@@ -900,11 +1003,11 @@ function useTableColumns(onlineTableContext) {
      });
      let fieldHrefSlots = result.fieldHrefSlots;
      const fieldHrefSlotKeysMap = {};
@@ -6613,7 +6656,7 @@ index c0ceb88..ba3bcc9 100644
      if (onlineTableContext.isTree() === true) {
        let firstField = result.textField;
        let index = -1;
-@@ -919,23 +981,23 @@ function useTableColumns(onlineTableContext) {
+@@ -919,23 +1022,23 @@ function useTableColumns(onlineTableContext) {
          tableColumns.unshift(deleteColumns[0]);
        }
        if (tableColumns.length > 0) {
@@ -6642,7 +6685,7 @@ index c0ceb88..ba3bcc9 100644
            }
            if (text2.length > 10) {
              return text2.substring(0, 10);
-@@ -943,36 +1005,40 @@ function useTableColumns(onlineTableContext) {
+@@ -943,36 +1046,40 @@ function useTableColumns(onlineTableContext) {
            return text2;
          };
        } else {
@@ -6691,7 +6734,7 @@ index c0ceb88..ba3bcc9 100644
                }
              }
              return value;
-@@ -981,7 +1047,7 @@ function useTableColumns(onlineTableContext) {
+@@ -981,7 +1088,7 @@ function useTableColumns(onlineTableContext) {
          if (column.scopedSlots) {
            column.ellipsis = true;
            let slots = column.scopedSlots;
@@ -6700,7 +6743,7 @@ index c0ceb88..ba3bcc9 100644
            delete column.scopedSlots;
          }
        }
-@@ -993,10 +1059,10 @@ function useTableColumns(onlineTableContext) {
+@@ -993,10 +1100,10 @@ function useTableColumns(onlineTableContext) {
      let urlPattern = /(ht|f)tp(s?)\:\/\/[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_]*)?/;
      let compPattern = /\.vue(\?.*)?$/;
      let jsPattern = /{{([^}]+)}}/g;
@@ -6713,7 +6756,7 @@ index c0ceb88..ba3bcc9 100644
            try {
              return eval(s0);
            } catch (e) {
-@@ -1006,7 +1072,7 @@ function useTableColumns(onlineTableContext) {
+@@ -1006,7 +1113,7 @@ function useTableColumns(onlineTableContext) {
          });
        }
        if (urlPattern.test(href)) {
@@ -6722,7 +6765,7 @@ index c0ceb88..ba3bcc9 100644
        } else if (compPattern.test(href)) {
          openHrefCompModal(href);
        } else {
-@@ -1017,38 +1083,38 @@ function useTableColumns(onlineTableContext) {
+@@ -1017,38 +1124,38 @@ function useTableColumns(onlineTableContext) {
    const dialogStyle = {
      top: 0,
      left: 0,
@@ -6774,7 +6817,7 @@ index c0ceb88..ba3bcc9 100644
          params[paramItem[0]] = paramItem[1];
        });
        hrefComponent.params = params;
-@@ -1056,57 +1122,59 @@ function useTableColumns(onlineTableContext) {
+@@ -1056,57 +1163,59 @@ function useTableColumns(onlineTableContext) {
        hrefComponent.params = {};
      }
      hrefComponent.model.visible = true;
@@ -6852,7 +6895,7 @@ index c0ceb88..ba3bcc9 100644
      }
      let a = text2;
      if (a.length > 10) {
-@@ -1115,17 +1183,17 @@ function useTableColumns(onlineTableContext) {
+@@ -1115,17 +1224,17 @@ function useTableColumns(onlineTableContext) {
      return a;
    }
    watch(selectedKeys, () => {
@@ -6875,7 +6918,7 @@ index c0ceb88..ba3bcc9 100644
        for (let str of arr) {
          if (str) {
            imgList.push(getFileAccessHttpUrl(str));
-@@ -1148,7 +1216,7 @@ function useTableColumns(onlineTableContext) {
+@@ -1148,7 +1257,7 @@ function useTableColumns(onlineTableContext) {
      handleColumnResult,
      onSelectChange,
      hrefComponent,
