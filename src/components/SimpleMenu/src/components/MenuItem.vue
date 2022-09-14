@@ -108,6 +108,12 @@
       //update-begin-author:taoyan date:2022-6-1 for: VUEN-1144 online 配置成菜单后，打开菜单，显示名称未展示为菜单名称
       function storePathTitle(path) {
         console.log('storePathTitle', path);
+        // 每次切换tab时 清空保存的表单状态
+        window.localStorage.setItem('add_form_temp_data', '');
+        // if (path.startsWith('/online/cgformList/')) {
+        //   window.localStorage.setItem('JEECG_ONL_PROJECT_PATH', '');
+        // }
+
         let title = '';
         if (instance!.attrs) {
           let item: any = instance!.attrs.item;

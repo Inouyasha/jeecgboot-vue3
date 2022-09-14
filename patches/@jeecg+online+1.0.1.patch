@@ -1160,7 +1160,7 @@ index 48636b1..3405edd 100644
    }
  }
 diff --git a/node_modules/@jeecg/online/OnlineAutoList.js b/node_modules/@jeecg/online/OnlineAutoList.js
-index 454118f..5b9c54a 100644
+index 454118f..9953de7 100644
 --- a/node_modules/@jeecg/online/OnlineAutoList.js
 +++ b/node_modules/@jeecg/online/OnlineAutoList.js
 @@ -14,56 +14,78 @@ var __async = (__this, __arguments, generator) => {
@@ -1401,7 +1401,7 @@ index 454118f..5b9c54a 100644
        cgTopButtonList,
        cgLinkButtonList,
        cgButtonJsHandler,
-@@ -204,207 +250,355 @@ const _sfc_main = {
+@@ -204,207 +250,356 @@ const _sfc_main = {
        importUrl,
        handleSubmitFlow,
        hrefComponent,
@@ -1418,6 +1418,7 @@ index 454118f..5b9c54a 100644
 -const _hoisted_4 = /* @__PURE__ */ createTextVNode(" \u5BFC\u51FA");
 -const _hoisted_5 = /* @__PURE__ */ createTextVNode(" \u6279\u91CF\u5220\u9664");
 +const _hoisted_1 = { class: 'p-2' };
++// yg 新增按钮
 +const _hoisted_2 = /* @__PURE__ */ createTextVNode('\u65B0\u589E');
 +const _hoisted_3 = /* @__PURE__ */ createTextVNode('\u5BFC\u5165');
 +const _hoisted_4 = /* @__PURE__ */ createTextVNode(' \u5BFC\u51FA');
@@ -1956,6 +1957,1050 @@ index 3ad6a16..57f9497 100644
      function renderFormItems() {
        return __async(this, null, function* () {
          formRendered.value = false;
+diff --git a/node_modules/@jeecg/online/OnlineForm.js b/node_modules/@jeecg/online/OnlineForm.js
+index 81c7b9d..6fcfb4f 100644
+--- a/node_modules/@jeecg/online/OnlineForm.js
++++ b/node_modules/@jeecg/online/OnlineForm.js
+@@ -2,15 +2,12 @@ var __defProp = Object.defineProperty;
+ var __getOwnPropSymbols = Object.getOwnPropertySymbols;
+ var __hasOwnProp = Object.prototype.hasOwnProperty;
+ var __propIsEnum = Object.prototype.propertyIsEnumerable;
+-var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
++var __defNormalProp = (obj, key, value) => (key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : (obj[key] = value));
+ var __spreadValues = (a, b) => {
+-  for (var prop in b || (b = {}))
+-    if (__hasOwnProp.call(b, prop))
+-      __defNormalProp(a, prop, b[prop]);
++  for (var prop in b || (b = {})) if (__hasOwnProp.call(b, prop)) __defNormalProp(a, prop, b[prop]);
+   if (__getOwnPropSymbols)
+     for (var prop of __getOwnPropSymbols(b)) {
+-      if (__propIsEnum.call(b, prop))
+-        __defNormalProp(a, prop, b[prop]);
++      if (__propIsEnum.call(b, prop)) __defNormalProp(a, prop, b[prop]);
+     }
+   return a;
+ };
+@@ -30,20 +27,38 @@ var __async = (__this, __arguments, generator) => {
+         reject(e);
+       }
+     };
+-    var step = (x) => x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected);
++    var step = (x) => (x.done ? resolve(x.value) : Promise.resolve(x.value).then(fulfilled, rejected));
+     step((generator = generator.apply(__this, __arguments)).next());
+   });
+ };
+-import { useMessage } from "/@/hooks/web/useMessage";
+-import { reactive, ref, computed, resolveComponent, openBlock, createElementBlock, createVNode, createBlock, withCtx, Fragment, renderList, normalizeStyle, createCommentVNode, renderSlot, unref, nextTick, toRaw } from "vue";
+-import { BasicForm, useForm } from "/@/components/Form/index";
+-import { V as VALIDATE_FAILED, S as SUBMIT_FLOW_KEY, a as SUBMIT_FLOW_ID } from "./FormSchemaFactory.js";
+-import { defHttp } from "/@/utils/http/axios";
+-import { u as useOnlineFormContext, a as useFormItems, l as loadFormFieldsDefVal, g as getRefPromise } from "./useAutoForm.js";
+-import { Loading } from "/@/components/Loading";
+-import OnlineSubForm from "./OnlineSubForm.js";
+-import { _ as _export_sfc } from "./index.js";
+-import { p as pick } from "./pick.js";
++import { useMessage } from '/@/hooks/web/useMessage';
++import {
++  reactive,
++  ref,
++  computed,
++  resolveComponent,
++  openBlock,
++  createElementBlock,
++  createVNode,
++  createBlock,
++  withCtx,
++  Fragment,
++  renderList,
++  normalizeStyle,
++  createCommentVNode,
++  renderSlot,
++  unref,
++  nextTick,
++  toRaw,
++} from 'vue';
++import { BasicForm, useForm } from '/@/components/Form/index';
++import { V as VALIDATE_FAILED, S as SUBMIT_FLOW_KEY, a as SUBMIT_FLOW_ID } from './FormSchemaFactory.js';
++import { defHttp } from '/@/utils/http/axios';
++import { u as useOnlineFormContext, a as useFormItems, l as loadFormFieldsDefVal, g as getRefPromise } from './useAutoForm.js';
++import { Loading } from '/@/components/Loading';
++import OnlineSubForm from './OnlineSubForm.js';
++import { _ as _export_sfc } from './index.js';
++import { p as pick } from './pick.js';
+ function useEnhance(onlineTableContext, isList = true) {
+   let EnhanceJS = reactive({});
+   const getAction = (url, params) => {
+@@ -59,19 +74,19 @@ function useEnhance(onlineTableContext, isList = true) {
+     return defHttp.delete({ url, params }, { isTransformResponse: false });
+   };
+   if (isList === true) {
+-    onlineTableContext["_getAction"] = getAction;
+-    onlineTableContext["_postAction"] = postAction;
+-    onlineTableContext["_putAction"] = putAction;
+-    onlineTableContext["_deleteAction"] = deleteAction;
++    onlineTableContext['_getAction'] = getAction;
++    onlineTableContext['_postAction'] = postAction;
++    onlineTableContext['_putAction'] = putAction;
++    onlineTableContext['_deleteAction'] = deleteAction;
+   } else {
+-    onlineTableContext.addObject2Context("_getAction", getAction);
+-    onlineTableContext.addObject2Context("_postAction", postAction);
+-    onlineTableContext.addObject2Context("_putAction", putAction);
+-    onlineTableContext.addObject2Context("_deleteAction", deleteAction);
++    onlineTableContext.addObject2Context('_getAction', getAction);
++    onlineTableContext.addObject2Context('_postAction', postAction);
++    onlineTableContext.addObject2Context('_putAction', putAction);
++    onlineTableContext.addObject2Context('_deleteAction', deleteAction);
+   }
+   function initCgEnhanceJs(str) {
+     if (str) {
+-      let Obj = eval("(" + str + ")");
++      let Obj = eval('(' + str + ')');
+       return new Obj(getAction, postAction, deleteAction);
+     } else {
+       return {};
+@@ -83,33 +98,33 @@ function useEnhance(onlineTableContext, isList = true) {
+     }
+   }
+   function customBeforeSubmit(that, formData) {
+-    if (EnhanceJS && EnhanceJS["beforeSubmit"]) {
+-      return EnhanceJS["beforeSubmit"](that, formData);
++    if (EnhanceJS && EnhanceJS['beforeSubmit']) {
++      return EnhanceJS['beforeSubmit'](that, formData);
+     } else {
+       return Promise.resolve();
+     }
+   }
+   function beforeDelete(that, record) {
+-    if (EnhanceJS && EnhanceJS["beforeDelete"]) {
+-      return EnhanceJS["beforeDelete"](that, record);
++    if (EnhanceJS && EnhanceJS['beforeDelete']) {
++      return EnhanceJS['beforeDelete'](that, record);
+     } else {
+       return Promise.resolve();
+     }
+   }
+   if (isList === true) {
+     if (onlineTableContext) {
+-      onlineTableContext["beforeDelete"] = (record) => {
+-        const onlEnhanceJS = onlineTableContext["EnhanceJS"];
+-        if (onlEnhanceJS && onlEnhanceJS["beforeDelete"]) {
+-          return onlEnhanceJS["beforeDelete"](onlineTableContext, record);
++      onlineTableContext['beforeDelete'] = (record) => {
++        const onlEnhanceJS = onlineTableContext['EnhanceJS'];
++        if (onlEnhanceJS && onlEnhanceJS['beforeDelete']) {
++          return onlEnhanceJS['beforeDelete'](onlineTableContext, record);
+         } else {
+           return Promise.resolve();
+         }
+       };
+-      onlineTableContext["beforeEdit"] = (record) => {
+-        const onlEnhanceJS = onlineTableContext["EnhanceJS"];
+-        if (onlEnhanceJS && onlEnhanceJS["beforeEdit"]) {
+-          return onlEnhanceJS["beforeEdit"](onlineTableContext, record);
++      onlineTableContext['beforeEdit'] = (record) => {
++        const onlEnhanceJS = onlineTableContext['EnhanceJS'];
++        if (onlEnhanceJS && onlEnhanceJS['beforeEdit']) {
++          return onlEnhanceJS['beforeEdit'](onlineTableContext, record);
+         } else {
+           return Promise.resolve();
+         }
+@@ -121,59 +136,59 @@ function useEnhance(onlineTableContext, isList = true) {
+     initCgEnhanceJs,
+     customBeforeSubmit,
+     beforeDelete,
+-    triggerJsFun
++    triggerJsFun,
+   };
+ }
+ const urlObject = {
+-  optPre: "/online/cgform/api/form/",
+-  urlButtonAction: "/online/cgform/api/doButton"
++  optPre: '/online/cgform/api/form/',
++  urlButtonAction: '/online/cgform/api/doButton',
+ };
+ const _sfc_main = {
+-  name: "OnlineForm",
++  name: 'OnlineForm',
+   components: {
+     BasicForm,
+     Loading,
+-    OnlineSubForm
++    OnlineSubForm,
+   },
+   props: {
+     id: {
+       type: String,
+-      default: ""
++      default: '',
+     },
+     formTemplate: {
+       type: Number,
+-      default: 1
++      default: 1,
+     },
+     disabled: {
+       type: Boolean,
+-      default: false
++      default: false,
+     },
+     isTree: {
+       type: Boolean,
+-      default: false
++      default: false,
+     },
+     pidField: {
+       type: String,
+-      default: ""
+-    }
++      default: '',
++    },
+   },
+-  emits: ["success", "rendered"],
++  emits: ['success', 'rendered'],
+   setup(props, { emit }) {
+-    console.log("onlineForm-setup\u300B\u300B");
++    console.log('onlineForm-setup\u300B\u300B');
+     const { createMessage: $message } = useMessage();
+     const onlineFormRef = ref(null);
+     const single = ref(true);
+     const loading = ref(false);
+     const tableType = ref(1);
+-    const customEditSubmitUrl = ref("");
++    const customEditSubmitUrl = ref('');
+     const submitFlowFlag = ref(false);
+     const isUpdate = ref(false);
+     const onlineExtConfigJson = reactive({
+       reportPrintShow: 0,
+-      reportPrintUrl: "",
++      reportPrintUrl: '',
+       joinQuery: 0,
+       modelFullscreen: 0,
+-      modalMinWidth: ""
++      modalMinWidth: '',
+     });
+     const { onlineFormContext, resetContext } = useOnlineFormContext();
+     const {
+@@ -190,13 +205,13 @@ const _sfc_main = {
+       baseColProps,
+       createFormSchemas,
+       linkDownList,
+-      fieldDisplayStatus
++      fieldDisplayStatus,
+     } = useFormItems(props, onlineFormRef);
+     let { EnhanceJS: EnhanceJS2, initCgEnhanceJs: initCgEnhanceJs2 } = useEnhance(onlineFormContext, false);
+     const [registerForm, { setProps, validate, resetFields, setFieldsValue, updateSchema, getFieldsValue, scrollToField }] = useForm({
+       schemas: formSchemas,
+       showActionButtonGroup: false,
+-      baseColProps
++      baseColProps,
+     });
+     const onlineFormDisabled = ref(false);
+     function handleFormDisabled() {
+@@ -206,14 +221,18 @@ const _sfc_main = {
+     }
+     function show(status, record, param) {
+       return __async(this, null, function* () {
+-        console.log("\u65B0\u589E\u7F16\u8F91\u8FDB\u5165\u8868\u5355\u300B\u300Bform", record);
++        console.log('\u65B0\u589E\u7F16\u8F91\u8FDB\u5165\u8868\u5355\u300B\u300Bform', record);
+         yield updatePidFieldDict();
+-        customEditSubmitUrl.value = "";
++        customEditSubmitUrl.value = '';
+         yield resetFields();
+-        dbData.value = "";
++        dbData.value = '';
+         let flag = unref(status);
+         isUpdate.value = flag;
+-        if (flag) {
++
++        // yg 继承数据
++        const isInherit = window.localStorage.getItem('form_type_is_inherit') === 'true';
++        // 继承模式或编辑模式
++        if (isInherit || flag) {
+           yield edit(record);
+         } else {
+           editSubVxeTableData();
+@@ -223,7 +242,7 @@ const _sfc_main = {
+             setFieldsValue(param);
+           }
+           handleDefaultValue();
+-          handleCgButtonClick("js", "loaded");
++          handleCgButtonClick('js', 'loaded');
+           handleFormDisabled();
+         });
+       });
+@@ -239,12 +258,12 @@ const _sfc_main = {
+               yield updateSchema({
+                 field: pidFieldName,
+                 componentProps: {
+-                  reload: new Date().getTime()
+-                }
++                  reload: new Date().getTime(),
++                },
+               });
+             }
+           } else {
+-            console.log("\u6CA1\u6709\u62FF\u5230\u8868\u5355\u914D\u7F6E\u4FE1\u606F\uFF0C\u53EF\u80FD\u662F\u7B2C\u4E00\u6B21\u6253\u5F00\u65B0\u589E\u9875\u9762");
++            console.log('\u6CA1\u6709\u62FF\u5230\u8868\u5355\u914D\u7F6E\u4FE1\u606F\uFF0C\u53EF\u80FD\u662F\u7B2C\u4E00\u6B21\u6253\u5F00\u65B0\u589E\u9875\u9762');
+           }
+         }
+       });
+@@ -265,9 +284,15 @@ const _sfc_main = {
+         target.ctx.setValues(v);
+       });
+     }
++    // TODO 判断update的状态
+     function edit(record) {
+       return __async(this, null, function* () {
+-        let formData = yield getFormData(record.id);
++        let formData;
++        if (typeof record === 'object' && 'id' in record) {
++          formData = yield getFormData(record.id);
++        } else {
++          formData = { ...record };
++        }
+         dbData.value = Object.assign({}, record);
+         let arr = realFormFieldNames.value;
+         yield setFieldsValue(pick(formData, ...arr));
+@@ -298,16 +323,19 @@ const _sfc_main = {
+     function getFormData(dataId) {
+       let url = `${urlObject.optPre}${props.id}/${dataId}`;
+       return new Promise((resolve, reject) => {
+-        defHttp.get({ url }, { isTransformResponse: false }).then((res) => {
+-          if (res.success) {
+-            resolve(res.result);
+-          } else {
++        defHttp
++          .get({ url }, { isTransformResponse: false })
++          .then((res) => {
++            if (res.success) {
++              resolve(res.result);
++            } else {
++              reject();
++              $message.warning(res.message);
++            }
++          })
++          .catch(() => {
+             reject();
+-            $message.warning(res.message);
+-          }
+-        }).catch(() => {
+-          reject();
+-        });
++          });
+       });
+     }
+     function createRootProperties(data) {
+@@ -318,15 +346,32 @@ const _sfc_main = {
+         handleExtConfigJson(data.head.extConfigJson);
+         createFormSchemas(data.schema.properties, data.schema.required, checkOnlyFieldValue);
+         EnhanceJS2 = initCgEnhanceJs2(data.enhanceJs);
+-        emit("rendered", onlineExtConfigJson);
++        emit('rendered', onlineExtConfigJson);
+         let formRefObject = yield getRefPromise(onlineFormRef);
+         formRefObject.$formValueChange = (field, value) => {
+           onValuesChange(field, value);
++          // 增加写入逻辑
++          // 读取localStrorage数据
++          const storage = window.localStorage;
++
++          // 只处理有继承的逻辑的逻辑
++          // 判断是否为edit状态 edit状态不走以下逻辑
++          if (isUpdate.value === true) {
++            return;
++          }
++
++          const addFormData = storage.getItem('add_form_temp_data');
++
++          // 如果已经有数据 继续写入 如果没有 则重新建立record并重新写入
++          let record = addFormData !== '' ? JSON.parse(addFormData) : {};
++          record[field] = value;
++          // yg 写入缓存
++          window.localStorage.setItem('add_form_temp_data', JSON.stringify(record));
+         };
+       });
+     }
+     function handleExtConfigJson(jsonStr) {
+-      let extConfigJson = { "reportPrintShow": 0, "reportPrintUrl": "", "joinQuery": 0, "modelFullscreen": 1, "modalMinWidth": "" };
++      let extConfigJson = { reportPrintShow: 0, reportPrintUrl: '', joinQuery: 0, modelFullscreen: 1, modalMinWidth: '' };
+       if (jsonStr) {
+         extConfigJson = JSON.parse(jsonStr);
+       }
+@@ -349,71 +394,79 @@ const _sfc_main = {
+     function validateAll() {
+       let temp = {};
+       return new Promise((resolve, reject) => {
+-        validate().then((values) => resolve(values), ({ errorFields }) => {
+-          if (errorFields && errorFields.length > 0) {
+-            scrollToField(errorFields[0][0]);
++        validate().then(
++          (values) => resolve(values),
++          ({ errorFields }) => {
++            if (errorFields && errorFields.length > 0) {
++              scrollToField(errorFields[0][0]);
++            }
++            reject(VALIDATE_FAILED);
+           }
+-          reject(VALIDATE_FAILED);
+-        });
+-      }).then((result) => {
+-        Object.assign(temp, changeDataIfArray2String(result));
+-        return validateSubTableFields();
+-      }).then((allTableData) => {
+-        Object.assign(temp, allTableData);
+-        return Promise.resolve(temp);
+-      }).catch((e) => {
+-        if (e === VALIDATE_FAILED || (e == null ? void 0 : e.code) === VALIDATE_FAILED) {
+-          $message.warning("\u6821\u9A8C\u672A\u901A\u8FC7");
+-          if (e.key) {
+-            changeTab(e.key);
++        );
++      })
++        .then((result) => {
++          Object.assign(temp, changeDataIfArray2String(result));
++          return validateSubTableFields();
++        })
++        .then((allTableData) => {
++          Object.assign(temp, allTableData);
++          return Promise.resolve(temp);
++        })
++        .catch((e) => {
++          if (e === VALIDATE_FAILED || (e == null ? void 0 : e.code) === VALIDATE_FAILED) {
++            $message.warning('\u6821\u9A8C\u672A\u901A\u8FC7');
++            if (e.key) {
++              changeTab(e.key);
++            }
++          } else {
++            console.error(e);
+           }
+-        } else {
+-          console.error(e);
+-        }
+-        return Promise.reject(null);
+-      });
++          return Promise.reject(null);
++        });
+     }
+     function changeTab(key) {
+       let arr = subTabInfo.value;
+       for (let i = 0; i < arr.length; i++) {
+         if (key == arr[i].key) {
+-          subActiveKey.value = i + "";
++          subActiveKey.value = i + '';
+           break;
+         }
+       }
+     }
+     function validateSubTableFields() {
+-      return new Promise((resolve, reject) => __async(this, null, function* () {
+-        let subData = {};
+-        try {
+-          let arr = subTabInfo.value;
+-          for (let i = 0; i < arr.length; i++) {
+-            let key = arr[i].key;
+-            let instance = refMap[key].value;
+-            if (instance instanceof Array) {
+-              instance = instance[0];
+-            }
+-            if (arr[i].relationType == 1) {
+-              try {
+-                let subFormData = yield instance.getAll();
+-                subData[key] = [];
+-                subData[key].push(subFormData);
+-              } catch (e) {
+-                throw { code: VALIDATE_FAILED, key };
++      return new Promise((resolve, reject) =>
++        __async(this, null, function* () {
++          let subData = {};
++          try {
++            let arr = subTabInfo.value;
++            for (let i = 0; i < arr.length; i++) {
++              let key = arr[i].key;
++              let instance = refMap[key].value;
++              if (instance instanceof Array) {
++                instance = instance[0];
+               }
+-            } else {
+-              let errMap = yield instance.fullValidateTable();
+-              if (errMap) {
+-                throw { code: VALIDATE_FAILED, key };
++              if (arr[i].relationType == 1) {
++                try {
++                  let subFormData = yield instance.getAll();
++                  subData[key] = [];
++                  subData[key].push(subFormData);
++                } catch (e) {
++                  throw { code: VALIDATE_FAILED, key };
++                }
++              } else {
++                let errMap = yield instance.fullValidateTable();
++                if (errMap) {
++                  throw { code: VALIDATE_FAILED, key };
++                }
++                subData[key] = instance.getTableData();
+               }
+-              subData[key] = instance.getTableData();
+             }
++          } catch (e) {
++            reject(e);
+           }
+-        } catch (e) {
+-          reject(e);
+-        }
+-        resolve(subData);
+-      }));
++          resolve(subData);
++        })
++      );
+     }
+     function handleSingleSubmit() {
+       return __async(this, null, function* () {
+@@ -429,21 +482,23 @@ const _sfc_main = {
+       });
+     }
+     function handleApplyRequest(formData) {
+-      customBeforeSubmit2(context, formData).then(() => {
+-        doApplyRequest(formData);
+-      }).catch((msg) => {
+-        $message.warning(msg);
+-      });
++      customBeforeSubmit2(context, formData)
++        .then(() => {
++          doApplyRequest(formData);
++        })
++        .catch((msg) => {
++          $message.warning(msg);
++        });
+     }
+     function doApplyRequest(formData) {
+       Object.keys(formData).map((key) => {
+         if (Array.isArray(formData[key])) {
+           if (formData[key].length == 0) {
+-            formData[key] = "";
++            formData[key] = '';
+           }
+         }
+       });
+-      console.log("\u63D0\u4EA4\u8868\u5355\u6570\u636E\u300B\u300B\u300Bform:", formData);
++      console.log('\u63D0\u4EA4\u8868\u5355\u6570\u636E\u300B\u300B\u300Bform:', formData);
+       let customUrl = customEditSubmitUrl.value;
+       let url = `${urlObject.optPre}${props.id}?tabletype=${tableType.value}`;
+       if (customUrl) {
+@@ -452,30 +507,41 @@ const _sfc_main = {
+       if (submitFlowFlag.value === true) {
+         formData[SUBMIT_FLOW_KEY] = 1;
+       }
+-      let method = isUpdate.value === true ? "put" : "post";
+-      defHttp.request({ url, method, params: formData }, { isTransformResponse: false }).then((res) => {
+-        if (res.success) {
+-          if (res.result) {
+-            formData[SUBMIT_FLOW_ID] = res.result;
++      let method = isUpdate.value === true ? 'put' : 'post';
++      defHttp
++        .request({ url, method, params: formData }, { isTransformResponse: false })
++        .then((res) => {
++          if (res.success) {
++            // 只处理新增的逻辑
++            if (isUpdate.value === false) {
++              // 如果完成新增后清除数据
++              window.localStorage.setItem('add_form_temp_data', '');
++            }
++
++            if (res.result) {
++              formData[SUBMIT_FLOW_ID] = res.result;
++            }
++            emit('success', formData);
++            $message.success(res.message);
++          } else {
++            $message.warning(res.message);
+           }
+-          emit("success", formData);
+-          $message.success(res.message);
+-        } else {
+-          $message.warning(res.message);
+-        }
+-      }).finally(() => {
+-        loading.value = false;
+-      });
++        })
++        .finally(() => {
++          loading.value = false;
++        });
+     }
+     function triggleChangeValues(values, id, target) {
+       if (id && target) {
+         if (target.setValues) {
+           target.setValues(values);
+         } else {
+-          target.ctx.setValues([{
+-            rowKey: id,
+-            values
+-          }]);
++          target.ctx.setValues([
++            {
++              rowKey: id,
++              values,
++            },
++          ]);
+         }
+       } else {
+         setFieldsValue(values);
+@@ -486,7 +552,7 @@ const _sfc_main = {
+       obj[field] = value;
+       setFieldsValue(obj);
+     }
+-    const subActiveKey = ref("0");
++    const subActiveKey = ref('0');
+     const subFormHeight = ref(300);
+     const subTableHeight = ref(340);
+     function getSubTableForeignKeyValue(key) {
+@@ -494,7 +560,7 @@ const _sfc_main = {
+         let formData = dbData.value;
+         return getValueIgnoreCase(formData, key);
+       }
+-      return "";
++      return '';
+     }
+     function getValueIgnoreCase(data, key) {
+       if (data) {
+@@ -507,11 +573,11 @@ const _sfc_main = {
+         }
+         return temp;
+       }
+-      return "";
++      return '';
+     }
+     function handleSubFormChange(valueObj, tableKey) {
+-      if (EnhanceJS2 && EnhanceJS2[tableKey + "_onlChange"]) {
+-        let tableChangeObj = EnhanceJS2[tableKey + "_onlChange"]();
++      if (EnhanceJS2 && EnhanceJS2[tableKey + '_onlChange']) {
++        let tableChangeObj = EnhanceJS2[tableKey + '_onlChange']();
+         let columnKey = Object.keys(valueObj)[0];
+         if (tableChangeObj[columnKey]) {
+           let subRef = refMap[tableKey].value;
+@@ -519,71 +585,79 @@ const _sfc_main = {
+             subRef = subRef[0];
+           }
+           let formEvent = subRef.getFormEvent();
+-          let event = __spreadValues({
+-            column: { key: columnKey },
+-            value: valueObj[columnKey]
+-          }, formEvent);
++          let event = __spreadValues(
++            {
++              column: { key: columnKey },
++              value: valueObj[columnKey],
++            },
++            formEvent
++          );
+           tableChangeObj[columnKey].call(onlineFormContext, onlineFormContext, event);
+         }
+       }
+     }
+     function handleValueChange(event, tableKey) {
+-      if (EnhanceJS2 && EnhanceJS2[tableKey + "_onlChange"]) {
+-        let tableChangeObj = EnhanceJS2[tableKey + "_onlChange"](onlineFormContext);
++      if (EnhanceJS2 && EnhanceJS2[tableKey + '_onlChange']) {
++        let tableChangeObj = EnhanceJS2[tableKey + '_onlChange'](onlineFormContext);
+         if (tableChangeObj[event.column.key]) {
+           tableChangeObj[event.column.key].call(onlineFormContext, onlineFormContext, event);
+         }
+       }
+     }
+     function handleAdded(event) {
+-      event.target.emit("executeFillRule", event);
++      event.target.emit('executeFillRule', event);
+     }
+     function getSubTableAuthPre(table) {
+-      return "online_" + table + ":";
++      return 'online_' + table + ':';
+     }
+     function onValuesChange(columnKey, value) {
+       return __async(this, null, function* () {
+-        if (!EnhanceJS2 || !EnhanceJS2["onlChange"]) {
++        if (!EnhanceJS2 || !EnhanceJS2['onlChange']) {
+           return false;
+         }
+         if (!columnKey) {
+           return false;
+         }
+-        let tableChangeObj = EnhanceJS2["onlChange"]();
++        let tableChangeObj = EnhanceJS2['onlChange']();
+         if (tableChangeObj[columnKey]) {
+           let formData = yield getFieldsValue();
+           let event = {
+             row: formData,
+             column: { key: columnKey },
+-            value
++            value,
+           };
+           tableChangeObj[columnKey].call(onlineFormContext, onlineFormContext, event);
+         }
+       });
+     }
+     function handleCgButtonClick(optType, buttonCode) {
+-      if (optType == "js") {
++      if (optType == 'js') {
+         if (EnhanceJS2 && EnhanceJS2[buttonCode]) {
+           EnhanceJS2[buttonCode].call(onlineFormContext, onlineFormContext);
+         }
+-      } else if (optType == "action") {
++      } else if (optType == 'action') {
+         let formData = dbData.value;
+         let params = {
+           formId: props.id,
+           buttonCode,
+           dataId: formData.id,
+-          uiFormData: Object.assign({}, formData)
++          uiFormData: Object.assign({}, formData),
+         };
+-        defHttp.post({
+-          url: `${urlObject.urlButtonAction}`,
+-          params
+-        }, { isTransformResponse: false }).then((res) => {
+-          if (res.success) {
+-            $message.success("\u5904\u7406\u5B8C\u6210!");
+-          } else {
+-            $message.warning("\u5904\u7406\u5931\u8D25!");
+-          }
+-        });
++        defHttp
++          .post(
++            {
++              url: `${urlObject.urlButtonAction}`,
++              params,
++            },
++            { isTransformResponse: false }
++          )
++          .then((res) => {
++            if (res.success) {
++              $message.success('\u5904\u7406\u5B8C\u6210!');
++            } else {
++              $message.warning('\u5904\u7406\u5931\u8D25!');
++            }
++          });
+       }
+     }
+     function clearSubRows(tbname) {
+@@ -603,10 +677,10 @@ const _sfc_main = {
+         return false;
+       }
+       let instance = refMap[tbname].value;
+-      if (typeof rows == "object") {
++      if (typeof rows == 'object') {
+         instance.addRows(rows, true);
+       } else {
+-        this.$message.error("\u6DFB\u52A0\u5B50\u8868\u6570\u636E,\u53C2\u6570\u4E0D\u8BC6\u522B!");
++        this.$message.error('\u6DFB\u52A0\u5B50\u8868\u6570\u636E,\u53C2\u6570\u4E0D\u8BC6\u522B!');
+       }
+     }
+     function clearThenAddRows(tbname, rows) {
+@@ -618,20 +692,20 @@ const _sfc_main = {
+         options = [];
+       }
+       options.map((item) => {
+-        if (!item.hasOwnProperty("label")) {
+-          item["label"] = item.text;
++        if (!item.hasOwnProperty('label')) {
++          item['label'] = item.text;
+         }
+       });
+       updateSchema({
+         field,
+         componentProps: {
+-          options
+-        }
++          options,
++        },
+       });
+     }
+     function customBeforeSubmit2(that, formData) {
+-      if (EnhanceJS2 && EnhanceJS2["beforeSubmit"]) {
+-        return EnhanceJS2["beforeSubmit"](that, formData);
++      if (EnhanceJS2 && EnhanceJS2['beforeSubmit']) {
++        return EnhanceJS2['beforeSubmit'](that, formData);
+       } else {
+         return Promise.resolve();
+       }
+@@ -640,7 +714,7 @@ const _sfc_main = {
+       let plain = toRaw(fieldDisplayStatus);
+       if (show2 && show2.length > 0) {
+         Object.keys(plain).map((k) => {
+-          if (!k.endsWith("_load") && show2.indexOf(k) < 0) {
++          if (!k.endsWith('_load') && show2.indexOf(k) < 0) {
+             fieldDisplayStatus[k] = false;
+           }
+         });
+@@ -654,14 +728,14 @@ const _sfc_main = {
+     }
+     function handleCustomFormEdit(record, editSubmitUrl) {
+       return __async(this, null, function* () {
+-        console.log("\u81EA\u5B9A\u4E49\u5F39\u7A97\u6253\u5F00online\u8868\u5355\u300B\u300Bform", record);
++        console.log('\u81EA\u5B9A\u4E49\u5F39\u7A97\u6253\u5F00online\u8868\u5355\u300B\u300Bform', record);
+         customEditSubmitUrl.value = editSubmitUrl;
+         yield resetFields();
+-        dbData.value = "";
++        dbData.value = '';
+         isUpdate.value = true;
+         yield edit(record);
+         yield nextTick(() => {
+-          handleCgButtonClick("js", "loaded");
++          handleCgButtonClick('js', 'loaded');
+         });
+       });
+     }
+@@ -691,7 +765,7 @@ const _sfc_main = {
+       clearThenAddRows,
+       changeOptions,
+       isUpdate,
+-      getSubTableInstance
++      getSubTableInstance,
+     };
+     resetContext(context);
+     return {
+@@ -720,90 +794,162 @@ const _sfc_main = {
+       sh: fieldDisplayStatus,
+       handleCgButtonClick,
+       handleCustomFormSh,
+-      handleCustomFormEdit
++      handleCustomFormEdit,
+     };
+-  }
++  },
+ };
+-const _hoisted_1 = ["id"];
++const _hoisted_1 = ['id'];
+ const _hoisted_2 = { key: 1 };
+ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
+-  const _component_BasicForm = resolveComponent("BasicForm");
+-  const _component_online_sub_form = resolveComponent("online-sub-form");
+-  const _component_JVxeTable = resolveComponent("JVxeTable");
+-  const _component_a_tab_pane = resolveComponent("a-tab-pane");
+-  const _component_a_tabs = resolveComponent("a-tabs");
+-  const _component_Loading = resolveComponent("Loading");
+-  return openBlock(), createElementBlock("div", {
+-    id: $setup.tableName + "_form"
+-  }, [
+-    createVNode(_component_BasicForm, {
+-      ref: "onlineFormRef",
+-      onRegister: $setup.registerForm
+-    }, null, 8, ["onRegister"]),
+-    $setup.hasSubTable ? (openBlock(), createBlock(_component_a_tabs, {
+-      key: 0,
+-      activeKey: $setup.subActiveKey,
+-      "onUpdate:activeKey": _cache[0] || (_cache[0] = ($event) => $setup.subActiveKey = $event)
+-    }, {
+-      default: withCtx(() => [
+-        (openBlock(true), createElementBlock(Fragment, null, renderList($setup.subTabInfo, (sub, index) => {
+-          return openBlock(), createBlock(_component_a_tab_pane, {
+-            tab: sub.describe,
+-            key: index + "",
+-            forceRender: true
+-          }, {
+-            default: withCtx(() => [
+-              sub.relationType == 1 ? (openBlock(), createElementBlock("div", {
++  const _component_BasicForm = resolveComponent('BasicForm');
++  const _component_online_sub_form = resolveComponent('online-sub-form');
++  const _component_JVxeTable = resolveComponent('JVxeTable');
++  const _component_a_tab_pane = resolveComponent('a-tab-pane');
++  const _component_a_tabs = resolveComponent('a-tabs');
++  const _component_Loading = resolveComponent('Loading');
++  return (
++    openBlock(),
++    createElementBlock(
++      'div',
++      {
++        id: $setup.tableName + '_form',
++      },
++      [
++        createVNode(
++          _component_BasicForm,
++          {
++            ref: 'onlineFormRef',
++            onRegister: $setup.registerForm,
++          },
++          null,
++          8,
++          ['onRegister']
++        ),
++        $setup.hasSubTable
++          ? (openBlock(),
++            createBlock(
++              _component_a_tabs,
++              {
+                 key: 0,
+-                style: normalizeStyle({ "overflow-y": "auto", "overflow-x": "hidden", "max-height": $setup.subFormHeight + "px" })
+-              }, [
+-                createVNode(_component_online_sub_form, {
+-                  ref_for: true,
+-                  ref: $setup.refMap[sub.key],
+-                  table: sub.key,
+-                  disabled: $setup.onlineFormDisabled,
+-                  "form-template": $props.formTemplate,
+-                  "main-id": $setup.getSubTableForeignKeyValue(sub.foreignKey),
+-                  properties: sub.properties,
+-                  "required-fields": sub.requiredFields,
+-                  "is-update": $setup.isUpdate,
+-                  onFormChange: (arg) => $setup.handleSubFormChange(arg, sub.key)
+-                }, null, 8, ["table", "disabled", "form-template", "main-id", "properties", "required-fields", "is-update", "onFormChange"])
+-              ], 4)) : (openBlock(), createElementBlock("div", _hoisted_2, [
+-                createVNode(_component_JVxeTable, {
+-                  ref_for: true,
+-                  ref: $setup.refMap[sub.key],
+-                  toolbar: "",
+-                  "keep-source": "",
+-                  "row-number": "",
+-                  "row-selection": "",
+-                  height: $setup.subTableHeight,
+-                  disabled: $setup.onlineFormDisabled,
+-                  columns: sub.columns,
+-                  dataSource: $setup.subDataSource[sub.key],
+-                  onValueChange: (event) => $setup.handleValueChange(event, sub.key),
+-                  authPre: $setup.getSubTableAuthPre(sub.key),
+-                  onAdded: $setup.handleAdded,
+-                  onExecuteFillRule: ($event) => $setup.handleSubTableDefaultValue(sub, $event)
+-                }, null, 8, ["height", "disabled", "columns", "dataSource", "onValueChange", "authPre", "onAdded", "onExecuteFillRule"])
+-              ]))
+-            ]),
+-            _: 2
+-          }, 1032, ["tab"]);
+-        }), 128))
+-      ]),
+-      _: 1
+-    }, 8, ["activeKey"])) : createCommentVNode("", true),
+-    createVNode(_component_Loading, {
+-      loading: $setup.loading,
+-      absolute: false
+-    }, null, 8, ["loading"]),
+-    renderSlot(_ctx.$slots, "bottom")
+-  ], 8, _hoisted_1);
++                activeKey: $setup.subActiveKey,
++                'onUpdate:activeKey': _cache[0] || (_cache[0] = ($event) => ($setup.subActiveKey = $event)),
++              },
++              {
++                default: withCtx(() => [
++                  (openBlock(true),
++                  createElementBlock(
++                    Fragment,
++                    null,
++                    renderList($setup.subTabInfo, (sub, index) => {
++                      return (
++                        openBlock(),
++                        createBlock(
++                          _component_a_tab_pane,
++                          {
++                            tab: sub.describe,
++                            key: index + '',
++                            forceRender: true,
++                          },
++                          {
++                            default: withCtx(() => [
++                              sub.relationType == 1
++                                ? (openBlock(),
++                                  createElementBlock(
++                                    'div',
++                                    {
++                                      key: 0,
++                                      style: normalizeStyle({ 'overflow-y': 'auto', 'overflow-x': 'hidden', 'max-height': $setup.subFormHeight + 'px' }),
++                                    },
++                                    [
++                                      createVNode(
++                                        _component_online_sub_form,
++                                        {
++                                          ref_for: true,
++                                          ref: $setup.refMap[sub.key],
++                                          table: sub.key,
++                                          disabled: $setup.onlineFormDisabled,
++                                          'form-template': $props.formTemplate,
++                                          'main-id': $setup.getSubTableForeignKeyValue(sub.foreignKey),
++                                          properties: sub.properties,
++                                          'required-fields': sub.requiredFields,
++                                          'is-update': $setup.isUpdate,
++                                          onFormChange: (arg) => $setup.handleSubFormChange(arg, sub.key),
++                                        },
++                                        null,
++                                        8,
++                                        ['table', 'disabled', 'form-template', 'main-id', 'properties', 'required-fields', 'is-update', 'onFormChange']
++                                      ),
++                                    ],
++                                    4
++                                  ))
++                                : (openBlock(),
++                                  createElementBlock('div', _hoisted_2, [
++                                    createVNode(
++                                      _component_JVxeTable,
++                                      {
++                                        ref_for: true,
++                                        ref: $setup.refMap[sub.key],
++                                        toolbar: '',
++                                        'keep-source': '',
++                                        'row-number': '',
++                                        'row-selection': '',
++                                        height: $setup.subTableHeight,
++                                        disabled: $setup.onlineFormDisabled,
++                                        columns: sub.columns,
++                                        dataSource: $setup.subDataSource[sub.key],
++                                        onValueChange: (event) => $setup.handleValueChange(event, sub.key),
++                                        authPre: $setup.getSubTableAuthPre(sub.key),
++                                        onAdded: $setup.handleAdded,
++                                        onExecuteFillRule: ($event) => $setup.handleSubTableDefaultValue(sub, $event),
++                                      },
++                                      null,
++                                      8,
++                                      ['height', 'disabled', 'columns', 'dataSource', 'onValueChange', 'authPre', 'onAdded', 'onExecuteFillRule']
++                                    ),
++                                  ])),
++                            ]),
++                            _: 2,
++                          },
++                          1032,
++                          ['tab']
++                        )
++                      );
++                    }),
++                    128
++                  )),
++                ]),
++                _: 1,
++              },
++              8,
++              ['activeKey']
++            ))
++          : createCommentVNode('', true),
++        createVNode(
++          _component_Loading,
++          {
++            loading: $setup.loading,
++            absolute: false,
++          },
++          null,
++          8,
++          ['loading']
++        ),
++        renderSlot(_ctx.$slots, 'bottom'),
++      ],
++      8,
++      _hoisted_1
++    )
++  );
+ }
+-var OnlineForm = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render]]);
+-var OnlineForm$1 = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+-  __proto__: null,
+-  "default": OnlineForm
+-}, Symbol.toStringTag, { value: "Module" }));
++var OnlineForm = /* @__PURE__ */ _export_sfc(_sfc_main, [['render', _sfc_render]]);
++var OnlineForm$1 = /* @__PURE__ */ Object.freeze(
++  /* @__PURE__ */ Object.defineProperty(
++    {
++      __proto__: null,
++      default: OnlineForm,
++    },
++    Symbol.toStringTag,
++    { value: 'Module' }
++  )
++);
+ export { OnlineForm as O, OnlineForm$1 as a, useEnhance as u };
 diff --git a/node_modules/@jeecg/online/OnlineQueryForm.js b/node_modules/@jeecg/online/OnlineQueryForm.js
 index f0a63ff..33bffe2 100644
 --- a/node_modules/@jeecg/online/OnlineQueryForm.js
@@ -5469,7 +6514,7 @@ index 642e43b..0000000
 -```
 \ No newline at end of file
 diff --git a/node_modules/@jeecg/online/useTableColumns.js b/node_modules/@jeecg/online/useTableColumns.js
-index c0ceb88..06525dc 100644
+index c0ceb88..fc860cf 100644
 --- a/node_modules/@jeecg/online/useTableColumns.js
 +++ b/node_modules/@jeecg/online/useTableColumns.js
 @@ -4,15 +4,12 @@ var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
@@ -6228,20 +7273,49 @@ index c0ceb88..06525dc 100644
            cgLinkButtonList.push(temp);
          }
        }
-@@ -587,65 +651,71 @@ function useListButton(onlineTableContext2) {
-   function handleAdd(param) {
-     let data = { isUpdate: false };
-     if (param) {
--      data["param"] = param;
-+      data['param'] = param;
+@@ -585,67 +649,97 @@ function useListButton(onlineTableContext2) {
      }
-     openModal(true, data);
+   }
+   function handleAdd(param) {
+-    let data = { isUpdate: false };
+-    if (param) {
+-      data["param"] = param;
++    // 读取localStrorage数据
++    const storage = window.localStorage;
++    const addFormData = storage.getItem('add_form_temp_data');
++
++    // yg更新初始化列表的逻辑 增加一次性的localStroage的检查
++    // 如果有已经加载的数据 存入
++    if (addFormData !== '') {
++      const record = JSON.parse(addFormData);
++
++      let data = { isUpdate: false, record };
++      if (param) {
++        data['param'] = param;
++      }
++
++      // 用于设置模态框状态 判断是否有数据需要继承
++      storage.setItem('form_type_is_inherit', true);
++
++      openModal(true, data);
++    } else {
++      let data = { isUpdate: false };
++      if (param) {
++        data['param'] = param;
++      }
++      storage.setItem('form_type_is_inherit', false);
++      openModal(true, data);
+     }
+-    openModal(true, data);
    }
    function handleEdit(record2) {
 -    onlineTableContext2.beforeEdit(record2).then(() => {
 -      openModal(true, {
 -        isUpdate: true,
 -        record: record2
++    // 读取localStrorage数据
++    const storage = window.localStorage;
++    storage.setItem('form_type_is_inherit', false);
 +    onlineTableContext2
 +      .beforeEdit(record2)
 +      .then(() => {
@@ -6327,7 +7401,7 @@ index c0ceb88..06525dc 100644
        arr.push(getSubmitFlowButton(record2));
      }
      if (toRaw(buttonSwitch.delete) === true) {
-@@ -654,10 +724,10 @@ function useListButton(onlineTableContext2) {
+@@ -654,10 +748,10 @@ function useListButton(onlineTableContext2) {
      let buttonList = cgLinkButtonList;
      if (buttonList && buttonList.length > 0) {
        for (let item of buttonList) {
@@ -6340,7 +7414,7 @@ index c0ceb88..06525dc 100644
            });
          }
        }
-@@ -668,19 +738,22 @@ function useListButton(onlineTableContext2) {
+@@ -668,19 +762,22 @@ function useListButton(onlineTableContext2) {
      openModal(true, {
        isUpdate: true,
        disableSubmit: true,
@@ -6368,7 +7442,7 @@ index c0ceb88..06525dc 100644
      };
      let postOption = { isTransformResponse: false };
      return new Promise((resolve, reject) => {
-@@ -702,103 +775,119 @@ function useListButton(onlineTableContext2) {
+@@ -702,103 +799,119 @@ function useListButton(onlineTableContext2) {
      });
    }
    function handleDelete(dataId) {
@@ -6549,7 +7623,7 @@ index c0ceb88..06525dc 100644
    }
    function onImportExcel() {
      openImportModal(true);
-@@ -806,12 +895,25 @@ function useListButton(onlineTableContext2) {
+@@ -806,12 +919,25 @@ function useListButton(onlineTableContext2) {
    const importUrl = () => {
      return `${onlineTableContext2.onlineUrl.importXls}${onlineTableContext2.ID}`;
    };
@@ -6578,7 +7652,7 @@ index c0ceb88..06525dc 100644
      }
      let paramsStr = JSON.stringify(filterObj(params));
      let url = `${onlineTableContext2.onlineUrl.exportXls}${onlineTableContext2.ID}`;
-@@ -819,24 +921,24 @@ function useListButton(onlineTableContext2) {
+@@ -819,24 +945,24 @@ function useListButton(onlineTableContext2) {
      handleExportXlsx(description, url, { paramsStr });
    }
    function showLinkButtonOfExpression(expression, row) {
@@ -6612,7 +7686,7 @@ index c0ceb88..06525dc 100644
        return arr2.indexOf(String(fieldValue)) >= 0;
      }
      return false;
-@@ -853,6 +955,7 @@ function useListButton(onlineTableContext2) {
+@@ -853,6 +979,7 @@ function useListButton(onlineTableContext2) {
      registerImportModal,
      onImportExcel,
      onExportExcel,
@@ -6620,7 +7694,7 @@ index c0ceb88..06525dc 100644
      getDropDownActions,
      getActions,
      cgButtonJsHandler,
-@@ -862,7 +965,7 @@ function useListButton(onlineTableContext2) {
+@@ -862,7 +989,7 @@ function useListButton(onlineTableContext2) {
      initButtonSwitch,
      getDeleteButton,
      handleSubmitFlow,
@@ -6629,7 +7703,7 @@ index c0ceb88..06525dc 100644
    };
  }
  function useTableColumns(onlineTableContext) {
-@@ -881,10 +984,10 @@ function useTableColumns(onlineTableContext) {
+@@ -881,10 +1008,10 @@ function useTableColumns(onlineTableContext) {
    });
    function handleColumnResult(result) {
      dictOptionInfo.value = result.dictOptions;
@@ -6642,7 +7716,7 @@ index c0ceb88..06525dc 100644
        };
      } else {
        rowSelection.value = null;
-@@ -900,11 +1003,11 @@ function useTableColumns(onlineTableContext) {
+@@ -900,11 +1027,11 @@ function useTableColumns(onlineTableContext) {
      });
      let fieldHrefSlots = result.fieldHrefSlots;
      const fieldHrefSlotKeysMap = {};
@@ -6656,7 +7730,7 @@ index c0ceb88..06525dc 100644
      if (onlineTableContext.isTree() === true) {
        let firstField = result.textField;
        let index = -1;
-@@ -919,23 +1022,23 @@ function useTableColumns(onlineTableContext) {
+@@ -919,23 +1046,23 @@ function useTableColumns(onlineTableContext) {
          tableColumns.unshift(deleteColumns[0]);
        }
        if (tableColumns.length > 0) {
@@ -6685,7 +7759,7 @@ index c0ceb88..06525dc 100644
            }
            if (text2.length > 10) {
              return text2.substring(0, 10);
-@@ -943,36 +1046,40 @@ function useTableColumns(onlineTableContext) {
+@@ -943,36 +1070,40 @@ function useTableColumns(onlineTableContext) {
            return text2;
          };
        } else {
@@ -6734,7 +7808,7 @@ index c0ceb88..06525dc 100644
                }
              }
              return value;
-@@ -981,7 +1088,7 @@ function useTableColumns(onlineTableContext) {
+@@ -981,7 +1112,7 @@ function useTableColumns(onlineTableContext) {
          if (column.scopedSlots) {
            column.ellipsis = true;
            let slots = column.scopedSlots;
@@ -6743,7 +7817,7 @@ index c0ceb88..06525dc 100644
            delete column.scopedSlots;
          }
        }
-@@ -993,10 +1100,10 @@ function useTableColumns(onlineTableContext) {
+@@ -993,10 +1124,10 @@ function useTableColumns(onlineTableContext) {
      let urlPattern = /(ht|f)tp(s?)\:\/\/[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_]*)?/;
      let compPattern = /\.vue(\?.*)?$/;
      let jsPattern = /{{([^}]+)}}/g;
@@ -6756,7 +7830,7 @@ index c0ceb88..06525dc 100644
            try {
              return eval(s0);
            } catch (e) {
-@@ -1006,7 +1113,7 @@ function useTableColumns(onlineTableContext) {
+@@ -1006,7 +1137,7 @@ function useTableColumns(onlineTableContext) {
          });
        }
        if (urlPattern.test(href)) {
@@ -6765,7 +7839,7 @@ index c0ceb88..06525dc 100644
        } else if (compPattern.test(href)) {
          openHrefCompModal(href);
        } else {
-@@ -1017,38 +1124,38 @@ function useTableColumns(onlineTableContext) {
+@@ -1017,38 +1148,38 @@ function useTableColumns(onlineTableContext) {
    const dialogStyle = {
      top: 0,
      left: 0,
@@ -6817,7 +7891,7 @@ index c0ceb88..06525dc 100644
          params[paramItem[0]] = paramItem[1];
        });
        hrefComponent.params = params;
-@@ -1056,57 +1163,59 @@ function useTableColumns(onlineTableContext) {
+@@ -1056,57 +1187,59 @@ function useTableColumns(onlineTableContext) {
        hrefComponent.params = {};
      }
      hrefComponent.model.visible = true;
@@ -6895,7 +7969,7 @@ index c0ceb88..06525dc 100644
      }
      let a = text2;
      if (a.length > 10) {
-@@ -1115,17 +1224,17 @@ function useTableColumns(onlineTableContext) {
+@@ -1115,17 +1248,17 @@ function useTableColumns(onlineTableContext) {
      return a;
    }
    watch(selectedKeys, () => {
@@ -6918,7 +7992,7 @@ index c0ceb88..06525dc 100644
        for (let str of arr) {
          if (str) {
            imgList.push(getFileAccessHttpUrl(str));
-@@ -1148,7 +1257,7 @@ function useTableColumns(onlineTableContext) {
+@@ -1148,7 +1281,7 @@ function useTableColumns(onlineTableContext) {
      handleColumnResult,
      onSelectChange,
      hrefComponent,
