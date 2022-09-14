@@ -101,8 +101,7 @@
 
   .@{prefix-cls} {
     &__toolbar {
-      //flex: 1;
-      width: 140px;
+      flex: 0 0 140px;
       display: flex;
       align-items: center;
       justify-content: flex-end;
@@ -122,7 +121,7 @@
     &__tableTitle {
       flex: 1;
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       align-content: flex-start;
 
       > * {
