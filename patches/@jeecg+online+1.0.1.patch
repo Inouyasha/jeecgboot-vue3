@@ -1160,7 +1160,7 @@ index 48636b1..3405edd 100644
    }
  }
 diff --git a/node_modules/@jeecg/online/OnlineAutoList.js b/node_modules/@jeecg/online/OnlineAutoList.js
-index 454118f..9953de7 100644
+index 454118f..9853dc9 100644
 --- a/node_modules/@jeecg/online/OnlineAutoList.js
 +++ b/node_modules/@jeecg/online/OnlineAutoList.js
 @@ -14,56 +14,78 @@ var __async = (__this, __arguments, generator) => {
@@ -1423,7 +1423,7 @@ index 454118f..9953de7 100644
 +const _hoisted_3 = /* @__PURE__ */ createTextVNode('\u5BFC\u5165');
 +const _hoisted_4 = /* @__PURE__ */ createTextVNode(' \u5BFC\u51FA');
 +// yg 空导出按钮
-+const _hoisted_add_1 = /* @__PURE__ */ createTextVNode(' \u7a7a\u5bfc\u51fa');
++const _hoisted_add_1 = /* @__PURE__ */ createTextVNode(' \u6a21\u677f\u5bfc\u51fa');
 +const _hoisted_5 = /* @__PURE__ */ createTextVNode(' \u6279\u91CF\u5220\u9664');
  const _hoisted_6 = {
    key: 0,
