@@ -1,0 +1,38 @@
+{
+  "options": [
+    {
+      "label": "技术成果库",
+      "value": "0b94ba1d723045d998b88afd6066796b"
+    },
+    {
+      "label": "专家库",
+      "value": "f206447b0e8d4e4d9c496a6d7711802a"
+    },
+    {
+      "label": "研发资源库",
+      "value": "c1109bdee8784a7d914e9ef4d39ee91c"
+    },
+    {
+      "label": "培训资源库",
+      "value": "58815ca29d1d44109acfdaf3185ecc09"
+    },
+    {
+      "label": "科普产品库",
+      "value": "feddac471c044e2390b4abe8be594402",
+      "queryItem": "title"
+    },
+    {
+      "label": "政策文件库",
+      "value": "a1efc92701b743458e3d334c4af2caa5"
+    },
+    {
+      "label": "市州信息资源库",
+      "value": "6f5b6a48d73e49f08009669ecee8883c",
+      "queryItem": "project"
+    },
+    {
+      "label": "单位信息库",
+      "value": "b9b0575fb2fc49ffbf703b0581f2e6da"
+    }
+  ]
+}
