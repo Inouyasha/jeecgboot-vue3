@@ -22,7 +22,6 @@ import { defHttp } from '/@/utils/http/axios';
   const queryItem = useRoute().query.name as string;
   const tableInfoList: { label: string; value: string; columns: BasicColumn[]; dataSource: Array<Record<string, any>> }[] = reactive([]);
   const total = ref(0);
-  console.log(queryItem);
 
   // 获取tab数据 用于数据请求
   const options = getOptions();
@@ -32,7 +31,7 @@ import { defHttp } from '/@/utils/http/axios';
   function getTableData() {
     const getDataQuery = (code: string, query: { key: string; value: string }) => {
       return {
-        url: `online/cgform/api/getData/${code}`,
+        url: `/online/cgform/api/getData/${code}`,
         params: {
           hasQuery: true,
           column: 'id',
@@ -64,7 +63,6 @@ import { defHttp } from '/@/utils/http/axios';
               }
             ]
           ) => {
-            console.log(result);
             // 删除customRender属性
             result[0].columns.forEach((column) => {
               if ('customRender' in column) {
