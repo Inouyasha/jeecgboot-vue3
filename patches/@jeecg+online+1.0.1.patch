@@ -3002,7 +3002,7 @@ index 81c7b9d..6fcfb4f 100644
 +);
  export { OnlineForm as O, OnlineForm$1 as a, useEnhance as u };
 diff --git a/node_modules/@jeecg/online/OnlineQueryForm.js b/node_modules/@jeecg/online/OnlineQueryForm.js
-index f0a63ff..33bffe2 100644
+index f0a63ff..f751fcb 100644
 --- a/node_modules/@jeecg/online/OnlineQueryForm.js
 +++ b/node_modules/@jeecg/online/OnlineQueryForm.js
 @@ -2,15 +2,12 @@ var __defProp = Object.defineProperty;
@@ -3177,7 +3177,7 @@ index f0a63ff..33bffe2 100644
            return a.order - b.order;
          });
          let schemaArray = [];
-@@ -164,7 +186,7 @@ const _sfc_main = {
+@@ -164,19 +186,25 @@ const _sfc_main = {
        return __async(this, null, function* () {
          let json = yield loadQueryInfo();
          let allFields = getAllFields(json);
@@ -3186,7 +3186,17 @@ index f0a63ff..33bffe2 100644
          let { formProperties, hasField } = getQueryFormProperties(allFields, json);
          if (hasField == false) {
            formSchemas.value = [];
-@@ -176,7 +198,7 @@ const _sfc_main = {
+           return;
+         }
++        // yg 设置普通query的cat_tree类型类型
++        Object.values(formProperties).forEach((formConfig) => {
++          if (formConfig.view === 'cat_tree') {
++            formConfig.isDictQuery = true;
++          }
++        });
+         yield initSchemas(formProperties);
+       });
+     }
      function customSetFieldsValue(rawValues) {
        return __async(this, null, function* () {
          yield getRefPromise(onlineQueryFormRef);
@@ -3195,7 +3205,7 @@ index f0a63ff..33bffe2 100644
          yield setFieldsValue(rawValues);
          if (Object.keys(rawValues).length > 0) {
            doSearch();
-@@ -191,15 +213,15 @@ const _sfc_main = {
+@@ -191,15 +219,15 @@ const _sfc_main = {
          Object.keys(allFields).map((field) => {
            if (searchFieldList.indexOf(field) >= 0) {
              if (joinQuery == true) {
@@ -3214,7 +3224,7 @@ index f0a63ff..33bffe2 100644
                  formProperties[field] = allFields[field];
                  hasField = true;
                }
-@@ -209,7 +231,7 @@ const _sfc_main = {
+@@ -209,7 +237,7 @@ const _sfc_main = {
        }
        return {
          formProperties,
@@ -3223,7 +3233,7 @@ index f0a63ff..33bffe2 100644
        };
      }
      function getAllFields(json) {
-@@ -218,18 +240,18 @@ const _sfc_main = {
+@@ -218,18 +246,18 @@ const _sfc_main = {
        let order = 1;
        Object.keys(properties).map((field) => {
          let item = properties[field];
@@ -3247,7 +3257,7 @@ index f0a63ff..33bffe2 100644
            allFields[field] = item;
          }
        });
-@@ -238,17 +260,20 @@ const _sfc_main = {
+@@ -238,17 +266,20 @@ const _sfc_main = {
      function loadQueryInfo() {
        let url = `${LOAD_URL}${props.id}`;
        return new Promise((resolve) => {
@@ -3278,7 +3288,7 @@ index f0a63ff..33bffe2 100644
        });
      }
      const [registerForm, { resetFields, setFieldsValue, updateSchema, getFieldsValue }] = useForm({
-@@ -258,12 +283,22 @@ const _sfc_main = {
+@@ -258,12 +289,22 @@ const _sfc_main = {
        autoSubmitOnEnter: true,
        submitFunc() {
          doSearch();
@@ -3303,7 +3313,7 @@ index f0a63ff..33bffe2 100644
      }
      function resetSearch() {
        return __async(this, null, function* () {
-@@ -273,32 +308,36 @@ const _sfc_main = {
+@@ -273,32 +314,36 @@ const _sfc_main = {
          if (Object.keys(rawValues).length > 0) {
            yield setFieldsValue(rawValues);
          }
@@ -3354,7 +3364,7 @@ index f0a63ff..33bffe2 100644
      return {
        onlineQueryFormRef,
        registerForm,
-@@ -306,137 +345,212 @@ const _sfc_main = {
+@@ -306,137 +351,212 @@ const _sfc_main = {
        toggleButtonShow,
        toggleSearchStatus,
        doSearch,
@@ -6514,7 +6524,7 @@ index 642e43b..0000000
 -```
 \ No newline at end of file
 diff --git a/node_modules/@jeecg/online/useTableColumns.js b/node_modules/@jeecg/online/useTableColumns.js
-index c0ceb88..fc860cf 100644
+index c0ceb88..4b25b0d 100644
 --- a/node_modules/@jeecg/online/useTableColumns.js
 +++ b/node_modules/@jeecg/online/useTableColumns.js
 @@ -4,15 +4,12 @@ var __getOwnPropDescs = Object.getOwnPropertyDescriptors;
@@ -7002,7 +7012,7 @@ index c0ceb88..fc860cf 100644
            item.children = [loadChild];
          }
          return item;
-@@ -410,84 +425,130 @@ function useOnlineTableContext() {
+@@ -410,84 +425,142 @@ function useOnlineTableContext() {
      if (expandedRowKeysValue.length > 0) {
        const { sortField, sortType, pidField } = onlineTableContext2;
        let params = Object.assign({}, { column: sortField, order: sortType });
@@ -7104,6 +7114,18 @@ index c0ceb88..fc860cf 100644
 +    let arr = [];
 +    // 获取表名
 +    Object.entries(queryData).forEach(([key, value]) => {
++      // 开始于searchRange标识为范围搜索
++      if(value.startsWith('searchRange:')){
++        arr.push({
++          field: key,
++          rule: 'in',
++          val: value.slice(12),
++          type: 'text',
++          dbType: 'string',
++        });
++        return;
++      }
++
 +      // 多选
 +      if (value.indexOf(',') !== -1) {
 +        arr.push({
@@ -7148,7 +7170,7 @@ index c0ceb88..fc860cf 100644
 -          item.field = field2.replace(pre, "");
 +          item.field = field2.replace(pre, '');
 +        }
-+        if (item.type === 'cat_tree' && item.val.startsWith('searchRange:') && typeof item.val === 'string') {
++        if (item.type === 'cat_tree' && typeof item.val === 'string' && item.val.startsWith('searchRange:') ) {
 +          let val = item.val.slice(12);
 +          // 如果是相等 只匹配第一项
 +          if (item.rule === 'eq') {
@@ -7179,7 +7201,7 @@ index c0ceb88..fc860cf 100644
      };
      if (params.length == 0) {
        superQueryStatus.value = false;
-@@ -502,43 +563,46 @@ function useOnlineTableContext() {
+@@ -502,43 +575,46 @@ function useOnlineTableContext() {
        param = {};
      }
      if (!param.row) {
@@ -7250,7 +7272,7 @@ index c0ceb88..fc860cf 100644
  function useListButton(onlineTableContext2) {
    const buttonStatus = {
      add: true,
-@@ -550,7 +614,7 @@ function useListButton(onlineTableContext2) {
+@@ -550,7 +626,7 @@ function useListButton(onlineTableContext2) {
      export: true,
      detail: true,
      super_query: true,
@@ -7259,7 +7281,7 @@ index c0ceb88..fc860cf 100644
    };
    const [registerModal, { openModal }] = useModal();
    const [registerImportModal, { openModal: openImportModal }] = useModal();
-@@ -563,10 +627,10 @@ function useListButton(onlineTableContext2) {
+@@ -563,10 +639,10 @@ function useListButton(onlineTableContext2) {
      cgTopButtonList.length = 0;
      if (btnList && btnList.length > 0) {
        for (let i = 0; i < btnList.length; i++) {
@@ -7273,7 +7295,7 @@ index c0ceb88..fc860cf 100644
            cgLinkButtonList.push(temp);
          }
        }
-@@ -585,67 +649,97 @@ function useListButton(onlineTableContext2) {
+@@ -585,67 +661,97 @@ function useListButton(onlineTableContext2) {
      }
    }
    function handleAdd(param) {
@@ -7401,7 +7423,7 @@ index c0ceb88..fc860cf 100644
        arr.push(getSubmitFlowButton(record2));
      }
      if (toRaw(buttonSwitch.delete) === true) {
-@@ -654,10 +748,10 @@ function useListButton(onlineTableContext2) {
+@@ -654,10 +760,10 @@ function useListButton(onlineTableContext2) {
      let buttonList = cgLinkButtonList;
      if (buttonList && buttonList.length > 0) {
        for (let item of buttonList) {
@@ -7414,7 +7436,7 @@ index c0ceb88..fc860cf 100644
            });
          }
        }
-@@ -668,19 +762,22 @@ function useListButton(onlineTableContext2) {
+@@ -668,19 +774,22 @@ function useListButton(onlineTableContext2) {
      openModal(true, {
        isUpdate: true,
        disableSubmit: true,
@@ -7442,7 +7464,7 @@ index c0ceb88..fc860cf 100644
      };
      let postOption = { isTransformResponse: false };
      return new Promise((resolve, reject) => {
-@@ -702,103 +799,119 @@ function useListButton(onlineTableContext2) {
+@@ -702,103 +811,119 @@ function useListButton(onlineTableContext2) {
      });
    }
    function handleDelete(dataId) {
@@ -7623,7 +7645,7 @@ index c0ceb88..fc860cf 100644
    }
    function onImportExcel() {
      openImportModal(true);
-@@ -806,12 +919,25 @@ function useListButton(onlineTableContext2) {
+@@ -806,12 +931,25 @@ function useListButton(onlineTableContext2) {
    const importUrl = () => {
      return `${onlineTableContext2.onlineUrl.importXls}${onlineTableContext2.ID}`;
    };
@@ -7652,7 +7674,7 @@ index c0ceb88..fc860cf 100644
      }
      let paramsStr = JSON.stringify(filterObj(params));
      let url = `${onlineTableContext2.onlineUrl.exportXls}${onlineTableContext2.ID}`;
-@@ -819,24 +945,24 @@ function useListButton(onlineTableContext2) {
+@@ -819,24 +957,24 @@ function useListButton(onlineTableContext2) {
      handleExportXlsx(description, url, { paramsStr });
    }
    function showLinkButtonOfExpression(expression, row) {
@@ -7686,7 +7708,7 @@ index c0ceb88..fc860cf 100644
        return arr2.indexOf(String(fieldValue)) >= 0;
      }
      return false;
-@@ -853,6 +979,7 @@ function useListButton(onlineTableContext2) {
+@@ -853,6 +991,7 @@ function useListButton(onlineTableContext2) {
      registerImportModal,
      onImportExcel,
      onExportExcel,
@@ -7694,7 +7716,7 @@ index c0ceb88..fc860cf 100644
      getDropDownActions,
      getActions,
      cgButtonJsHandler,
-@@ -862,7 +989,7 @@ function useListButton(onlineTableContext2) {
+@@ -862,7 +1001,7 @@ function useListButton(onlineTableContext2) {
      initButtonSwitch,
      getDeleteButton,
      handleSubmitFlow,
@@ -7703,7 +7725,7 @@ index c0ceb88..fc860cf 100644
    };
  }
  function useTableColumns(onlineTableContext) {
-@@ -881,10 +1008,10 @@ function useTableColumns(onlineTableContext) {
+@@ -881,10 +1020,10 @@ function useTableColumns(onlineTableContext) {
    });
    function handleColumnResult(result) {
      dictOptionInfo.value = result.dictOptions;
@@ -7716,7 +7738,7 @@ index c0ceb88..fc860cf 100644
        };
      } else {
        rowSelection.value = null;
-@@ -900,11 +1027,11 @@ function useTableColumns(onlineTableContext) {
+@@ -900,11 +1039,11 @@ function useTableColumns(onlineTableContext) {
      });
      let fieldHrefSlots = result.fieldHrefSlots;
      const fieldHrefSlotKeysMap = {};
@@ -7730,7 +7752,7 @@ index c0ceb88..fc860cf 100644
      if (onlineTableContext.isTree() === true) {
        let firstField = result.textField;
        let index = -1;
-@@ -919,23 +1046,23 @@ function useTableColumns(onlineTableContext) {
+@@ -919,23 +1058,23 @@ function useTableColumns(onlineTableContext) {
          tableColumns.unshift(deleteColumns[0]);
        }
        if (tableColumns.length > 0) {
@@ -7759,7 +7781,7 @@ index c0ceb88..fc860cf 100644
            }
            if (text2.length > 10) {
              return text2.substring(0, 10);
-@@ -943,36 +1070,40 @@ function useTableColumns(onlineTableContext) {
+@@ -943,36 +1082,40 @@ function useTableColumns(onlineTableContext) {
            return text2;
          };
        } else {
@@ -7808,7 +7830,7 @@ index c0ceb88..fc860cf 100644
                }
              }
              return value;
-@@ -981,7 +1112,7 @@ function useTableColumns(onlineTableContext) {
+@@ -981,7 +1124,7 @@ function useTableColumns(onlineTableContext) {
          if (column.scopedSlots) {
            column.ellipsis = true;
            let slots = column.scopedSlots;
@@ -7817,7 +7839,7 @@ index c0ceb88..fc860cf 100644
            delete column.scopedSlots;
          }
        }
-@@ -993,10 +1124,10 @@ function useTableColumns(onlineTableContext) {
+@@ -993,10 +1136,10 @@ function useTableColumns(onlineTableContext) {
      let urlPattern = /(ht|f)tp(s?)\:\/\/[0-9a-zA-Z]([-.\w]*[0-9a-zA-Z])*(:(0-9)*)*(\/?)([a-zA-Z0-9\-\.\?\,\'\/\\\+&amp;%\$#_]*)?/;
      let compPattern = /\.vue(\?.*)?$/;
      let jsPattern = /{{([^}]+)}}/g;
@@ -7830,7 +7852,7 @@ index c0ceb88..fc860cf 100644
            try {
              return eval(s0);
            } catch (e) {
-@@ -1006,7 +1137,7 @@ function useTableColumns(onlineTableContext) {
+@@ -1006,7 +1149,7 @@ function useTableColumns(onlineTableContext) {
          });
        }
        if (urlPattern.test(href)) {
@@ -7839,7 +7861,7 @@ index c0ceb88..fc860cf 100644
        } else if (compPattern.test(href)) {
          openHrefCompModal(href);
        } else {
-@@ -1017,38 +1148,38 @@ function useTableColumns(onlineTableContext) {
+@@ -1017,38 +1160,38 @@ function useTableColumns(onlineTableContext) {
    const dialogStyle = {
      top: 0,
      left: 0,
@@ -7891,7 +7913,7 @@ index c0ceb88..fc860cf 100644
          params[paramItem[0]] = paramItem[1];
        });
        hrefComponent.params = params;
-@@ -1056,57 +1187,59 @@ function useTableColumns(onlineTableContext) {
+@@ -1056,57 +1199,59 @@ function useTableColumns(onlineTableContext) {
        hrefComponent.params = {};
      }
      hrefComponent.model.visible = true;
@@ -7969,7 +7991,7 @@ index c0ceb88..fc860cf 100644
      }
      let a = text2;
      if (a.length > 10) {
-@@ -1115,17 +1248,17 @@ function useTableColumns(onlineTableContext) {
+@@ -1115,17 +1260,17 @@ function useTableColumns(onlineTableContext) {
      return a;
    }
    watch(selectedKeys, () => {
@@ -7992,7 +8014,7 @@ index c0ceb88..fc860cf 100644
        for (let str of arr) {
          if (str) {
            imgList.push(getFileAccessHttpUrl(str));
-@@ -1148,7 +1281,7 @@ function useTableColumns(onlineTableContext) {
+@@ -1148,7 +1293,7 @@ function useTableColumns(onlineTableContext) {
      handleColumnResult,
      onSelectChange,
      hrefComponent,

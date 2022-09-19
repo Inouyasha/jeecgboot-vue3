@@ -231,8 +231,8 @@
           loadCategoryData({ code }).then((result: { value: string; text: string; label: string }[]) => {
             const searchValue = `searchRange:${result.map((item) => item.value).join(',')}`;
 
-            emit('change', value.value, { searchValue });
-            treeValue.value = value.value;
+            emit('change', searchValue, { searchValue });
+            treeValue.value = searchValue;
           });
 
           return;
